@@ -155,17 +155,43 @@ contract DictumVaultForkTest is Test {
         _swear(ETH, DictumVault.Side.Long, 5e6, 6000);
         (uint96 t, uint96 vd) = _levels(BTC, true, 200, 150);
         vm.prank(agentKey);
-        vm.expectRevert(); // cooldown 10 min
+        vm.expectPartialRevert(DictumVault.CooldownActive.selector);
         v.swear(BTC, DictumVault.Side.Long, 5e6, t, vd, uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
         _wait(601);
         (t, vd) = _levels(ETH, true, 200, 150);
         vm.prank(agentKey);
-        vm.expectRevert(); // one outstanding note per asset
+        vm.expectPartialRevert(DictumVault.NoteAlreadyOutstanding.selector);
         v.swear(ETH, DictumVault.Side.Long, 5e6, t, vd, uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
         (t, vd) = _levels(BTC, true, 200, 150);
         vm.prank(agentKey);
-        vm.expectRevert(); // 25 h > 24 h horizon
+        vm.expectPartialRevert(DictumVault.BadExpiry.selector);
         v.swear(BTC, DictumVault.Side.Long, 5e6, t, vd, uint40(vm.getBlockTimestamp() + 25 hours), 6000, "x", bytes32(0));
+    }
+
+    function test_noNegativeExpectancyNotes() public {
+        // reward/risk 1.5 needs p > 0.40; 0.35 is a note the agent expects to lose
+        (uint96 tg, uint96 vd) = _levels(ETH, true, 200, 150);
+        vm.prank(agentKey);
+        vm.expectPartialRevert(DictumVault.NegativeExpectancy.selector);
+        v.swear(ETH, DictumVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 1 hours), 3500, "x", bytes32(0));
+        vm.prank(agentKey);
+        v.swear(ETH, DictumVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 1 hours), 4200, "x", bytes32(0));
+    }
+
+    function test_aNoteCannotBeFulfilledByItsOwnSwap() public {
+        // a $1,000 buy in the ~$48k WETH pool moves it ~4%: a +1% target would be reached by the agent's own trade
+        DictumVault.Mandate memory m = v.mandate();
+        m.maxNotional = 5_000e6;
+        m.maxExposure = 5_000e6;
+        m.minRewardRiskX100 = 100;
+        m.maxSlippageBps = 1_000;
+        vm.prank(owner);
+        v.amend(m);
+        deal(HSK.USDT, address(v), 2_000e6);
+        uint256 e = v.twapPx(ETH);
+        vm.prank(agentKey);
+        vm.expectPartialRevert(DictumVault.SelfFulfilling.selector);
+        v.swear(ETH, DictumVault.Side.Long, 1_000e6, uint96(e * 101 / 100), uint96(e * 99 / 100), uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
     }
 
     function test_confidenceBounds() public {
@@ -179,7 +205,7 @@ contract DictumVaultForkTest is Test {
         _push(ETH, true, 3_000e6); // spot jumps, the 5-minute TWAP has not moved yet
         uint256 e = v.twapPx(ETH);
         vm.prank(agentKey);
-        vm.expectRevert(); // SpotDeviation
+        vm.expectPartialRevert(DictumVault.SpotDeviation.selector);
         v.swear(ETH, DictumVault.Side.Long, 5e6, uint96(e * 103 / 100), uint96(e * 98 / 100), uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
     }
 

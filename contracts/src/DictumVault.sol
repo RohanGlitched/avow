@@ -91,7 +91,7 @@ contract DictumVault {
     uint32 public constant TWAP_FALLBACK = 60;
     uint16 public constant MIN_STOP_BPS = 25;
     uint32 public constant MIN_HORIZON = 10 minutes;
-    uint16 public constant MIN_CONFIDENCE = 5000;
+    uint16 public constant MIN_CONFIDENCE = 3000;
     uint16 public constant MAX_CONFIDENCE = 9900;
     uint8 public constant WINDOW = 32;
     uint256 private constant SQ_ONE = 1e8; // (1.0)² in sqErr units
@@ -167,6 +167,8 @@ contract DictumVault {
     error StopTooWide(uint256 stopBps, uint256 maxStopBps);
     error StopTooTight(uint256 stopBps);
     error RewardRiskTooLow(uint256 rrX100, uint256 minX100);
+    error NegativeExpectancy(uint256 confidenceBps, uint256 rrX100);
+    error SelfFulfilling(uint256 spotAfter, uint256 targetPx);
     error BadExpiry(uint256 expiry);
     error BadConfidence(uint256 confidenceBps);
     error ExceedsDenomination(uint256 notional, uint256 cap);
@@ -263,7 +265,7 @@ contract DictumVault {
         Asset memory a = _assets[assetId];
         uint256 entry = _twap(a);
         _checkSpot(a, entry, m);
-        _checkLevels(side, entry, targetPx, voidPx, m);
+        _checkLevels(side, entry, targetPx, voidPx, confidenceBps, m);
 
         uint8 t = tier();
         uint256 cap = denominationOf(t);
@@ -277,12 +279,16 @@ contract DictumVault {
             uint256 expected = _usdtToAsset(notional, entry, a.decimals);
             amountOut = _swapIn(usdt, a.token, a.fee, amountIn, expected * (BPS - m.maxSlippageBps) / BPS);
             lockedAsset[assetId] += amountOut;
+            uint256 after_ = _spot(a);
+            if (after_ >= targetPx) revert SelfFulfilling(after_, targetPx);
         } else {
             amountIn = _usdtToAsset(notional, entry, a.decimals);
             uint256 free = IERC20(a.token).balanceOf(address(this)) - lockedAsset[assetId];
             if (free < amountIn) revert InsufficientInventory(free, amountIn);
             amountOut = _swapIn(a.token, usdt, a.fee, amountIn, uint256(notional) * (BPS - m.maxSlippageBps) / BPS);
             lockedUsdt += amountOut;
+            uint256 after_ = _spot(a);
+            if (after_ <= targetPx) revert SelfFulfilling(after_, targetPx);
         }
 
         id = _notes.length;
@@ -481,7 +487,10 @@ contract DictumVault {
     }
 
     function spotPx(uint8 assetId) external view returns (uint256) {
-        Asset memory a = _assets[assetId];
+        return _spot(_assets[assetId]);
+    }
+
+    function _spot(Asset memory a) internal view returns (uint256) {
         (, int24 tick,,,,,) = IUniswapV3PoolLike(a.pool).slot0();
         return _pxAtTick(a, tick);
     }
@@ -605,7 +614,10 @@ contract DictumVault {
 
     // ─────────────────────────────────────────────────────────────── internals: checks
 
-    function _checkLevels(Side side, uint256 entry, uint256 target, uint256 voidPx, Mandate memory m) internal pure {
+    function _checkLevels(Side side, uint256 entry, uint256 target, uint256 voidPx, uint256 conf, Mandate memory m)
+        internal
+        pure
+    {
         uint256 risk;
         uint256 reward;
         if (side == Side.Long) {
@@ -622,6 +634,8 @@ contract DictumVault {
         if (stopBps < MIN_STOP_BPS) revert StopTooTight(stopBps);
         uint256 rr = reward * 100 / risk;
         if (rr < m.minRewardRiskX100) revert RewardRiskTooLow(rr, m.minRewardRiskX100);
+        // no note the agent expects to lose at its own stated odds: p·reward > (1 − p)·risk
+        if (conf * (reward + risk) <= BPS * risk) revert NegativeExpectancy(conf, rr);
     }
 
     function _checkSpot(Asset memory a, uint256 twap, Mandate memory m) internal view {
