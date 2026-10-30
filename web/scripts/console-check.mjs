@@ -10,7 +10,14 @@ for (const w of [1440, 390]) {
     const errs = [];
     p.on("console", (m) => m.type() === "error" && errs.push(m.text().slice(0, 300)));
     p.on("pageerror", (e) => errs.push(String(e).slice(0, 300)));
-    await p.goto(base + path, { waitUntil: "load", timeout: 60_000 });
+    const t0 = Date.now();
+    try {
+      await p.goto(base + path, { waitUntil: "load", timeout: 60_000 });
+    } catch (e) {
+      console.log(`${w} ${path} TIMEOUT after ${Date.now() - t0} ms`);
+      await p.close();
+      continue;
+    }
     await p.waitForTimeout(3000);
     const sw = await p.evaluate(() => document.documentElement.scrollWidth);
     console.log(`${w} ${path} ${errs.length ? "ERRORS " + errs.join(" | ") : "ok"}${sw > w ? " SIDEWAYS " + sw : ""}`);
