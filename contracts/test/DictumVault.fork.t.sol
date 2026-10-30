@@ -191,7 +191,7 @@ contract DictumVaultForkTest is Test {
         uint256 e = v.twapPx(ETH);
         vm.prank(agentKey);
         vm.expectPartialRevert(DictumVault.SelfFulfilling.selector);
-        v.swear(ETH, DictumVault.Side.Long, 1_000e6, uint96(e * 101 / 100), uint96(e * 99 / 100), uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
+        v.swear(ETH, DictumVault.Side.Long, 1_000e6, uint96(e * 1012 / 1000), uint96(e * 99 / 100), uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
     }
 
     function test_confidenceBounds() public {
