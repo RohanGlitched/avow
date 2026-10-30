@@ -1,5 +1,6 @@
 "use client";
-// The printed amendment form. Stricter rows Avow may apply itself; looser rows need the owner's wallet.
+// The printed amendment form. Stricter rows: the owner signs a free message and Avow applies them with tighten().
+// Looser rows: the owner signs amend() with their wallet.
 import { useState } from "react";
 import { fieldTitle, fieldValue, type ProposalRow } from "@/lib/mandate";
 import { requestTighten, signAmendment } from "@/lib/wallet";
@@ -85,12 +86,13 @@ export function AmendmentForm({ rows, title = "Amendment", serial }: { rows: Pro
       <div className="amend__who">
         {stricter.length ? (
           <div className="amend__part">
-            <b>Avow can apply this itself</b>
-            {stricter.length} stricter {stricter.length === 1 ? "change" : "changes"}. The vault&apos;s <code>tighten()</code> accepts only equal-or-stricter values, so no signature is needed.
+            <b>Stricter: a free signed message</b>
+            {stricter.length} stricter {stricter.length === 1 ? "change" : "changes"}. The owner signs a free message (no gas) and Avow applies {stricter.length === 1 ? "it" : "them"} with{" "}
+            <code>tighten()</code>; the vault rejects anything looser.
             {!looser.length ? (
               <div style={{ marginTop: 10 }}>
                 <button className="btn" onClick={apply} disabled={busy !== null}>
-                  {busy === "apply" ? "Asking Avow…" : "Ask Avow to apply it"}
+                  {busy === "apply" ? "Waiting for the signature…" : "Sign a free message to apply"}
                 </button>
               </div>
             ) : null}
@@ -98,8 +100,8 @@ export function AmendmentForm({ rows, title = "Amendment", serial }: { rows: Pro
         ) : null}
         {looser.length ? (
           <div className="amend__part amend__part--owner">
-            <b>Needs the owner&apos;s signature</b>
-            {looser.length} looser {looser.length === 1 ? "change" : "changes"}. Only the owner&apos;s wallet can call <code>amend()</code>; the whole amendment is signed together.
+            <b>Looser: the owner&apos;s wallet</b>
+            {looser.length} looser {looser.length === 1 ? "change" : "changes"}. The owner signs <code>amend()</code> with their wallet; the whole amendment is signed together.
           </div>
         ) : null}
       </div>

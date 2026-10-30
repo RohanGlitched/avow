@@ -120,8 +120,8 @@ export default async function MandatePage() {
       <section className="sec" aria-labelledby="amend">
         <div className="wrap">
           <SecHead id="amend" title="Draft an amendment.">
-            Change any clause and watch the rosette redraw. The form marks each change stricter or looser. Stricter changes Avow can apply itself; anything looser waits for the owner&apos;s
-            signature.
+            Change any clause and watch the rosette redraw. The form marks each change stricter or looser. Stricter changes: the owner signs a free message (no gas) and Avow applies them with <code>tighten()</code>; the vault rejects anything looser. Looser
+            changes: the owner signs <code>amend()</code> with their wallet.
           </SecHead>
           <MandateEditor mandate={m} />
         </div>

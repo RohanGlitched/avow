@@ -145,3 +145,19 @@ export function denom(v: number) {
   const cents = Math.round((v - whole) * 100);
   return { whole: String(whole), cents: String(cents).padStart(2, "0") };
 }
+
+/**
+ * Note URLs use the printed serial number, not the on-chain id: AVW·000001 is id 0 and lives at /notes/1.
+ * Every link to a note goes through here.
+ */
+export const noteHref = (id: number) => `/notes/${id + 1}`;
+/** The on-chain id for a /notes/[n] path segment, or null if it is not a serial number. */
+export function idFromSerialParam(p: string): number | null {
+  if (!/^\d{1,9}$/.test(p)) return null;
+  const n = Number(p);
+  return n >= 1 ? n - 1 : null;
+}
+/** The printed serial for an on-chain id, preferring the serial the agent sent with the note. */
+export function serialFor(id: number, notes?: Pick<Note, "id" | "serial">[]): string {
+  return notes?.find((n) => n.id === id)?.serial ?? `AVW·${String(id + 1).padStart(6, "0")}`;
+}

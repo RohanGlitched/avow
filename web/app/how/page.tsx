@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getState } from "@/lib/data";
+import { getState, specimenNote } from "@/lib/data";
 import { Guide } from "@/components/Guide";
 import { SecHead, Divider } from "@/components/Bits";
 import { ArchitectureDiagram, GuaranteeTable, AddressTable } from "@/components/HowParts";
-import { FORK_TESTS_PASSING, GUARANTEES } from "@/lib/guarantees";
+import { TEST_SUMMARY, GUARANTEES } from "@/lib/guarantees";
 import { verifyCommands } from "@/lib/verify";
-import { NETWORK_WORDS } from "@/lib/chain";
+import { NETWORK_WORDS, rehearsalSentence } from "@/lib/chain";
 import { bps, duration, px } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -25,10 +25,20 @@ const RULES = [
   { name: "unfreeze()", who: "Owner only", what: "Re-opens a vault frozen by the drawdown clause." },
 ];
 
+const MCP_TOOLS = [
+  { name: "avow_summary", what: "The vault now: graded record, Brier score, trade limit, vault value, holdings, open notes, mandate, HSKSwap against the exchanges, heartbeat." },
+  { name: "avow_notes", what: "Notes newest first, filtered by status or asset: target, void level, expiry, odds and outcome." },
+  { name: "avow_note", what: "One note by its on-chain id (AVW·000001 is id 0): statement, levels, transactions and the agent's reasons." },
+  { name: "avow_journal", what: "The decision journal: notes sworn, passes and declines with reasons, refusals by the vault, settlements." },
+  { name: "avow_propose_change", what: "Marks proposed mandate changes stricter or looser. Stricter ones Avow applies after the owner's free signed message; looser ones need amend()." },
+];
+
 export default async function HowPage() {
   const s = await getState();
-  const example = s.notes.find((n) => n.status === "void") ?? s.notes[0];
+  const own = s.notes.find((n) => n.status === "void") ?? s.notes[0];
+  const example = own ?? specimenNote("void");
   const cmds = verifyCommands(s.notes[0] ?? null);
+  const rehearsal = rehearsalSentence(s);
   return (
     <>
       <section className="page-head">
@@ -41,6 +51,7 @@ export default async function HowPage() {
             Most AI trading bots ask to be trusted. Avow cannot trade except by publishing a falsifiable note, in the same transaction, through a vault that enforces its owner&apos;s rules. This page
             explains the mechanism, lists what the contract guarantees and how each guarantee is tested, and gives you the commands to verify it yourself.
           </p>
+          {rehearsal ? <p className="rehearsal-line">{rehearsal}</p> : null}
           <div className="actions">
             <a href="#verify" className="btn">
               Verify it yourself
@@ -55,7 +66,22 @@ export default async function HowPage() {
       <section className="sec sec--tint" aria-labelledby="anatomy">
         <div className="wrap">
           <SecHead id="anatomy" title="Anatomy of a note.">
-            This is {example.serial}, a note that went void. When the price crossed its void level the hidden VOID pantograph surfaced in red, the stop closed the position, and the miss was graded.
+            {!own ? (
+              <>
+                This is a specimen from the sample data, not a note of this vault, which has not sworn its first note yet. It went void: the hidden VOID pantograph surfaced in red, the
+                stop closed the position, and the miss was graded.
+              </>
+            ) : example.status === "void" ? (
+              <>
+                This is {example.serial}, a note that went void. When the price crossed its void level the hidden VOID pantograph surfaced in red, the stop closed the position, and the miss
+                was graded.
+              </>
+            ) : (
+              <>
+                This is {example.serial}, {example.status}. Every printed mark is a fact you can check; if a note goes void, the hidden VOID pantograph surfaces in red and the miss is
+                graded.
+              </>
+            )}
           </SecHead>
           <Guide note={example} state={s} />
         </div>
@@ -133,7 +159,7 @@ export default async function HowPage() {
       <section className="sec" aria-labelledby="guarantees">
         <div className="wrap">
           <SecHead id="guarantees" title="Guarantees, where they are enforced, and the test that proves each.">
-            {FORK_TESTS_PASSING} fork tests pass against real HSK Chain mainnet state: the real HSKSwap pools, tokens and prices, with the vault deployed on a local fork.
+            {TEST_SUMMARY} pass against real HSK Chain mainnet state: the real HSKSwap pools, tokens and prices, with the vault deployed on a local fork.
           </SecHead>
           <GuaranteeTable />
         </div>
@@ -143,7 +169,7 @@ export default async function HowPage() {
         <div className="wrap">
           <SecHead id="seatbelt" title="Chainlink: checked by the agent, not the contract.">
             Chainlink feeds on HSK Chain are read-whitelisted; contracts get &ldquo;No access&rdquo;. So the vault judges only by the pool&apos;s own 5-minute TWAP and live price, and the agent
-            refuses to swear when the pool is more than 3% from Chainlink or the feed is older than 26 hours.
+            refuses to swear when the pool is more than 3% from a fresh Chainlink price. A feed older than 26 hours is shown greyed as stale: that seatbelt is off for the asset.
           </SecHead>
           <div className="table-wrap">
             <table className="tbl tbl--stack">
@@ -160,7 +186,8 @@ export default async function HowPage() {
               <tbody>
                 {s.market.map((m) => {
                   const dev = m.dexPx && m.chainlinkPx ? ((m.dexPx - m.chainlinkPx) / m.chainlinkPx) * 1e4 : null;
-                  const ok = dev != null && Math.abs(dev) <= 300 && (m.chainlinkAgeSec ?? Infinity) < 26 * 3600;
+                  const stale = m.chainlinkAgeSec == null || m.chainlinkAgeSec > 26 * 3600;
+                  const ok = dev != null && Math.abs(dev) <= 300;
                   return (
                     <tr key={m.asset}>
                       <td data-h="Asset" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
@@ -175,11 +202,11 @@ export default async function HowPage() {
                       <td data-h="Difference" className="r">
                         {bps(dev, true)}
                       </td>
-                      <td data-h="Feed age" className="r">
+                      <td data-h="Feed age" className={`r${stale ? " muted" : ""}`}>
                         {m.chainlinkAgeSec != null ? duration(m.chainlinkAgeSec) : "—"}
                       </td>
-                      <td data-h="Seatbelt" className={ok ? "pos" : "neg"} style={{ fontWeight: 650 }}>
-                        {ok ? "passes" : "would refuse"}
+                      <td data-h="Seatbelt" className={stale ? "muted" : ok ? "pos" : "neg"} style={{ fontWeight: 650 }}>
+                        {stale ? "stale — agent refuses to trade" : ok ? "passes" : "would refuse"}
                       </td>
                     </tr>
                   );
@@ -232,7 +259,49 @@ export default async function HowPage() {
         </div>
       </section>
 
-      <section className="sec sec--tint" aria-labelledby="limits">
+      <section className="sec sec--tint" aria-labelledby="mcp">
+        <div className="wrap grid-2" style={{ alignItems: "start" }}>
+          <div>
+            <h2 id="mcp">Ask Avow from your own agent.</h2>
+            <p className="lede" style={{ marginTop: 14 }}>
+              The vault, the notes and the journal are also served over MCP, so Claude, Cursor or any MCP client can read the record and draft a change. Reading is open; a proposed change
+              comes back as an amendment, and only the owner&apos;s signature can make it real.
+            </p>
+            <div className="cmd" style={{ marginTop: 22 }}>
+              <div className="cmd__q">
+                One line for Claude Code <span>Streamable HTTP, no key needed to read</span>
+              </div>
+              <pre>
+                <code>claude mcp add --transport http avow https://avow-world.vercel.app/api/mcp</code>
+              </pre>
+            </div>
+          </div>
+          <div className="table-wrap">
+            <table className="tbl tbl--stack">
+              <thead>
+                <tr>
+                  <th>Tool</th>
+                  <th>What it returns</th>
+                </tr>
+              </thead>
+              <tbody>
+                {MCP_TOOLS.map((t) => (
+                  <tr key={t.name}>
+                    <td data-h="Tool" style={{ whiteSpace: "nowrap" }}>
+                      <code>{t.name}</code>
+                    </td>
+                    <td data-h="What it returns" className="muted">
+                      {t.what}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section className="sec" aria-labelledby="limits">
         <div className="wrap">
           <SecHead id="limits" title="Limits, stated plainly.">
             What Avow does not solve, and what we would watch on mainnet.
@@ -242,9 +311,15 @@ export default async function HowPage() {
               { t: "Thin pools", d: "HSKSwap pools trade every few hours. A 5-minute TWAP on a quiet pool can be moved by one large swap; requiring the live price to agree limits that, and notes stay small." },
               { t: "Oracle depth", d: "The WBTC pool keeps a single price observation until someone raises its cardinality. The vault refuses a TWAP it cannot read." },
               { t: "The model can be wrong", d: "That is the point. Every wrong note is graded, visible and costs Avow denomination. The contract does not trust the model; it bounds it." },
-              { t: "Fees dominate small notes", d: "A round trip pays 0.60% in pool fees, so most premiums are declined and realised P&L is measured in cents at Probation size." },
+              { t: "Fees dominate small notes", d: "A round trip pays 0.60% in pool fees plus gas (about 0.68% on a $50 note), so most premiums are declined and realised P&L is measured in cents at Probation size." },
               { t: "Off-chain reasons", d: "The rationale lives in the journal; only its hash is on chain. The statement itself, with every level, is on chain in full." },
-              { t: "Rehearsal first", d: "The numbers on this site come from a fork of HSK mainnet. The same contracts and agent move to mainnet with the owner's funds." },
+              {
+                t: "Rehearsal first",
+                d:
+                  s.network.mode === "fork-rehearsal"
+                    ? "The numbers on this site come from a private fork of HSK mainnet where outside traders are simulated, so they are not evidence. The same contracts and agent move to mainnet on Nov 1 with the owner's funds."
+                    : "The contracts and agent were rehearsed on a private fork of HSK mainnet before going live; the rehearsal numbers are not part of this record.",
+              },
             ].map((x) => (
               <div key={x.t} style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
                 <h3 style={{ fontSize: 20 }}>{x.t}</h3>

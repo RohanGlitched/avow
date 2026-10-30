@@ -8,17 +8,20 @@ import { Rosette } from "@/components/Rosette";
 import { JournalRow } from "@/components/Journal";
 import { SecHead, Divider } from "@/components/Bits";
 import { Hex } from "@/components/Ovi";
+import { Term } from "@/components/Term";
+import { rehearsalSentence } from "@/lib/chain";
 import { StatusMark } from "@/components/NoteStub";
 import { ownLink } from "@/lib/chain";
 import { noteRosette, hashBytes } from "@/lib/rosette";
-import { ASSET_LABEL, STATUS_EXPLAIN, duration, num, pct, px, rewardRisk, signed, stopBps, usd, when } from "@/lib/format";
+import { ASSET_LABEL, STATUS_EXPLAIN, duration, idFromSerialParam, noteHref, num, pct, px, rewardRisk, signed, stopBps, usd, when } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const s = await getState();
-  const n = s.notes.find((x) => String(x.id) === id);
+  const want = idFromSerialParam(id);
+  const n = want == null ? undefined : s.notes.find((x) => x.id === want);
   if (!n) return { title: "Note not found" };
   return { title: `${n.serial}`, description: n.statement };
 }
@@ -28,7 +31,9 @@ const USED = new Set([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 
 export default async function NotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const s = await getState();
-  const idx = s.notes.findIndex((x) => String(x.id) === id);
+  // the URL carries the printed serial: /notes/1 is AVW·000001, on-chain id 0
+  const want = idFromSerialParam(id);
+  const idx = want == null ? -1 : s.notes.findIndex((x) => x.id === want);
   if (idx < 0) notFound();
   const n = s.notes[idx];
   const newer = s.notes[idx - 1];
@@ -67,6 +72,10 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
           <p className="lede">
             {n.side === "long" ? "Long" : "Short"} {L} for {usd(n.notionalUsd)}, sworn {when(n.openedAt)} at {pct(n.confidence)} confidence. {STATUS_EXPLAIN[n.status]}
           </p>
+          <p className="terms-row">
+            <span>The words on this note:</span> <Term k="twap" /> <Term k="void" /> <Term k="brier" /> <Term k="denomination" />
+          </p>
+          {rehearsalSentence(s) ? <p className="rehearsal-line">{rehearsalSentence(s)}</p> : null}
         </div>
       </section>
 
@@ -79,7 +88,8 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
       <section className="sec" aria-labelledby="corridor">
         <div className="wrap">
           <SecHead id="corridor" title="The corridor it promised.">
-            From the moment it was sworn to its expiry, the note lives between two lines: the target and the void level. The engraved line is the HSKSwap price it was judged on.
+            From the moment it was sworn until it settles or expires, the note lives between two lines: the target and the void level. The engraved line is the HSKSwap price it was judged
+            on.
           </SecHead>
           {m ? (
             <figure style={{ margin: 0 }}>
@@ -103,8 +113,10 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
                 </span>
               </div>
               <figcaption className="plate">
-                Plate. {n.serial}, {when(n.openedAt)} to {when(n.expiry)}. Open circle: sworn at {px(n.asset, n.entryPx)}.
-                {n.exitPx != null ? ` Filled circle: ${n.status} at ${px(n.asset, n.exitPx)}.` : ` Now ${px(n.asset, n.livePx)}.`}
+                Plate. {n.serial}, sworn {when(n.openedAt)}, expiring {when(n.expiry)}. {settled
+                  ? "The corridor ends where the note settled; the chart runs a few hours on, up to the latest price read."
+                  : "The chart ends at the latest price read (“now”); the expiry is marked off the chart when it is later."} Open circle: sworn at {px(n.asset, n.entryPx)}.
+                {n.exitPx != null ? ` Filled circle: ${n.status}, the closing swap filled at ${px(n.asset, n.exitPx)}.` : ` Now ${px(n.asset, n.livePx)}.`}
               </figcaption>
             </figure>
           ) : (
@@ -124,13 +136,17 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
             <dl className="kv">
               <dt>Statement</dt>
               <dd style={{ fontFamily: "var(--serif)", fontWeight: 500, fontSize: 17 }}>{n.statement}</dd>
-              <dt>Entry, 5-minute TWAP</dt>
+              <dt>
+                Entry, 5-minute <Term k="twap" />
+              </dt>
               <dd className="tnum">{px(n.asset, n.entryPx)}</dd>
               <dt>Target</dt>
               <dd className="tnum">
                 {px(n.asset, n.targetPx)} <span className="muted">({signed(((n.targetPx - n.entryPx) / n.entryPx) * 100, 2, "%")})</span>
               </dd>
-              <dt>Void level</dt>
+              <dt>
+                <Term k="void" />
+              </dt>
               <dd className="tnum">
                 {px(n.asset, n.voidPx)} <span className="muted">({signed(((n.voidPx - n.entryPx) / n.entryPx) * 100, 2, "%")})</span>
                 {n.swornVoidPx != null ? <span className="muted"> tightened from {px(n.asset, n.swornVoidPx)}</span> : null}
@@ -155,7 +171,9 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
                   ? `${num(n.amountIn, 2)} USDT for ${num(n.amountOut, n.asset === "WHSK" ? 2 : 6)} ${n.asset}`
                   : `${num(n.amountIn, n.asset === "WHSK" ? 2 : 6)} ${n.asset} for ${num(n.amountOut, 2)} USDT`}
               </dd>
-              <dt>Tier when sworn</dt>
+              <dt>
+                Trade limit (<Term k="denomination">denomination</Term>) when sworn
+              </dt>
               <dd>{s.record.tiers[n.tierAtOpen]?.name ?? n.tierAtOpen}, cap {usd(s.record.tiers[n.tierAtOpen]?.capUsd)}</dd>
               <dt>Transaction</dt>
               <dd>
@@ -187,8 +205,10 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
                 <dd>
                   <Hex value={n.settleTx} href={ownLink(s, "tx", n.settleTx)} head={10} tail={8} />
                 </dd>
-                <dt>Realised P&amp;L</dt>
-                <dd className={(n.pnlUsd ?? 0) >= 0 ? "pos" : "neg"}>{usd(n.pnlUsd, { sign: true })}</dd>
+                <dt>Realised P&amp;L, on chain</dt>
+                <dd className={(n.pnlUsd ?? 0) >= 0 ? "pos" : "neg"}>
+                  {usd(n.pnlUsd, { sign: true })} <span className="muted">after pool fees; gas and model spend are not in this figure</span>
+                </dd>
                 <dt>Grade</dt>
                 <dd>
                   {n.sqError != null ? (
@@ -203,7 +223,7 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
                   <>
                     <dt>Effect on the record</dt>
                     <dd>
-                      Rolling Brier {brierBefore != null ? `from ${brierBefore.toFixed(3)} to ` : "starts at "}
+                      Rolling <Term k="brier" /> {brierBefore != null ? `from ${brierBefore.toFixed(3)} to ` : "starts at "}
                       {brierAfter.toFixed(3)}
                     </dd>
                   </>
@@ -225,6 +245,14 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
                   <dd className="tnum">{n.livePx ? signed(((n.targetPx - n.livePx) / n.livePx) * 100, 2, "%") : "—"}</dd>
                   <dt>To void level</dt>
                   <dd className="tnum">{n.livePx ? signed(((n.voidPx - n.livePx) / n.livePx) * 100, 2, "%") : "—"}</dd>
+                  {n.unrealisedPnlUsd != null ? (
+                    <>
+                      <dt>Unrealised, if closed now</dt>
+                      <dd className={`tnum ${n.unrealisedPnlUsd >= 0 ? "pos" : "neg"}`}>
+                        {usd(n.unrealisedPnlUsd, { sign: true })} <span className="muted">at the live pool price, minus the exit fee</span>
+                      </dd>
+                    </>
+                  ) : null}
                   <dt>If honoured</dt>
                   <dd className="tnum">graded 1, squared error {((1 - n.confidence) ** 2).toFixed(3)}</dd>
                   <dt>If not</dt>
@@ -314,7 +342,7 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
         <div className="wrap">
           <nav className="pager" aria-label="Other notes">
             {older ? (
-              <Link href={`/notes/${older.id}`}>
+              <Link href={noteHref(older.id)}>
                 <span>Older</span>
                 <span className="serial">{older.serial}</span>
               </Link>
@@ -322,7 +350,7 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
               <span />
             )}
             {newer ? (
-              <Link href={`/notes/${newer.id}`}>
+              <Link href={noteHref(newer.id)}>
                 <span>Newer</span>
                 <span className="serial">{newer.serial}</span>
               </Link>

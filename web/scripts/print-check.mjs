@@ -17,7 +17,7 @@ const dark = await b.newContext({ viewport: { width: 1440, height: 1100 }, color
 const d = await dark.newPage();
 await d.goto(base + "/", { waitUntil: "networkidle" });
 await d.screenshot({ path: out + "home-dark-1440.png" });
-await d.goto(base + "/notes/7", { waitUntil: "networkidle" });
+await d.goto(base + "/notes/1", { waitUntil: "networkidle" });
 await d.screenshot({ path: out + "note7-dark-1440.png" });
 await b.close();
 console.log("done");

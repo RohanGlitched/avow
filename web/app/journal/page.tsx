@@ -23,7 +23,7 @@ export default async function JournalPage() {
           </div>
           <h1>The journal: every decision, including the ones not taken.</h1>
           <p className="lede">
-            The agent writes here every time it swears, declines, is refused by a clause, settles or changes the mandate. Declines carry the model&apos;s own reasons. The latest entry is{" "}
+            The agent writes here every time it swears, passes, declines, re-examines an open note, is refused by a clause, settles or changes the mandate. Declines carry the model&apos;s own reasons. The latest entry is{" "}
             {j[0] ? <Ago t={j[0].t} /> : "not written yet"}.
           </p>
         </div>
@@ -40,6 +40,16 @@ export default async function JournalPage() {
               <b>{c("declined")}</b>
               <span>declined</span>
             </div>
+            <div className="count">
+              <b>{c("considered")}</b>
+              <span>passes: nothing worth swearing</span>
+            </div>
+            {c("reviewed") ? (
+              <div className="count">
+                <b>{c("reviewed")}</b>
+                <span>reviews of open notes</span>
+              </div>
+            ) : null}
             <div className="count">
               <b>{c("blocked")}</b>
               <span>blocked by a clause</span>
@@ -62,7 +72,7 @@ export default async function JournalPage() {
 
       <section className="sec" style={{ paddingTop: 16 }} aria-label="Entries">
         <div className="wrap">
-          <JournalList entries={j} state={s} />
+          <JournalList entries={j} state={{ network: s.network, notes: s.notes.map((n) => ({ id: n.id, serial: n.serial })) }} />
         </div>
       </section>
 

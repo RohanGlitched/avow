@@ -16,7 +16,7 @@ export interface Note {
   swornVoidPx?: number; // optional: the void level in the sworn statement, when the agent has since tightened the stop
   openedAt: number; // unix s
   expiry: number; // unix s
-  confidence: number; // 0.30–0.99, the agent's stated probability that the target comes before the void level and expiry
+  confidence: number; // 0.50–0.99, the agent's stated probability that the target comes before the void level and expiry
   notionalUsd: number;
   amountIn: number; // tokens spent (USDT for long, asset for short)
   amountOut: number; // tokens received
@@ -36,6 +36,7 @@ export interface Note {
   pnlUsd?: number;
   sqError?: number; // (confidence - outcome)^2 once graded
   livePx?: number; // current TWAP for outstanding notes
+  unrealisedPnlUsd?: number; // outstanding notes: marked at the live pool price minus the exit fee
 }
 
 export interface Mandate {
@@ -68,7 +69,11 @@ export interface Record {
   lapsed: number;
   retracted: number;
   brier: number | null; // rolling window (last 32 graded), null if none
-  pnlUsd: number; // realised
+  pnlUsd: number; // realised, on chain (after pool fees; gas and model spend are not in it)
+  netPnlUsd?: number; // realised P&L minus gas and model spend
+  gasUsdAll?: number;
+  modelUsdAll?: number;
+  revoked?: number;
   tier: Tier;
   tiers: Tier[]; // the ladder
   voidStreak: number;
@@ -91,9 +96,12 @@ export interface MarketRow {
   poolAsset: number | null;
   lastSwapAgoSec: number | null;
   history: { t: number; dex: number | null; cex: number | null }[]; // recent series for sparklines/charts
+  /** The real mainnet pool, shown next to the fork figures during a rehearsal. */
+  mainnet?: { twapPx: number | null; spotPx: number | null; lastSwapAgoSec: number | null; swaps3h: number | null };
+  swaps3h?: number;
 }
 
-export type JournalKind = "heartbeat" | "considered" | "declined" | "sworn" | "settled" | "blocked" | "amended" | "tightened" | "error";
+export type JournalKind = "heartbeat" | "considered" | "declined" | "sworn" | "settled" | "blocked" | "amended" | "tightened" | "reviewed" | "error";
 export interface JournalEntry {
   t: number;
   kind: JournalKind;
@@ -127,5 +135,28 @@ export interface State {
   notes: Note[]; // newest first
   market: MarketRow[];
   journal: JournalEntry[]; // newest first, last ~200
-  costs: { modelCalls24h: number; modelUsd24h: number; gasHsk24h: number; gasUsd24h: number };
+  costs: { modelCalls24h: number; modelUsd24h: number; gasHsk24h: number; gasUsd24h: number; modelCallsAll?: number; modelUsdAll?: number; gasHskAll?: number; gasUsdAll?: number };
+  /** True in a fork rehearsal: outside arbitrageurs and noise traders on the fork are scripted by the agent's simulator. */
+  simulatedOutsideTraders?: boolean;
+  /** An empirical study of how often real HSKSwap gaps against the exchanges closed, from mainnet swap logs. */
+  study?: Study;
+}
+
+export interface StudyRow {
+  asset: string;
+  gapBucket: string;
+  episodes: number;
+  convergedWithin12h: number;
+  medianHoursToConverge: number | null;
+  convergedWithin2h?: number;
+  /** episodes where the pool itself moved at least half the gap within 12 h (what a catch-up note needs) */
+  poolMovedHalfWithin12h?: number;
+  /** share of the closing move that came from the pool side (0..1) */
+  poolSideShare?: number | null;
+}
+export interface Study {
+  generatedAt: number;
+  windowDays: number;
+  rows: StudyRow[];
+  notes: string;
 }

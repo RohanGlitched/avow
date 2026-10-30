@@ -342,8 +342,17 @@ code {
   color: var(--ink);
 }
 .btn[disabled] {
-  opacity: 0.55;
+  /* solid, not faded: the disabled button keeps at least 3:1 against the page and its label stays legible */
+  opacity: 1;
+  background: var(--muted);
+  border-color: var(--muted);
+  color: var(--bg);
   cursor: not-allowed;
+}
+.btn--ghost[disabled] {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--muted);
 }
 .actions {
   display: flex;
@@ -861,7 +870,7 @@ a.ovi {
   grid-column: 1 / -1;
   font-family: var(--sans);
   font-stretch: 125%;
-  font-size: 10.5px;
+  font-size: 11.5px;
   letter-spacing: 0.03em;
   text-align: right;
   color: var(--muted);
@@ -1218,7 +1227,7 @@ a.ovi {
   fill: var(--void);
 }
 .note--void .pantograph .pg-fg {
-  opacity: 0.3;
+  opacity: 0.11;
 }
 .note--void {
   --ro-t2: var(--void);
@@ -1245,6 +1254,42 @@ a.ovi {
   width: min(42%, 420px);
   transform: rotate(-7deg);
   pointer-events: none;
+}
+/* on a note the stamp is anchored over the rosette, faint and multiplied, so every printed value stays readable */
+.note__medallion .perf,
+.note__medallion .inkstamp {
+  left: 50%;
+  right: auto;
+  top: 50%;
+  bottom: auto;
+  width: 108%;
+  max-width: 330px;
+  transform: translate(-50%, -50%) rotate(-9deg);
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+.note__medallion .perf circle {
+  r: 4.4px;
+  stroke: none;
+}
+.note__medallion .perf circle:nth-child(n) {
+  fill: var(--ink);
+}
+/* a cancelled note's rosette fades, so the stamp over it reads while every printed value stays untouched */
+.note--honoured .note__medallion .rosette,
+.note--void .note__medallion .rosette,
+.note--lapsed .note__medallion .rosette {
+  opacity: 0.38;
+}
+.note__medallion .inkstamp {
+  opacity: 0.62;
+}
+.note__ink--void .ink-line {
+  stroke: var(--void);
+}
+.note__ink--void .ink-word,
+.note__ink--void .ink-date {
+  fill: var(--void);
 }
 .perf circle {
   fill: var(--perf-hole, rgba(12, 22, 18, 0.82));
@@ -1461,17 +1506,6 @@ a.ovi {
   }
   .note__tx br {
     display: none;
-  }
-  .perf {
-    width: 70%;
-    right: 15%;
-    top: auto;
-    bottom: 30%;
-  }
-  .inkstamp {
-    width: 70%;
-    right: 15%;
-    top: 30%;
   }
   .crossing {
     top: 33%;
@@ -1753,7 +1787,7 @@ a.stub:hover {
   color: var(--muted);
 }
 .stub__mini {
-  height: 28px;
+  height: 32px;
   position: relative;
 }
 .filters {
@@ -2567,8 +2601,12 @@ a.stub:hover {
   background: var(--note);
   border: 1px solid var(--line);
   border-radius: 6px;
+}
+/* sticky only once a conversation has started, so it never covers the suggested questions on first load */
+.composer--sticky {
   position: sticky;
   bottom: 12px;
+  z-index: 5;
 }
 .composer textarea {
   resize: none;
@@ -3675,4 +3713,432 @@ a.stub:hover {
 }
 .note--print .note__terms {
   animation: fade-in 0.5s ease 1.7s both;
+}
+
+/* ================================================================== judge round fixes */
+
+/* counts rows hold 6 to 8 figures */
+@media (min-width: 961px) {
+  .counts {
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  }
+}
+@media (max-width: 960px) and (min-width: 721px) {
+  .count:nth-child(3n + 1) {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+/* rehearsal honesty: the strip sentence, the page lines, the record label */
+.strip--rehearsal .strip__item.mode {
+  white-space: normal;
+  flex: 1 1 560px;
+  align-items: flex-start;
+  line-height: 1.4;
+}
+.strip--rehearsal .mode__dot {
+  margin-top: 5px;
+  flex: none;
+}
+.strip--rehearsal .strip__item--grow {
+  margin-left: 0;
+}
+.rehearsal-line {
+  margin-top: 14px;
+  max-width: 70ch;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  padding-left: 12px;
+  border-left: 2px solid var(--gilt);
+}
+.rehearsal-line--plate {
+  display: inline;
+  padding: 0;
+  border: 0;
+  margin: 0;
+  font-size: inherit;
+  color: var(--ink-2);
+}
+.rehearsal-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin: 8px 0 14px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.rehearsal-label b {
+  font-stretch: 125%;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gilt-text);
+  border: 1px solid var(--gilt);
+  padding: 2px 8px;
+  border-radius: 2px;
+}
+
+/* plain words under the hero buttons */
+.plainly {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 6px;
+  max-width: 52ch;
+}
+.plainly li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: baseline;
+  font-size: 16.5px;
+  color: var(--ink);
+}
+.plainly span {
+  font-family: var(--serif);
+  font-style: normal;
+  font-weight: 600;
+  color: var(--void);
+  font-size: 15px;
+}
+
+/* dotted-underline terms with a plain-words popover */
+.term {
+  position: relative;
+  display: inline;
+}
+.term__btn {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: help;
+  text-decoration: underline dotted;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, currentColor 60%, transparent);
+}
+.term__btn:hover,
+.term__btn[aria-expanded="true"] {
+  text-decoration-color: var(--void);
+}
+.term__tip {
+  display: none;
+  position: absolute;
+  z-index: 60;
+  left: 0;
+  top: calc(100% + 8px);
+  width: min(300px, calc(100vw - 24px));
+  transform: translateX(var(--shift, 0px));
+  background: var(--plate);
+  color: var(--on-plate);
+  font-family: var(--sans);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 4px;
+  box-shadow: 0 10px 28px -12px rgba(0, 0, 0, 0.5);
+  white-space: normal;
+}
+.term__tip b {
+  color: #fff;
+  font-weight: 600;
+}
+.term__tip.is-open {
+  display: block;
+}
+.terms-row {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  font-size: 15px;
+  color: var(--ink);
+}
+.terms-row > span:first-child {
+  color: var(--muted);
+}
+
+/* settled notes on the scale: a crossed tick at the level that triggered settlement, a separate fill marker */
+.scale__hit {
+  display: block;
+  margin-bottom: 1px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  font-stretch: 112.5%;
+}
+.scale__end--void .scale__hit {
+  color: var(--void);
+}
+.scale--settled .scale__ends {
+  margin-bottom: 46px;
+}
+.scale--settled .scale__end .cap {
+  display: inline;
+}
+.scale__trigger {
+  position: absolute;
+  top: -12px;
+  width: 0;
+  height: 34px;
+  z-index: 2;
+}
+.scale__trigger::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--ink);
+}
+/* the cross through the tick */
+.scale__trigger::after {
+  content: "×";
+  position: absolute;
+  top: 4px;
+  left: 0;
+  transform: translateX(-50%);
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink);
+  background: var(--note);
+  padding: 0 1px;
+}
+.scale__trigger--void::before {
+  background: var(--void);
+}
+.scale__trigger--void::after {
+  color: var(--void);
+}
+.needle--fill::before {
+  width: 0;
+  border-left: 2px dashed var(--ink-2);
+  background: none;
+}
+.needle--fill::after {
+  border-top-color: var(--ink-2);
+}
+.needle--fill .needle__label {
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.scale__words {
+  margin-top: 30px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 78ch;
+}
+
+/* journal: reviews of open notes, per-asset reasons on slips */
+.jkind--reviewed {
+  color: var(--ink-2);
+}
+.jkind--reviewed i {
+  border-style: dashed;
+}
+.slip__reasons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.slip__reasons b {
+  color: var(--ink);
+  font-weight: 650;
+  margin-right: 4px;
+}
+
+/* desk */
+.msg__engine {
+  margin-top: 8px;
+  font-size: 12px;
+  font-stretch: 112.5%;
+  color: var(--muted);
+}
+
+/* market cards: mainnet first in a rehearsal */
+.mkt__src {
+  font-size: 12px;
+  font-stretch: 125%;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.mkt__fork {
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.mkt__fork span {
+  font-stretch: 112.5%;
+}
+.mkt__fork b {
+  color: var(--ink-2);
+  font-weight: 600;
+}
+.mkt__fork .spread {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.mkt__rows dd.cl-stale,
+.mkt__rows dd.cl-stale span {
+  color: var(--muted);
+  font-weight: 500;
+  opacity: 0.75;
+}
+
+/* charts: the right edge reads "now" */
+.chart .ax .ax-now {
+  fill: var(--ink);
+  font-weight: 600;
+}
+
+/* the annotated specimen: a full-size strip to swipe on a phone */
+.guide__swipe {
+  display: none;
+}
+@media (max-width: 760px) {
+  .guide__specimen {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    margin: 0 calc(-1 * var(--gut));
+    padding: 6px var(--gut) 10px 46px;
+    scroll-padding-left: 46px;
+  }
+  .guide__specimen > .note {
+    width: 820px;
+  }
+  .guide__specimen:focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: -2px;
+  }
+  .guide__swipe {
+    display: block;
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+}
+
+/* measured odds */
+.study__takeaway {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.4;
+  max-width: 60ch;
+  margin-bottom: 22px;
+}
+
+/* business: earnings arithmetic, team */
+.earn .sub {
+  font-size: 12.5px;
+}
+.earn__total td {
+  border-top: 1px solid var(--ink);
+  font-weight: 650;
+}
+.index-open td a {
+  font-family: var(--serif);
+  font-size: 20px;
+}
+.built {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.built li {
+  padding: 12px 0 12px 26px;
+  border-bottom: 1px solid var(--line-2);
+  position: relative;
+  font-size: 16px;
+  color: var(--ink);
+}
+.built li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 19px;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--ovi-a);
+  transform: rotate(45deg);
+}
+
+/* stamps in dark mode: multiply would erase them on dark paper */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .note__medallion .perf,
+  :root:not([data-theme="light"]) .note__medallion .inkstamp {
+    mix-blend-mode: normal;
+    opacity: 0.5;
+  }
+}
+:root[data-theme="dark"] .note__medallion .perf,
+:root[data-theme="dark"] .note__medallion .inkstamp {
+  mix-blend-mode: normal;
+  opacity: 0.5;
+}
+.study__notes {
+  margin-top: 28px;
+  max-width: 92ch;
+}
+.study__notes h3 {
+  font-size: 19px;
+  margin-bottom: 8px;
+}
+.study__notes > p:not(.plate) {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+@media (max-width: 760px) {
+  .guide__specimen .callout {
+    left: -32px;
+  }
+  .guide__specimen .note__paper > .callout {
+    left: auto;
+  }
+}
+/* retracted / revoked: the crossing runs through the sworn sentence, never across the facts row */
+.note__paper > .crossing {
+  top: 27%;
+  transform: rotate(-6deg);
+}
+.note__paper > .crossing span {
+  background: var(--note);
+  padding: 0 10px;
+}
+@container note (max-width: 760px) {
+  .note__paper > .crossing {
+    top: 31%;
+    transform: rotate(-11deg);
+  }
+}
+.cmd pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-stretch: normal;
+  color: inherit;
 }

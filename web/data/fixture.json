@@ -116,7 +116,7 @@
  "notes": [
   {
    "id": 10,
-   "serial": "AVW·000010",
+   "serial": "AVW·000011",
    "asset": "WBTC",
    "side": "short",
    "entryPx": 76912,
@@ -146,7 +146,7 @@
   },
   {
    "id": 9,
-   "serial": "AVW·000009",
+   "serial": "AVW·000010",
    "asset": "WHSK",
    "side": "short",
    "entryPx": 0.08802,
@@ -177,7 +177,7 @@
   },
   {
    "id": 8,
-   "serial": "AVW·000008",
+   "serial": "AVW·000009",
    "asset": "WHSK",
    "side": "short",
    "entryPx": 0.0884,
@@ -211,7 +211,7 @@
   },
   {
    "id": 7,
-   "serial": "AVW·000007",
+   "serial": "AVW·000008",
    "asset": "WETH",
    "side": "short",
    "entryPx": 2255.3,
@@ -246,7 +246,7 @@
   },
   {
    "id": 6,
-   "serial": "AVW·000006",
+   "serial": "AVW·000007",
    "asset": "WBTC",
    "side": "long",
    "entryPx": 77120,
@@ -281,7 +281,7 @@
   },
   {
    "id": 5,
-   "serial": "AVW·000005",
+   "serial": "AVW·000006",
    "asset": "WETH",
    "side": "short",
    "entryPx": 2281.7,
@@ -316,7 +316,7 @@
   },
   {
    "id": 4,
-   "serial": "AVW·000004",
+   "serial": "AVW·000005",
    "asset": "WHSK",
    "side": "long",
    "entryPx": 0.0877,
@@ -351,7 +351,7 @@
   },
   {
    "id": 3,
-   "serial": "AVW·000003",
+   "serial": "AVW·000004",
    "asset": "WBTC",
    "side": "short",
    "entryPx": 77940,
@@ -386,7 +386,7 @@
   },
   {
    "id": 2,
-   "serial": "AVW·000002",
+   "serial": "AVW·000003",
    "asset": "WETH",
    "side": "long",
    "entryPx": 2262.4,
@@ -421,7 +421,7 @@
   },
   {
    "id": 1,
-   "serial": "AVW·000001",
+   "serial": "AVW·000002",
    "asset": "WHSK",
    "side": "short",
    "entryPx": 0.08912,
@@ -3762,14 +3762,14 @@
    "t": 1793428160,
    "kind": "heartbeat",
    "title": "Alive. 118 cycles in the last hour, 3 candidates, nothing new sworn.",
-   "detail": "Watching AVW·000009 (HSK) and AVW·000010 (BTC). Both inside their corridors."
+   "detail": "Watching AVW·000010 (HSK) and AVW·000011 (BTC). Both inside their corridors."
   },
   {
    "t": 1793426580,
    "kind": "considered",
    "asset": "WHSK",
    "noteId": 9,
-   "title": "AVW·000009 is 76% of the way from its void level to its target",
+   "title": "AVW·000010 is 76% of the way from its void level to its target",
    "detail": "TWAP 0.08735 against target 0.08690. No action: the keeper settles the moment the TWAP crosses."
   },
   {
@@ -3785,7 +3785,7 @@
    "t": 1793422440,
    "kind": "declined",
    "asset": "WHSK",
-   "title": "Skipped HSK: AVW·000009 is already outstanding",
+   "title": "Skipped HSK: AVW·000010 is already outstanding",
    "detail": "One outstanding note per asset. The candidate was dropped before reaching the model."
   },
   {
@@ -3802,7 +3802,7 @@
    "tx": "0xcb5a2242b706456a980fd73905bd74a593994719dcfff5ccdeeda6297ba2272f",
    "model": "gemini-3.5-flash",
    "tokens": 2470,
-   "title": "Swore AVW·000010 at 61% confidence for $19.40",
+   "title": "Swore AVW·000011 at 61% confidence for $19.40",
    "detail": "Avow swears that BTC will trade below 76,080.00 on HSKSwap before 09:36 IST on 1 Nov, or this note is void at 77,470.00."
   },
   {
@@ -3827,7 +3827,7 @@
    "asset": "WHSK",
    "noteId": 9,
    "tx": "0x4a3bb3fe80920feaae54b750f593987e55f5d7b48fbdc98059b1c0999fdf0bfa",
-   "title": "Tightened the void level on AVW·000009 from 0.08893 to 0.08880",
+   "title": "Tightened the void level on AVW·000010 from 0.08893 to 0.08880",
    "detail": "HSK eased 0.5% on HashKey Global. Moving the void level toward entry shrinks the worst case. The contract only lets the agent move a stop in this direction."
   },
   {
@@ -3863,7 +3863,7 @@
    "tx": "0x9b73cdacef698cfb92847ebd581a62df587ddcddc5f6bdb72a5e81d3baae7ea4",
    "model": "gemini-3.5-flash",
    "tokens": 2433,
-   "title": "Swore AVW·000009 at 63% confidence for $19.20",
+   "title": "Swore AVW·000010 at 63% confidence for $19.20",
    "detail": "Avow swears that HSK will trade below 0.08690 on HSKSwap before 03:00 IST on 1 Nov, or this note is void at 0.08893."
   },
   {
@@ -3923,7 +3923,7 @@
    "asset": "WHSK",
    "noteId": 8,
    "tx": "0xda585044511b2e2e2377d4f225623e7f2a30a071db4fcbe2b3339848f8f51fcf",
-   "title": "AVW·000008 revoked by the owner at 0.08822, P&L −$0.10",
+   "title": "AVW·000009 revoked by the owner at 0.08822, P&L −$0.10",
    "detail": "Not graded."
   },
   {
@@ -3946,7 +3946,7 @@
    "tx": "0x34b7a89c0774d7d6a1339f74769c36545ecaa54729d1b492c234dff323d83072",
    "model": "gemini-3.5-flash",
    "tokens": 2396,
-   "title": "Swore AVW·000008 at 60% confidence for $18.90",
+   "title": "Swore AVW·000009 at 60% confidence for $18.90",
    "detail": "Avow swears that HSK will trade below 0.08734 on HSKSwap before 12:00 IST on 31 Oct, or this note is void at 0.08920."
   },
   {
@@ -3962,7 +3962,7 @@
    "asset": "WETH",
    "noteId": 7,
    "tx": "0x367d192707933b9f3e87a249f6b1b5334a5bb4fe9c58d13c24b78f3ab053d63c",
-   "title": "AVW·000007 void at 2,276.51, P&L −$0.33",
+   "title": "AVW·000008 void at 2,276.51, P&L −$0.33",
    "detail": "Graded 0 against 0.58: squared error 0.336. Settled by the keeper. Void streak: 1 of 3."
   },
   {
@@ -3982,7 +3982,7 @@
    "tx": "0x5801e03b5de17e694304a5fbde5ba376400ac1ade3e90984b06215e9ed125bcd",
    "model": "gemini-3.5-flash",
    "tokens": 2359,
-   "title": "Swore AVW·000007 at 58% confidence for $19.60",
+   "title": "Swore AVW·000008 at 58% confidence for $19.60",
    "detail": "Avow swears that ETH will trade below 2,230.49 on HSKSwap before 06:00 IST on 31 Oct, or this note is void at 2,275.60."
   },
   {
@@ -3998,7 +3998,7 @@
    "asset": "WHSK",
    "noteId": 4,
    "tx": "0x7e431376f912ecef08855d4671126e16d205625ea3acc67fd765ee159ed6bddf",
-   "title": "AVW·000004 lapsed at 0.08790, P&L −$0.07",
+   "title": "AVW·000005 lapsed at 0.08790, P&L −$0.07",
    "detail": "Graded 0 against 0.55: squared error 0.302. Settled by the keeper."
   },
   {
@@ -4014,7 +4014,7 @@
    "asset": "WBTC",
    "noteId": 6,
    "tx": "0xaa42ee46904acbd815df08d23566b91b3a9009c81c15c12f605d73c5436db89f",
-   "title": "AVW·000006 retracted by Avow at 76,980.00, P&L −$0.11",
+   "title": "AVW·000007 retracted by Avow at 76,980.00, P&L −$0.11",
    "detail": "Graded 0 against 0.55: squared error 0.302. Settled by the keeper. Promoted to Apprentice: 5 graded notes, Brier 0.201. Denomination rises from $10 to $20."
   },
   {
@@ -4030,7 +4030,7 @@
    "tx": "0xb1f45e76789d5e0e2f3435b995dc6e77a4f413fb4410fd75e94e8a3002a8d952",
    "model": "gemini-3.5-flash",
    "tokens": 2322,
-   "title": "Swore AVW·000006 at 55% confidence for $9.85",
+   "title": "Swore AVW·000007 at 55% confidence for $9.85",
    "detail": "Avow swears that BTC will trade above 78,122.56 on HSKSwap before 20:00 IST on 30 Oct, or this note is void at 76,387.36."
   },
   {
@@ -4053,7 +4053,7 @@
    "asset": "WETH",
    "noteId": 5,
    "tx": "0xe46620c759dcce8d4d3a9c197a1756b7848a039f27db04483484888db4807178",
-   "title": "AVW·000005 honoured at 2,253.42, P&L +$0.03",
+   "title": "AVW·000006 honoured at 2,253.42, P&L +$0.03",
    "detail": "Graded 1 against 0.66: squared error 0.116. Settled by the keeper."
   },
   {
@@ -4070,7 +4070,7 @@
    "tx": "0xff3fd0c11e19225fa80fc25d6dffd0837e7a9652a92a3ec6111e691bc30ee5ca",
    "model": "gemini-3.5-flash",
    "tokens": 2285,
-   "title": "Swore AVW·000005 at 66% confidence for $9.75",
+   "title": "Swore AVW·000006 at 66% confidence for $9.75",
    "detail": "Avow swears that ETH will trade below 2,254.32 on HSKSwap before 10:00 IST on 30 Oct, or this note is void at 2,302.24."
   },
   {
@@ -4086,7 +4086,7 @@
    "asset": "WBTC",
    "noteId": 3,
    "tx": "0xfb6ecbdd05d1a701cd0c9c05665502d5ab78f8ff774debb5e25813c72ae84c89",
-   "title": "AVW·000003 honoured at 77,129.74, P&L +$0.01",
+   "title": "AVW·000004 honoured at 77,129.74, P&L +$0.01",
    "detail": "Graded 1 against 0.64: squared error 0.130. Settled by an outside address; anyone may settle."
   },
   {
@@ -4097,7 +4097,7 @@
    "tx": "0x86a7da91b96afd5121ce8df332a2c200078b3aa0a927d81886d88dd0797d2eba",
    "model": "gemini-3.5-flash",
    "tokens": 2248,
-   "title": "Swore AVW·000004 at 55% confidence for $9.50",
+   "title": "Swore AVW·000005 at 55% confidence for $9.50",
    "detail": "Avow swears that HSK will trade above 0.08893 on HSKSwap before 05:00 IST on 30 Oct, or this note is void at 0.08678."
   },
   {
@@ -4113,7 +4113,7 @@
    "asset": "WETH",
    "noteId": 2,
    "tx": "0xce72d4d4af852fcf35377309d9d7542ebe030779b7e98427240c3f33a8d3cf3b",
-   "title": "AVW·000002 void at 2,236.61, P&L −$0.20",
+   "title": "AVW·000003 void at 2,236.61, P&L −$0.20",
    "detail": "Graded 0 against 0.56: squared error 0.314. Settled by the keeper."
   },
   {
@@ -4124,7 +4124,7 @@
    "tx": "0x6279325a06241b52bbf6b746c7a92103e32c247d2fb59cedceb823926f7e4b70",
    "model": "gemini-3.5-flash",
    "tokens": 2211,
-   "title": "Swore AVW·000003 at 64% confidence for $9.90",
+   "title": "Swore AVW·000004 at 64% confidence for $9.90",
    "detail": "Avow swears that BTC will trade below 77,160.60 on HSKSwap before 00:00 IST on 30 Oct, or this note is void at 78,563.52."
   },
   {
@@ -4149,7 +4149,7 @@
    "asset": "WHSK",
    "noteId": 1,
    "tx": "0x08acdec0d29496605943b4a1abe919533680c0c42054216ed03dcd27e58ab48c",
-   "title": "AVW·000001 honoured at 0.08792, P&L +$0.04",
+   "title": "AVW·000002 honoured at 0.08792, P&L +$0.04",
    "detail": "Graded 1 against 0.62: squared error 0.144. Settled by the keeper."
   },
   {
@@ -4160,7 +4160,7 @@
    "tx": "0x0d7b3a493c1e07e3eabc2f2f137a875a7394ce168e3388d1a4b1287a1f1fde93",
    "model": "gemini-3.5-flash",
    "tokens": 2174,
-   "title": "Swore AVW·000002 at 56% confidence for $9.60",
+   "title": "Swore AVW·000003 at 56% confidence for $9.60",
    "detail": "Avow swears that ETH will trade above 2,296.34 on HSKSwap before 18:00 IST on 29 Oct, or this note is void at 2,237.51."
   },
   {
@@ -4178,7 +4178,7 @@
    "tx": "0x3857bb93456d63eae5662b7f19308f795e326141106539f5ed29d6a357fcce72",
    "model": "gemini-3.5-flash",
    "tokens": 2137,
-   "title": "Swore AVW·000001 at 62% confidence for $9.80",
+   "title": "Swore AVW·000002 at 62% confidence for $9.80",
    "detail": "Avow swears that HSK will trade below 0.08796 on HSKSwap before 14:00 IST on 29 Oct, or this note is void at 0.08997."
   },
   {

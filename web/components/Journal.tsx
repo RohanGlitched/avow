@@ -3,8 +3,11 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Hex } from "./Ovi";
 import { ownLink } from "@/lib/chain";
-import { ASSET_LABEL, num, time, weekday, dayKey } from "@/lib/format";
-import type { JournalEntry, JournalKind, State } from "@/lib/types";
+import { ASSET_LABEL, noteHref, num, serialFor, time, weekday, dayKey } from "@/lib/format";
+import type { JournalEntry, JournalKind, Note, State } from "@/lib/types";
+
+/** What a journal row needs from the state: the network (for explorer links) and the note serials. */
+export type JournalCtx = { network: State["network"]; notes: Pick<Note, "id" | "serial">[] };
 
 export const KIND_WORD: Record<JournalKind, string> = {
   sworn: "Sworn",
@@ -15,10 +18,11 @@ export const KIND_WORD: Record<JournalKind, string> = {
   heartbeat: "Heartbeat",
   amended: "Amended",
   tightened: "Tightened",
+  reviewed: "Reviewed",
   error: "Error",
 };
 
-export function JournalRow({ e, state }: { e: JournalEntry; state: Pick<State, "network"> }) {
+export function JournalRow({ e, state }: { e: JournalEntry; state: JournalCtx }) {
   const quiet = e.kind === "heartbeat" || e.kind === "considered";
   return (
     <li className={`jrow${quiet ? " jrow--quiet" : ""}`} id={`j${e.t}`}>
@@ -31,11 +35,11 @@ export function JournalRow({ e, state }: { e: JournalEntry; state: Pick<State, "
       <div>
         <div className="jrow__title">{e.title}</div>
         {e.detail ? <p className="jrow__detail">{e.detail}</p> : null}
-        {e.noteId || e.tx || e.model ? (
+        {e.noteId != null || e.tx || e.model ? (
           <div className="jrow__links">
-            {e.noteId ? (
-              <Link href={`/notes/${e.noteId}`} className="chip serial">
-                AVW·{String(e.noteId).padStart(6, "0")}
+            {e.noteId != null ? (
+              <Link href={noteHref(e.noteId)} className="chip serial">
+                {serialFor(e.noteId, state.notes)}
               </Link>
             ) : null}
             {e.tx ? (
@@ -59,16 +63,18 @@ export function JournalRow({ e, state }: { e: JournalEntry; state: Pick<State, "
 
 const FILTERS: { key: string; label: string; kinds: JournalKind[] | null }[] = [
   { key: "all", label: "Everything", kinds: null },
-  { key: "decisions", label: "Decisions", kinds: ["sworn", "declined", "blocked"] },
+  { key: "decisions", label: "Decisions", kinds: ["sworn", "declined", "blocked", "reviewed"] },
   { key: "sworn", label: "Sworn", kinds: ["sworn"] },
   { key: "declined", label: "Declined", kinds: ["declined"] },
   { key: "blocked", label: "Blocked by a clause", kinds: ["blocked"] },
+  { key: "considered", label: "Nothing worth swearing", kinds: ["considered"] },
+  { key: "reviewed", label: "Reviews of open notes", kinds: ["reviewed"] },
   { key: "settled", label: "Settled", kinds: ["settled"] },
   { key: "owner", label: "Mandate changes", kinds: ["amended", "tightened"] },
-  { key: "ops", label: "Heartbeats and errors", kinds: ["heartbeat", "considered", "error"] },
+  { key: "ops", label: "Heartbeats and errors", kinds: ["heartbeat", "error"] },
 ];
 
-export function JournalList({ entries, state, initial = "all" }: { entries: JournalEntry[]; state: Pick<State, "network">; initial?: string }) {
+export function JournalList({ entries, state, initial = "all" }: { entries: JournalEntry[]; state: JournalCtx; initial?: string }) {
   const [f, setF] = useState(initial);
   const filter = FILTERS.find((x) => x.key === f) ?? FILTERS[0];
   const shown = useMemo(() => entries.filter((e) => !filter.kinds || filter.kinds.includes(e.kind)), [entries, filter]);

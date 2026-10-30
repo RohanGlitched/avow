@@ -4,7 +4,7 @@ import { getState } from "@/lib/data";
 import { NotesLedger } from "@/components/NotesLedger";
 import { SecHead, Divider } from "@/components/Bits";
 import { StatusMark } from "@/components/NoteStub";
-import { ASSET_LABEL, STATUS_EXPLAIN, num, usd } from "@/lib/format";
+import { ASSET_LABEL, STATUS_EXPLAIN, noteHref, num, usd } from "@/lib/format";
 import type { AssetSym, NoteStatus } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +42,7 @@ export default async function NotesPage() {
       <section className="sec" aria-labelledby="by-asset">
         <div className="wrap">
           <SecHead id="by-asset" title="Outcomes by asset.">
-            Realised P&amp;L counts the 0.30% pool fee on both swaps and the gas of both transactions. Revoked notes are closed by the owner and never graded.
+            Realised P&amp;L is measured on chain and counts the 0.30% pool fee on both swaps; gas and model spend are reported separately on the record. Revoked notes are closed by the owner and never graded.
           </SecHead>
           <div className="table-wrap">
             <table className="tbl tbl--stack">
@@ -111,7 +111,7 @@ export default async function NotesPage() {
                 <p style={{ marginTop: 8, color: "var(--muted)", fontSize: 15.5 }}>{STATUS_EXPLAIN[st]}</p>
                 <p className="plate">
                   {notes.filter((n) => n.status === st).length} so far.{" "}
-                  {notes.find((n) => n.status === st) ? <Link href={`/notes/${notes.find((n) => n.status === st)!.id}`}>See {notes.find((n) => n.status === st)!.serial}</Link> : null}
+                  {notes.find((n) => n.status === st) ? <Link href={noteHref(notes.find((n) => n.status === st)!.id)}>See {notes.find((n) => n.status === st)!.serial}</Link> : null}
                 </p>
               </div>
             ))}

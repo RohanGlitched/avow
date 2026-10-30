@@ -16,8 +16,10 @@ export const NAV = [
 
 export const CHANGELOG = [
   { date: "2026-10-31", text: "Vault rules no longer read Chainlink: a spike clause, no self-fulfilling notes, no negative-expectancy notes." },
-  { date: "2026-10-31", text: "Desk: talk to Avow. Stricter changes apply at once; looser ones become amendments the owner signs." },
-  { date: "2026-10-30", text: "Fork rehearsal on HSK mainnet state: notes, settlement by anyone, calibration grading. 27 fork tests pass." },
+  { date: "2026-10-31", text: "Desk: talk to Avow. Stricter changes apply after a free owner signature (no gas); looser ones become amendments the owner signs with amend()." },
+  { date: "2026-10-31", text: "Judge round 1 fixes: revoke graded as a miss, fee-aware expectancy, calm settlement, equity-based drawdown; agent prices fees and gas, uses 30 days of measured HSKSwap odds, reviews open notes; desk honest about rehearsal." },
+  { date: "2026-10-31", text: "Independent audit: 1 high, 3 medium, 4 low found and fixed, each with a regression test; 240-slot TWAP buffer." },
+  { date: "2026-10-30", text: "Fork rehearsal on HSK mainnet state: notes, settlement by anyone, calibration grading. the first fork tests pass." },
   { date: "2026-10-29", text: "Measured HSKSwap against HashKey Global: recurring 35–50 bps premiums on thin pools." },
 ];
 

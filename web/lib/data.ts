@@ -5,7 +5,7 @@
 import { cache } from "react";
 import fixture from "@/data/fixture.json";
 import { agentFetch } from "./agent";
-import type { State } from "./types";
+import type { Note, State } from "./types";
 
 /** Seconds between server re-reads. Pages also export `revalidate = 15`. */
 export const STATE_REVALIDATE = 15;
@@ -27,4 +27,14 @@ export const getState = cache(loadState);
 /** Where the state came from, for the `x-avow-source` header. */
 export function stateSource(s: State): string {
   return s.source ?? "chain";
+}
+
+/**
+ * A labelled specimen for explainers when the vault has sworn no note yet (a fresh vault). Taken from the
+ * development sample, with its serial replaced by "SPECIMEN" so it can never be mistaken for a note of this vault.
+ */
+export function specimenNote(prefer: Note["status"]): Note {
+  const notes = (fixture as unknown as State).notes;
+  const n = notes.find((x) => x.status === prefer) ?? notes[0];
+  return { ...n, serial: "SPECIMEN" };
 }

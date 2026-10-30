@@ -49,8 +49,12 @@ export function IntaglioChart({ series, asset, corridor, now, mini, label, padH 
     let t1 = lastT;
     if (corridor) {
       t0 = Math.max(t0, corridor.openedAt - padH * 3600);
+      // The right edge is "now" (the last price read) unless the note has run its course: the corridor is then cut
+      // at the edge and its expiry labelled off-chart, instead of drawing hours of empty corridor with no prices.
       const end = corridor.settledAt ?? corridor.expiry;
-      t1 = Math.max(Math.min(end + padH * 3600, corridor.expiry + 1800), corridor.status === "outstanding" ? corridor.expiry : end + 1800);
+      t1 = corridor.status === "outstanding" ? Math.min(lastT, corridor.expiry + 1800) : Math.min(lastT, end + padH * 3600, corridor.expiry + 1800);
+      t1 = Math.max(t1, (corridor.settledAt ?? corridor.openedAt) + 300);
+      if (t1 <= t0) t0 = t1 - 3600;
     }
     const pts = series.filter((p) => p.t >= t0 && p.t <= t1);
     const vals: number[] = [];
@@ -109,7 +113,7 @@ export function IntaglioChart({ series, asset, corridor, now, mini, label, padH 
   // axes
   const yTicks = mini ? [] : niceTicks(lo, hi, 4);
   const span = t1 - t0;
-  const stepH = span > 48 * 3600 ? 12 : span > 18 * 3600 ? 6 : span > 8 * 3600 ? 3 : 1;
+  const stepH = span > 48 * 3600 ? 12 : span > 18 * 3600 ? 6 : span > 8 * 3600 ? 3 : span > 3 * 3600 ? 1 : span > 5400 ? 0.5 : span > 2400 ? 0.25 : 1 / 12;
   const xTicks: number[] = [];
   if (!mini) {
     const st = stepH * 3600;
@@ -121,8 +125,13 @@ export function IntaglioChart({ series, asset, corridor, now, mini, label, padH 
 
   const c = corridor;
   const cx0 = c ? X(c.openedAt) : 0;
-  const cx1 = c ? Math.min(X(c.expiry), w - m.r) : 0;
-  const cutAtEdge = c ? X(c.expiry) > w - m.r + 0.5 : false;
+  // a settled note's corridor ends where it settled; an open one runs to its expiry (cut at the edge if later)
+  const cEnd = c ? (c.status !== "outstanding" && c.settledAt != null ? Math.min(c.settledAt, c.expiry) : c.expiry) : 0;
+  const cx1 = c ? Math.min(X(cEnd), w - m.r) : 0;
+  const cutAtEdge = c ? X(cEnd) > w - m.r + 0.5 : false;
+  const endedEarly = c ? cEnd < c.expiry : false;
+  const lastT = series.at(-1)?.t ?? 0;
+  const edgeIsNow = !mini && t1 >= lastT - 90;
   const yT = c ? Y(c.targetPx) : 0;
   const yV = c ? Y(c.voidPx) : 0;
   const yE = c ? Y(c.entryPx) : 0;
@@ -201,8 +210,12 @@ export function IntaglioChart({ series, asset, corridor, now, mini, label, padH 
             <text className="lvl-lab lvl-lab--void" x={w - m.r + 6} y={yV + 4}>
               {pxShort(asset, c.voidPx)}
             </text>
-            <text className="lab" x={cx1 - 4} y={Math.min(yT, yV) - 6} textAnchor="end">
-              {cutAtEdge ? `expires ${time(c.expiry)} IST, ${day(c.expiry)}` : `expiry ${time(c.expiry)}`}
+            <text className="lab" x={cx1 < 260 ? cx0 + 4 : cx1 - 4} y={Math.min(yT, yV) - 6} textAnchor={cx1 < 260 ? "start" : "end"}>
+              {endedEarly && !cutAtEdge
+                ? `${c.status} ${time(cEnd)}, before expiry`
+                : cutAtEdge
+                  ? `expires ${time(c.expiry)} IST, ${day(c.expiry)}, off the chart →`
+                  : `expiry ${time(c.expiry)}`}
             </text>
           </g>
         )}
@@ -223,7 +236,17 @@ export function IntaglioChart({ series, asset, corridor, now, mini, label, padH 
         {!mini && (
           <g className="ax">
             <line x1={m.l} x2={w - m.r} y1={base} y2={base} />
-            {wideTicks.map((t) => (
+            {edgeIsNow ? (
+              <g>
+                <line x1={w - m.r} x2={w - m.r} y1={base} y2={base + 5} />
+                <text x={w - m.r} y={base + 19} textAnchor="end" className="ax-now">
+                  now
+                </text>
+              </g>
+            ) : null}
+            {wideTicks
+              .filter((t) => !edgeIsNow || X(t) < w - m.r - 56)
+              .map((t) => (
               <g key={t}>
                 <line x1={X(t)} x2={X(t)} y1={base} y2={base + 5} />
                 <text x={X(t)} y={base + 19} textAnchor="middle">

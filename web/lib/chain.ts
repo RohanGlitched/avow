@@ -45,10 +45,22 @@ export function ownLink(s: Pick<State, "network">, kind: "address" | "tx", v: st
 }
 
 export const NETWORK_WORDS: Record<State["network"]["mode"], { short: string; long: string }> = {
-  mainnet: { short: "HSK Chain mainnet", long: "The vault is live on HSK Chain mainnet (chain 177)." },
+  mainnet: { short: "Live on HSK Chain mainnet", long: "The vault is live on HSK Chain mainnet (chain 177)." },
   testnet: { short: "HSK Chain testnet", long: "The vault runs on HSK Chain testnet. Prices still come from mainnet pools." },
   "fork-rehearsal": {
     short: "Rehearsal on a fork of HSK mainnet",
     long: "The vault runs on a local fork of HSK Chain mainnet: real HSKSwap pools and Chainlink feeds, but its own transactions are not on the public explorer.",
   },
 };
+
+/** The day the mainnet vault launches. */
+export const MAINNET_LAUNCH = "Nov 1";
+
+/**
+ * The one plain sentence every rehearsal page carries. Null on mainnet (and testnet), where the sentence disappears.
+ */
+export function rehearsalSentence(s: Pick<State, "network" | "simulatedOutsideTraders">): string | null {
+  if (s.network.mode !== "fork-rehearsal") return null;
+  const traders = s.simulatedOutsideTraders === false ? "no outside traders take part" : "outside traders are simulated";
+  return `This is a rehearsal on a private fork of HSK mainnet where ${traders}, so its outcomes are not evidence; the mainnet vault launches on ${MAINNET_LAUNCH}.`;
+}

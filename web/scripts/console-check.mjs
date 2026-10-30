@@ -1,7 +1,7 @@
 // Opens each page on a deployed site and prints console errors (hydration, fetch) per page.
 import { chromium } from "playwright";
 const base = (process.argv[2] ?? "https://avow-world.vercel.app").replace(/\/$/, "");
-const pages = ["/", "/notes", "/notes/0", "/mandate", "/desk", "/record", "/journal", "/how", "/business"];
+const pages = ["/", "/notes", "/notes/1", "/mandate", "/desk", "/record", "/journal", "/how", "/business"]; // note URLs carry the serial: /notes/1 is AVW·000001
 const b = await chromium.launch();
 for (const w of [1440, 390]) {
   const ctx = await b.newContext({ viewport: { width: w, height: 900 } });

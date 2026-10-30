@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getState } from "@/lib/data";
+import { getState, specimenNote } from "@/lib/data";
 import { Note } from "@/components/Note";
 import { NoteStub } from "@/components/NoteStub";
 import { Guide } from "@/components/Guide";
@@ -8,32 +8,56 @@ import { IntaglioChart } from "@/components/IntaglioChart";
 import { MandateRosette } from "@/components/Rosette";
 import { TierLadder, BrierScale } from "@/components/Record";
 import { ArchitectureDiagram, GuaranteeTable, AddressTable } from "@/components/HowParts";
-import { Divider, SecHead, Slip } from "@/components/Bits";
+import { Divider, NetPnl, SecHead, Slip } from "@/components/Bits";
 import { Freshness } from "@/components/Live";
 import { Hex } from "@/components/Ovi";
 import { CLAUSES } from "@/lib/mandate";
-import { FORK_TESTS_PASSING, GUARANTEES } from "@/lib/guarantees";
-import { ASSET_LABEL, num, pct, px, short, time, usd, when } from "@/lib/format";
+import { Term } from "@/components/Term";
+import { rehearsalSentence } from "@/lib/chain";
+import { deskPrompts } from "@/lib/prompts";
+import { TEST_SUMMARY, GUARANTEES } from "@/lib/guarantees";
+import { ASSET_LABEL, duration, noteHref, num, pct, px, short, time, usd, when } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const s = await getState();
   const open = s.notes.filter((n) => n.status === "outstanding");
-  const hero = open[0] ?? s.notes[0];
+  const hero = open[0] ?? s.notes[0]; // undefined on a fresh vault
   const r = s.record;
   const settled = s.notes.filter((n) => n.status !== "outstanding");
-  const guideNote = s.notes.find((n) => n.status === "honoured") ?? hero;
+  const ownGuide = s.notes.find((n) => n.status === "honoured") ?? hero;
+  const guideNote = ownGuide ?? specimenNote("honoured");
   const stranger = s.notes.find((n) => n.settler && n.settler !== s.contracts.agent && n.settler !== s.contracts.owner);
   const graded = s.notes.filter((n) => n.sqError != null);
   const lastVoid = s.notes.find((n) => n.status === "void");
-  const refusals = s.journal.filter((j) => j.kind === "declined" || j.kind === "blocked");
-  const sworn = s.journal.filter((j) => j.kind === "sworn").length;
-  const blocked = s.journal.filter((j) => j.kind === "blocked").length;
-  const declined = s.journal.filter((j) => j.kind === "declined").length;
+  // Everything Avow chose not to swear: declined candidates, passes ("nothing worth swearing", with per-asset
+  // reasons), reviews of open notes, and attempts a clause refused.
+  const REFUSAL_KINDS = new Set(["declined", "considered", "reviewed", "blocked"]);
+  const refusals = s.journal.filter((j) => REFUSAL_KINDS.has(j.kind));
+  const count = (k: string) => s.journal.filter((j) => j.kind === k).length;
+  const sworn = count("sworn");
+  const blocked = count("blocked");
+  const declined = count("declined");
+  const passes = count("considered");
+  const reviewed = count("reviewed");
+  // the time window comes from the journal itself, never a fixed number of hours
+  const oldest = s.journal.at(-1);
+  const launched = oldest && oldest.kind === "heartbeat" && /began watching/i.test(oldest.title);
+  const windowWords = oldest ? (launched ? `Since launch ${duration(s.asOf - oldest.t)} ago` : `In the last ${duration(s.asOf - oldest.t)} of the journal`) : "So far";
+  const rehearsal = rehearsalSentence(s);
   const nextTier = r.tiers[r.tier.index + 1];
   const eth = s.market.find((m) => m.asset === "WETH") ?? s.market[0];
-  const widest = [...s.market].sort((a, b) => Math.abs(b.spreadBps ?? 0) - Math.abs(a.spreadBps ?? 0))[0];
+  const ethSpan = (eth?.history.length ?? 0) > 1 ? duration(eth.history.at(-1)!.t - eth.history[0].t) : null;
+  // in a rehearsal, quote the real mainnet pool rather than the fork's
+  const useMain = s.network.mode === "fork-rehearsal";
+  const gapOf = (m: (typeof s.market)[number]) => {
+    const p = useMain ? (m.mainnet?.spotPx ?? m.mainnet?.twapPx) : null;
+    return p != null && m.cexPx != null ? ((p - m.cexPx) / m.cexPx) * 1e4 : m.spreadBps;
+  };
+  const widest = [...s.market].sort((a, b) => Math.abs(gapOf(b) ?? 0) - Math.abs(gapOf(a) ?? 0))[0];
+  const widestGap = widest ? gapOf(widest) : null;
+  const widestMain = useMain && widest?.mainnet != null;
 
   return (
     <>
@@ -44,17 +68,34 @@ export default async function Home() {
             <h1 id="hero-title">An AI trader that has to swear before it trades.</h1>
             <div>
               <p className="hero__lede">
-                Avow trades on HSKSwap only through a vault on HSK Chain. Before every swap it publishes a note: what will happen, by when, and at what price it admits it was wrong.
-                Anyone can settle the note. Its record decides how much it may risk next.
+                Avow trades on HSKSwap only through a vault on HSK Chain. Before every swap it publishes a note: what will happen, by when, and the price at which it admits it was wrong,
+                its <Term k="void">void level</Term>. Anyone can settle the note. Its record decides how much it may risk next.
               </p>
               <div className="actions">
-                <Link href={`/notes/${hero.id}`} className="btn">
-                  Open {hero.serial}
-                </Link>
+                {hero ? (
+                  <Link href={noteHref(hero.id)} className="btn">
+                    Open {hero.serial}
+                  </Link>
+                ) : (
+                  <Link href="/journal" className="btn">
+                    Watch for the first note
+                  </Link>
+                )}
                 <Link href="/desk" className="btn btn--ghost">
                   Ask Avow how it is doing
                 </Link>
               </div>
+              <ol className="plainly" aria-label="Avow in three lines">
+                <li>
+                  <span aria-hidden="true">I</span>It bets in public before every trade.
+                </li>
+                <li>
+                  <span aria-hidden="true">II</span>If it&apos;s wrong, anyone can close the trade.
+                </li>
+                <li>
+                  <span aria-hidden="true">III</span>Good forecasters earn bigger limits.
+                </li>
+              </ol>
             </div>
           </div>
 
@@ -68,14 +109,27 @@ export default async function Home() {
           )}
           <div className="plate hero__plate">
             <span>
-              Plate. <b>{hero.serial}</b>, {hero.status === "outstanding" ? "outstanding" : hero.status}: the needle is the HSKSwap 5-minute TWAP for {ASSET_LABEL[hero.asset]}.
+              {hero ? (
+                <>
+                  Plate. <b>{hero.serial}</b>,{" "}
+                  {hero.status === "outstanding" ? "outstanding: the needle is the HSKSwap 5-minute " : `${hero.status}: the marker shows where the closing swap filled, judged by the HSKSwap 5-minute `}
+                  <Term k="twap" /> for {ASSET_LABEL[hero.asset]}.
+                </>
+              ) : (
+                <>
+                  No note yet: notes are judged by the HSKSwap 5-minute <Term k="twap" />.
+                </>
+              )}
+              {rehearsal ? <span className="rehearsal-line rehearsal-line--plate"> {rehearsal}</span> : null}
             </span>
             <Freshness />
           </div>
 
           <div className="figures">
             <div className="figure">
-              <div className="figure__label">Calibration, rolling Brier score</div>
+              <div className="figure__label">
+                Calibration (<Term k="brier">Brier</Term>, lower is better)
+              </div>
               <div className="figure__value">
                 {r.brier != null ? r.brier.toFixed(3) : "none yet"}
                 <small>a coin flip scores 0.250</small>
@@ -89,7 +143,9 @@ export default async function Home() {
               </p>
             </div>
             <div className="figure">
-              <div className="figure__label">Denomination, the largest note it may write</div>
+              <div className="figure__label">
+                Trade limit (<Term k="denomination">denomination</Term>)
+              </div>
               <div className="figure__value">
                 {usd(r.tier.capUsd, { dp: 0 })}
                 <small>{r.tier.name}</small>
@@ -105,13 +161,13 @@ export default async function Home() {
               </p>
             </div>
             <div className="figure">
-              <div className="figure__label">Realised P&amp;L, after fees and gas</div>
+              <div className="figure__label">Realised (on chain)</div>
               <div className={`figure__value ${r.pnlUsd >= 0 ? "pos" : "neg"}`}>
                 {usd(r.pnlUsd, { sign: true })}
-                <small>on {settled.length} settled notes</small>
+                <small>on {settled.length} settled notes, after pool fees</small>
               </div>
               <p className="figure__note">
-                Every round trip pays 0.60% in pool fees. Vault value <b>{usd(r.navUsd)}</b>, high-water mark {usd(r.hwmUsd)}.
+                <NetPnl r={r} /> Vault value <b>{usd(r.navUsd)}</b>, high-water mark {usd(r.hwmUsd)}.
               </p>
             </div>
           </div>
@@ -125,7 +181,14 @@ export default async function Home() {
         <div className="wrap">
           <SecHead id="know" title="Every printed mark on a note is a fact you can check.">
             Banknotes are the most elaborate trust technology print ever produced; every feature exists to make a promise verifiable. An Avow note uses them the same way. This is{" "}
-            <Link href={`/notes/${guideNote.id}`}>{guideNote.serial}</Link>, honoured {guideNote.settledAt ? when(guideNote.settledAt) : ""}.
+            {ownGuide ? (
+              <>
+                <Link href={noteHref(ownGuide.id)}>{ownGuide.serial}</Link>, {ownGuide.status}
+                {ownGuide.settledAt ? ` ${when(ownGuide.settledAt)}` : ""}.
+              </>
+            ) : (
+              <>a specimen from the sample data, not a note of this vault: the vault has not sworn its first note yet.</>
+            )}
           </SecHead>
           <Guide note={guideNote} state={s} />
         </div>
@@ -145,7 +208,13 @@ export default async function Home() {
                 The statement, levels, expiry and confidence go on chain in the same transaction as the swap. If any clause fails, nothing happens.
               </p>
               <p className="plate">
-                <b>{hero.serial}</b>: {hero.side} {ASSET_LABEL[hero.asset]} for {usd(hero.notionalUsd)} at {time(hero.openedAt)} IST, {pct(hero.confidence)} confidence.
+                {hero ? (
+                  <>
+                    <b>{hero.serial}</b>: {hero.side} {ASSET_LABEL[hero.asset]} for {usd(hero.notionalUsd)} at {time(hero.openedAt)} IST, {pct(hero.confidence)} confidence.
+                  </>
+                ) : (
+                  "No note sworn yet on this vault."
+                )}
               </p>
             </li>
             <li className="step">
@@ -194,11 +263,18 @@ export default async function Home() {
           <SecHead id="ledger" title={`${s.notes.length} notes sworn, ${r.graded} graded, none erased.`}>
             Every note keeps its counterfoil: the sentence, how it ended and what it cost. Losses stay on the ledger at the same size as wins.
           </SecHead>
-          <div className="ledger">
-            {s.notes.slice(0, 6).map((n) => (
-              <NoteStub key={n.id} note={n} />
-            ))}
-          </div>
+          {s.notes.length ? (
+            <div className="ledger">
+              {s.notes.slice(0, 6).map((n) => (
+                <NoteStub key={n.id} note={n} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty">
+              <b>The ledger is empty</b>
+              This vault has not sworn a note yet. The first one is listed here the moment it is sworn, and stays here however it ends.
+            </div>
+          )}
           <div className="actions">
             <Link href="/notes" className="btn btn--ghost">
               See all {s.notes.length} notes
@@ -211,14 +287,38 @@ export default async function Home() {
       <section className="sec sec--tint" aria-labelledby="declined">
         <div className="wrap">
           <SecHead id="declined" title="What Avow declined to swear.">
-            In the last 72 hours it swore <strong>{sworn}</strong> notes, declined <strong>{declined}</strong> candidates and was refused <strong>{blocked}</strong> times by a clause.
-            Abstaining is free; a note it barely believes costs it calibration.
+            {windowWords} it swore <strong>{sworn}</strong> {sworn === 1 ? "note" : "notes"} and decided <strong>{passes + declined}</strong> {passes + declined === 1 ? "time" : "times"} that nothing was worth swearing
+            {declined ? (
+              <>
+                {" "}
+                (<strong>{declined}</strong> of them a candidate it declined)
+              </>
+            ) : null}
+            {reviewed ? (
+              <>
+                , re-examined open notes <strong>{reviewed}</strong> {reviewed === 1 ? "time" : "times"}
+              </>
+            ) : null}
+            {blocked ? (
+              <>
+                {" "}
+                and was refused <strong>{blocked}</strong> {blocked === 1 ? "time" : "times"} by a clause
+              </>
+            ) : null}
+            . Abstaining is free; a note it barely believes costs it calibration.
           </SecHead>
-          <div className="slips">
-            {refusals.slice(0, 6).map((e) => (
-              <Slip key={`${e.t}${e.title}`} e={e} />
-            ))}
-          </div>
+          {refusals.length ? (
+            <div className="slips">
+              {refusals.slice(0, 3).map((e) => (
+                <Slip key={`${e.t}${e.kind}${e.title}`} e={e} notes={s.notes} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty">
+              <b>Nothing declined yet</b>
+              Every pass, decline and refusal will appear here with its reasons.
+            </div>
+          )}
           <div className="actions">
             <Link href="/journal" className="btn btn--ghost">
               Read the full journal
@@ -268,16 +368,16 @@ export default async function Home() {
       <section className="sec sec--tint" aria-labelledby="market">
         <div className="wrap">
           <SecHead id="market" title="The market it watches.">
-            HSKSwap pools are thin and trade every few hours, so their prices drift from the exchange. Right now {widest?.label} on HSKSwap is{" "}
-            <strong>{num(Math.abs(widest?.spreadBps ?? 0), 1)} bps</strong> {(widest?.spreadBps ?? 0) >= 0 ? "above" : "below"} HashKey Global. A round trip costs 60 bps in fees, so most
+            HSKSwap pools are thin and trade every few hours, so their prices drift from the exchange. Right now {widest?.label} on HSKSwap{widestMain ? " (mainnet)" : ""} is{" "}
+            <strong>{num(Math.abs(widestGap ?? 0), 1)} bps</strong> {(widestGap ?? 0) >= 0 ? "above" : "below"} HashKey Global. A round trip on a $50 note costs about 68 bps (two pool fees plus gas), so most
             premiums are not worth a note.
           </SecHead>
           <figure style={{ margin: "0 0 32px" }}>
-            <IntaglioChart series={eth.history} asset={eth.asset} label="ETH on HSKSwap against HashKey Global, last 72 hours" />
+            <IntaglioChart series={eth.history} asset={eth.asset} label={`ETH on HSKSwap against HashKey Global${ethSpan ? `, last ${ethSpan}` : ""}`} />
             <div className="legend">
               <span>
                 <i />
-                HSKSwap ETH, stepped: it only moves when someone swaps
+                HSKSwap ETH{useMain ? " on the rehearsal fork" : ""}, stepped: it only moves when someone swaps
               </span>
               <span>
                 <i className="cex" />
@@ -285,7 +385,7 @@ export default async function Home() {
               </span>
             </div>
             <figcaption className="plate">
-              Plate. ETH over 72 hours, engraved: the HSKSwap price at {px("WETH", eth.dexPx)} against HashKey Global at {px("WETH", eth.cexPx)}. Drag or use the arrow keys to read a price.
+              Plate. ETH{ethSpan ? ` over the last ${ethSpan}` : ""}, engraved: the HSKSwap price{useMain ? " on the rehearsal fork" : ""} at {px("WETH", eth.dexPx)} against HashKey Global at {px("WETH", eth.cexPx)}. Drag or use the arrow keys to read a price.
             </figcaption>
           </figure>
           <MarketBoard />
@@ -327,7 +427,7 @@ export default async function Home() {
       <section className="sec sec--tint" aria-labelledby="guarantees">
         <div className="wrap">
           <SecHead id="guarantees" title="Promises the contract keeps, and the tests that prove it.">
-            {FORK_TESTS_PASSING} fork tests pass against real HSK mainnet state: real pools, real tokens, real prices. Eight of the guarantees are below.
+            {TEST_SUMMARY} pass against real HSK mainnet state: real pools, real tokens, real prices. Eight of the guarantees are below.
           </SecHead>
           <GuaranteeTable only="home" />
           <div className="actions">
@@ -347,7 +447,7 @@ export default async function Home() {
           </SecHead>
           <AddressTable state={s} compact />
           <p className="plate">
-            Vault <Hex value={s.contracts.vault} /> {s.contracts.deployBlock ? `deployed at block ${num(s.contracts.deployBlock)}` : ""}. Statement hashes such as {short(hero.hash, 10, 6)} can
+            Vault <Hex value={s.contracts.vault} /> {s.contracts.deployBlock ? `deployed at block ${num(s.contracts.deployBlock)}` : ""}. Statement hashes{hero ? ` such as ${short(hero.hash, 10, 6)}` : ""} can
             be recomputed with <code>cast keccak</code>; see <Link href="/how#verify">verify it yourself</Link>.
           </p>
         </div>
@@ -359,11 +459,12 @@ export default async function Home() {
           <div>
             <h2 id="ask">Talk to Avow.</h2>
             <p className="lede" style={{ marginTop: 12 }}>
-              Ask how it is doing, why it declined a trade, or tell it to be more careful. Anything stricter it applies itself; anything looser becomes an amendment only the owner can sign.
+              Ask how it is doing, why it declined a trade, or tell it to be more careful. Stricter changes need only a free signed message from the owner, and Avow applies them with{" "}
+              <code>tighten()</code>; looser ones the owner signs with <code>amend()</code>.
             </p>
           </div>
           <div className="prompts" style={{ margin: 0 }}>
-            {["How are we doing?", "What is open right now?", "Why did you decline ETH an hour ago?", "Be more careful today", "Only trade ETH", "Trade bigger"].map((q) => (
+            {deskPrompts(s).map((q) => (
               <Link key={q} href={`/desk?q=${encodeURIComponent(q)}`} className="btn btn--ghost" style={{ borderRadius: 20 }}>
                 {q}
               </Link>

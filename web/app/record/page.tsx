@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getState } from "@/lib/data";
-import { SecHead, Divider } from "@/components/Bits";
+import { SecHead, Divider, NetPnl } from "@/components/Bits";
+import { Term } from "@/components/Term";
+import { StudyTable } from "@/components/Study";
 import { BrierHistory, BrierScale, PnlCurve, Reliability, TierLadder } from "@/components/Record";
 import { TIER_RULES } from "@/lib/tiers";
 import { StatusMark } from "@/components/NoteStub";
-import { NETWORK_WORDS } from "@/lib/chain";
-import { pct, usd, when } from "@/lib/format";
+import { NETWORK_WORDS, rehearsalSentence } from "@/lib/chain";
+import { noteHref, pct, usd, when } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Record", description: "Avow's calibration on chain: Brier score, reliability, the denomination it has earned and its realised P&L." };
@@ -19,6 +21,7 @@ export default async function RecordPage() {
   const nextRule = next ? TIER_RULES[next.index] : null;
   const dd = r.hwmUsd > 0 ? (r.hwmUsd - r.navUsd) / r.hwmUsd : 0;
   const settled = s.notes.filter((n) => n.settledAt != null).length;
+  const rehearsal = rehearsalSentence(s);
   return (
     <>
       <section className="page-head">
@@ -28,14 +31,21 @@ export default async function RecordPage() {
           </div>
           <h1>The record decides how much Avow may risk.</h1>
           <p className="lede">
-            Every settled note is graded on chain: 1 if honoured, 0 otherwise, against the confidence Avow stated when it swore. The squared gap is the Brier score. A coin flip scores 0.25;
-            lower is better, and only a better-than-coin record earns a larger denomination.
+            Every settled note is graded on chain: 1 if honoured, 0 otherwise, against the confidence Avow stated when it swore. The squared gap is the <Term k="brier" />. A coin flip scores
+            0.25; lower is better, and only a better-than-coin record earns a larger <Term k="denomination">denomination</Term>, its trade limit.
           </p>
+          {rehearsal ? <p className="rehearsal-line">{rehearsal}</p> : null}
         </div>
       </section>
 
-      <section className="sec" style={{ paddingTop: 8, paddingBottom: 0 }} aria-label="Counts">
+      <section className="sec" style={{ paddingTop: 8, paddingBottom: 0 }} aria-label={rehearsal ? "Rehearsal record" : "Counts"}>
         <div className="wrap">
+          {rehearsal ? (
+            <div className="rehearsal-label">
+              <b>Rehearsal record</b>
+              <span>Private fork of HSK mainnet, outside traders simulated. Not evidence; the mainnet record starts empty.</span>
+            </div>
+          ) : null}
           <div className="counts">
             <div className="count">
               <b>{r.graded}</b>
@@ -43,7 +53,7 @@ export default async function RecordPage() {
             </div>
             <div className="count">
               <b className="tnum">{r.brier != null ? r.brier.toFixed(3) : "—"}</b>
-              <span>Brier, last {Math.min(32, r.graded)}</span>
+              <span>Calibration (Brier, lower is better), last {Math.min(32, r.graded)}</span>
             </div>
             <div className="count">
               <b>{r.honoured}</b>
@@ -57,11 +67,17 @@ export default async function RecordPage() {
             </div>
             <div className="count">
               <b className={r.pnlUsd >= 0 ? "pos" : "neg"}>{usd(r.pnlUsd, { sign: true })}</b>
-              <span>realised on {settled} settled</span>
+              <span>realised (on chain) on {settled} settled</span>
             </div>
+            {r.netPnlUsd != null ? (
+              <div className="count">
+                <b className={r.netPnlUsd >= 0 ? "pos" : "neg"}>{usd(r.netPnlUsd, { sign: true, dp: r.netPnlUsd !== 0 && Math.abs(r.netPnlUsd) < 1 ? 3 : 2 })}</b>
+                <span>net after gas and model</span>
+              </div>
+            ) : null}
             <div className="count">
               <b>{usd(r.tier.capUsd, { dp: 0 })}</b>
-              <span>denomination, {r.tier.name}</span>
+              <span>trade limit (denomination), {r.tier.name}</span>
             </div>
           </div>
         </div>
@@ -152,13 +168,13 @@ export default async function RecordPage() {
         <div className="wrap grid-2">
           <figure style={{ margin: 0 }}>
             <PnlCurve notes={s.notes} />
-            <figcaption className="plate">Plate. Cumulative realised P&amp;L after each settled note, net of pool fees and gas.</figcaption>
+            <figcaption className="plate">Plate. Cumulative realised P&amp;L on chain after each settled note, after pool fees. Gas and model spend are not in this line.</figcaption>
           </figure>
           <div>
             <h2 id="pnl">Money, small on purpose.</h2>
             <p className="lede" style={{ marginTop: 14 }}>
-              Realised {usd(r.pnlUsd, { sign: true })} on {settled} settled notes. Notes stay small until the record earns more; every round trip pays 0.60% in pool fees, which is why most
-              premiums are declined.
+              Realised on chain {usd(r.pnlUsd, { sign: true })} on {settled} settled notes, after pool fees. <NetPnl r={r} /> Notes stay small until the record earns more; every round
+              trip pays 0.60% in pool fees plus gas (about 0.68% on a $50 note), which is why most premiums are declined.
             </p>
             <dl className="kv" style={{ marginTop: 24 }}>
               <dt>Vault value</dt>
@@ -201,7 +217,7 @@ export default async function RecordPage() {
                   {graded.map((n) => (
                     <tr key={n.id}>
                       <td data-h="Note">
-                        <Link href={`/notes/${n.id}`} className="serial">
+                        <Link href={noteHref(n.id)} className="serial">
                           {n.serial}
                         </Link>
                       </td>
@@ -245,6 +261,17 @@ export default async function RecordPage() {
           </p>
         </div>
       </section>
+      {s.study && s.study.rows.length ? (
+        <section className="sec" aria-labelledby="odds">
+          <div className="wrap">
+            <SecHead id="odds" title="Measured odds: do HSKSwap gaps really close?">
+              The question every catch-up note bets on, answered from {s.study.windowDays} days of real HSKSwap swap logs on mainnet, not from the rehearsal.
+            </SecHead>
+            <StudyTable study={s.study} />
+          </div>
+        </section>
+      ) : null}
+
     </>
   );
 }

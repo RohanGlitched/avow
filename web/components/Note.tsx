@@ -3,7 +3,7 @@
 // promise clause = the sworn statement, microtext = statement + tx hash,
 // needle = live HSKSwap TWAP, seal and OVI ink = on-chain marks.
 import { Rosette } from "./Rosette";
-import { Needle, Until } from "./Live";
+import { Needle, Unrealised, Until } from "./Live";
 import { Hex } from "./Ovi";
 import { Crossing, InkStamp, Perforation, Pantograph } from "./Stamps";
 import { ASSET_LABEL, STATUS_WORD, denom, num, pct, px, splitStatement, usd, when } from "@/lib/format";
@@ -105,6 +105,10 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
 
           <div className="note__medallion">
             <Rosette hash={note.hash} print={print} defer={defer} label={`Guilloché rosette computed from the statement hash ${note.hash.slice(0, 10)}…`} />
+            {/* the cancellation stamp sits over the rosette, never over the printed values */}
+            {note.status === "honoured" && note.settledAt ? <Perforation t={note.settledAt} className="note__perf" /> : null}
+            {note.status === "lapsed" && note.settledAt ? <InkStamp word="LAPSED" t={note.settledAt} uid={uid} className="note__ink" /> : null}
+            {note.status === "void" && note.settledAt ? <InkStamp word="VOID" t={note.settledAt} uid={uid} className="note__ink note__ink--void" /> : null}
             <Callout k="A" on={annotate} />
           </div>
 
@@ -158,9 +162,10 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
                 </dd>
               </div>
             )}
+            {!settled ? <Unrealised note={note} /> : null}
             {settled && note.pnlUsd != null ? (
               <div>
-                <dt>Realised</dt>
+                <dt>Realised, on chain</dt>
                 <dd className={`tnum ${note.pnlUsd >= 0 ? "pos" : "neg"}`}>{usd(note.pnlUsd, { sign: true })}</dd>
               </div>
             ) : null}
@@ -202,8 +207,6 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
           </div>
         </div>
 
-        {note.status === "honoured" && note.settledAt ? <Perforation t={note.settledAt} className="note__perf" /> : null}
-        {note.status === "lapsed" && note.settledAt ? <InkStamp word="LAPSED" t={note.settledAt} uid={uid} className="note__ink" /> : null}
         {note.status === "retracted" ? <Crossing text="Retracted by Avow, graded as a miss" /> : null}
         {note.status === "revoked" ? <Crossing text="Revoked by the owner, not graded" /> : null}
         <Callout k="H" on={annotate} />

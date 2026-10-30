@@ -68,7 +68,7 @@ export function ArchitectureDiagram() {
         <W d="M620 120 C670 120 670 110 718 110" label="swear()" lx={640} ly={106} />
         <W d="M620 200 C670 200 670 190 718 190" label="settle()" lx={640} ly={216} />
         <W d="M865 240 L865 288" label="swap" lx={874} ly={268} />
-        <W d="M865 358 V422 H125 V362" label="pool swaps" lx={500} ly={416} />
+        <W d="M865 358 V422 H125 V362" label="pool swaps" lx={500} ly={409} />
         <W d="M718 225 C680 260 660 330 622 340" label="reads" lx={662} ly={292} ro />
         <W d="M1060 82 L1012 82" />
         <W d="M1060 200 L1012 200" />

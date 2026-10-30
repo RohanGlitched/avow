@@ -9,12 +9,16 @@ const base = (args.find((a) => a.startsWith("http")) ?? "http://localhost:3417")
 const only = args.find((a) => !a.startsWith("http") && !a.startsWith("--"));
 const dark = args.includes("--dark");
 const viewportOnly = args.includes("--viewport");
+// Note pages: the newest few notes, read from the site itself (URLs carry the serial number: /notes/1 is AVW·000001).
+let noteSerials = [];
+try {
+  const st = await (await fetch(base + "/api/state")).json();
+  noteSerials = (st.notes ?? []).slice(0, 3).map((n) => n.id + 1);
+} catch {}
 const PAGES = [
   ["home", "/"],
   ["notes", "/notes"],
-  ["note-10", "/notes/10"],
-  ["note-7", "/notes/7"],
-  ["note-5", "/notes/5"],
+  ...noteSerials.map((n) => [`note-${n}`, `/notes/${n}`]),
   ["mandate", "/mandate"],
   ["desk", "/desk"],
   ["record", "/record"],

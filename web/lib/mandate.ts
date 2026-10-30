@@ -213,7 +213,7 @@ export const STANDING_CLAUSES: { title: string; sentence: string; guard: string;
   {
     title: "No note it expects to lose",
     sentence: "No note may be sworn that Avow expects to lose at its own odds: confidence × reward must exceed (1 − confidence) × risk.",
-    guard: "swear(): p·reward > (1 − p)·risk, confidence 0.30–0.99",
+    guard: "swear(): p·reward > (1 − p)·risk, odds 50–99%",
     test: "test_noNegativeExpectancyNotes",
   },
   {
