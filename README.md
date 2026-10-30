@@ -12,7 +12,7 @@
 <p align="center">
 <img alt="HSK Chain mainnet" src="https://img.shields.io/badge/HSK%20Chain-mainnet%20177-173C30">
 <img alt="HSKSwap" src="https://img.shields.io/badge/trades%20on-HSKSwap-2B3A57">
-<img alt="Fork tests" src="https://img.shields.io/badge/fork%20tests-27%20passing-9A7426">
+<img alt="Fork tests" src="https://img.shields.io/badge/fork%20tests-31%20%2B%2013%20audit%20%2B%20invariants-9A7426">
 <img alt="Model" src="https://img.shields.io/badge/model-Gemini%203.5%20Flash%20on%20Vertex-5E6B63">
 </p>
 
@@ -59,13 +59,14 @@ flowchart LR
 | swear a note its own swap would fulfil | `SelfFulfilling` | `test_aNoteCannotBeFulfilledByItsOwnSwap` |
 | trade into a price spike | `SpotDeviation` | `test_noSwearingIntoASpike` |
 | widen a stop after the fact | `tightenStop` only moves toward entry | `test_tightenStopOnlyTowardEntry` |
-| hide a loser by closing it early | `retract` is graded as a miss | `test_retractIsGradedAMissAndRevokeIsNotGraded` |
+| hide a loser by closing it early (agent or owner) | `retract` and `revoke` are graded as misses | `test_retractAndRevokeAreBothGradedAsMisses` |
+| swear a note that cannot pay its fees | expectancy after the 0.60% round trip | `test_aTargetInsideTheFeeIsRefused` |
 | loosen its own mandate or unpause itself | `tighten` checks every field | `test_agentCanOnlyTighten`, `test_pausedAndDisallowedAssets` |
 | earn a bigger note by being confidently wrong | Brier tiers | `test_overconfidenceKeepsTheAgentOnProbation` |
 | keep trading through a drawdown or a bad day | `Frozen`, `DailyLossReached` | `test_drawdownFreezesTheVault`, `test_dailyLossLimit` |
 
 And the stop works without the agent: `test_voidLongIsThePermissionlessStopLoss`, but a spike alone cannot trigger it
-(`test_aSpikeDoesNotTriggerTheStop`, `test_aLevelThePriceLeftAgainDoesNotCount`). All 27 tests run on a **fork of HSK Chain mainnet** against the
+(`test_aSpikeDoesNotTriggerTheStop`, `test_aLevelThePriceLeftAgainDoesNotCount`). All tests (31 behaviour, 13 audit regression, a fuzz test and an invariant suite) run on a **fork of HSK Chain mainnet** against the
 real HSKSwap pools: `cd contracts && forge test`. Trust boundaries and known limits: [SECURITY.md](SECURITY.md).
 
 ## Repository

@@ -1,14 +1,14 @@
-# Dictum — design document
+# Avow — design document
 
 > *Dictum meum pactum* — "my word is my bond", the motto of the old London stock exchange floor, where a trader's spoken word was binding.
-> Dictum is an AI trader on HSK Chain whose every word is binding: before it trades, it must swear a falsifiable note on-chain.
+> Avow is an AI trader on HSK Chain whose every word is binding: before it trades, it must swear a falsifiable note on-chain.
 
 Hackathon: HSK Chain Horizon Hackathon · India (DoraHacks), Track 1 **AI Agent Trading** (HSKSwap).
 Deadline Nov 1 2026 21:30 IST. Demo day Nov 4 (Mumbai/online). Winners must be on HSK Chain **mainnet** (chain 177).
 
 ## 1. The idea in one paragraph
 
-Every AI trading bot asks to be trusted. Dictum asks for nothing: it can only trade through a vault contract that
+Every AI trading bot asks to be trusted. Avow asks for nothing: it can only trade through a vault contract that
 (1) enforces the owner's written **mandate** on-chain (assets, size, slippage, stop distance, horizon, daily loss, drawdown),
 (2) makes the agent publish each trade as a **note** — a sworn, falsifiable statement with an entry, a target, a void level
 (the stop) and an expiry, plus the agent's stated confidence — in the same transaction as the swap,
@@ -18,7 +18,7 @@ Every AI trading bot asks to be trusted. Dictum asks for nothing: it can only tr
 **denomination** — the largest note it may write — grows only as its graded record earns it, and shrinks when it is wrong
 or overconfident. Autonomy is earned on-chain, not granted by a prompt.
 
-The owner talks to Dictum in plain language ("how are we doing?", "be more careful", "only trade ETH", "trade bigger").
+The owner talks to Avow in plain language ("how are we doing?", "be more careful", "only trade ETH", "trade bigger").
 Anything that makes the mandate stricter the agent applies at once (the contract checks it is stricter); anything that
 loosens it becomes an **amendment** the owner signs with their wallet.
 
@@ -35,7 +35,7 @@ loosens it becomes an **amendment** the owner signs with their wallet.
 - Chainlink Data Feeds on HSK mainnet: ETH/USD `0xbB091f3b515059b7A887eDcC73dC2a2Fa65E0242`, BTC/USD `0x204ED500ab56A2E19B051561258E3A45c850360F`,
   HSK/USD `0x86CE42c1b714149Dc3A7b17169EF67b5F78A224b`, USDT/USD `0x823d7f90f7A3498DB6595886b6B5dC95E6B0B7f3`, USDC/USD `0x244Ce344df8837c9d938867E2Ffbf0E4B0169B56`.
   Updated on deviation/heartbeat (ages of 3–14 h seen) → used as a coarse seatbelt, not for grading.
-- Gas: 500 gwei on mainnet; a note (swap + storage + statement) ≈ 350k gas ≈ 0.18 HSK ≈ $0.015. HSK ≈ $0.087.
+- Gas: 500 gwei on mainnet; a note (swap + storage + statement) ≈ 0.54M gas ≈ 0.27 HSK ≈ $0.024; a settlement ≈ 0.38M gas. HSK ≈ $0.087.
 - RPC `https://mainnet.hsk.xyz`: eth_getLogs range < 10,000 blocks (use 5,000). Block time 2 s.
 - CEX reference: HashKey Global public API `https://api-glb.hashkey.com/quote/v1/ticker/price?symbol=ETHUSDT` (works from India); Gate.io as second source.
 
@@ -45,12 +45,12 @@ loosens it becomes an **amendment** the owner signs with their wallet.
 HashKey Global + Gate (fair value) ─┐
 HSKSwap pools (slot0, TWAP, swaps) ─┼─> agent/ (GCE VM asia-south1, static IP 35.200.225.158)
 Chainlink (off-chain seatbelt) ─────┘     signals → Gemini 3.5 Flash (Vertex AI) chooses + swears → deterministic guards
-                                           → DictumVault.swear() on HSK Chain → keeper settles notes → journal → web
+                                           → AvowVault.swear() on HSK Chain → keeper settles notes → journal → web
 web/ (Next.js on Vercel): reads the vault directly over RPC + the agent's journal; chat (/desk) on Gemini with read tools;
     amendments are signed by the owner's wallet in the browser.
 ```
 
-## 4. Contract (contracts/src/DictumVault.sol)
+## 4. Contract (contracts/src/AvowVault.sol)
 
 Roles: `owner` (human, holds funds), `agent` (server key, can only swear/retract/tighten/settle), anyone (settle, deposit).
 Quote token USDT. Assets indexed 0=WETH, 1=WBTC, 2=WHSK, each with pool, fee, Chainlink feed.
@@ -60,7 +60,7 @@ entryPx, targetPx, voidPx (all USD per whole asset ×1e8, from the pool TWAP), o
 amountIn, amountOut, statementHash, status (Outstanding, Honoured, Void, Lapsed, Retracted, Revoked), exitPx, pnlUsd6, settledAt.
 
 Rules enforced by `swear()`: not paused/frozen; asset allowed; cooldown elapsed; one outstanding note per asset; horizon 10 min – max;
-odds 30–99%; long: target > entry > void (short mirrored); stop distance 0.25% – maxStopBps; reward/risk ≥ minRewardRisk; **positive
+odds 50–99%; long: target > entry > void (short mirrored); stop distance 0.25% – maxStopBps; reward/risk ≥ minRewardRisk; **positive
 expectancy at the agent's own odds** (p·reward > (1−p)·risk); notional ≤ denomination (tier cap) and open exposure ≤ maxExposure; daily
 realised loss < limit; live price within maxSpotDevBps of the 5-minute TWAP (no swearing into a spike); swap within maxSlippage of the TWAP;
 **not fulfilled by its own trade** (after the opening swap the live price must still be short of the target). The full statement is emitted
@@ -78,7 +78,10 @@ Three consecutive Voids drop one tier.
 `retract(id)` (agent): close early; graded as a miss (o = 0) so retreating never improves the record.
 `tightenStop(id, newVoid)` (agent): only toward entry.
 `tighten(Mandate)` (agent): every field must be equal or stricter; assets a subset. `amend(Mandate)` (owner): anything.
-`revoke(id)` (owner): close any note (not graded). Drawdown: if NAV < HWM×(1−maxDD) the vault freezes until `unfreeze()` (owner).
+`revoke(id)` (owner): close any note without trading; still graded as a miss and marked at the TWAP, so an owner cannot launder a loss.
+Drawdown: realised equity (value at the first note, adjusted for flows, plus realised P&L) below its high-water mark × (1−maxDD) freezes the
+vault until `unfreeze()` (owner); inventory price moves do not count. Expectancy is checked after the 0.60% round-trip fee.
+Targets and expiries settle only while the live price is within maxSpotDevBps of the TWAP; a stop never waits.
 
 ## 5. Agent loop (agent/)
 
@@ -94,14 +97,14 @@ declined, with reasons) goes to the journal. Journal → GCS / site.
 
 Subject: a note is a promise. Banknotes and bearer bonds are the most elaborate trust technology print ever built — guilloché
 rosettes, intaglio line-shading, microtext, serial numbers in red, void pantographs, perforated cancellation stamps,
-colour-shifting ink. Every one of those features exists to make a promise verifiable. Dictum's notes use them the same way,
+colour-shifting ink. Every one of those features exists to make a promise verifiable. Avow's notes use them the same way,
 and each feature carries data:
 
 - **Guilloché rosette = the note's hash.** Procedural SVG (sums of epicycles); parameters derived from the note hash, so every
   note's rosette is unique and anyone can recompute it. The **mandate** has its own rosette whose harmonics come from the mandate
   parameters — amend the mandate and the rosette morphs.
 - **The promise clause.** The banknote's "I promise to pay the bearer on demand the sum of…" becomes the sworn statement:
-  *"Dictum swears that ETH will trade above 2,271.40 on HSKSwap before 18:00 IST on 31 Oct, or this note is void at 2,203.10."*
+  *"Avow swears that ETH will trade above 2,271.40 on HSKSwap before 18:00 IST on 31 Oct, or this note is void at 2,203.10."*
 - **Serial numbers** in red: `DCT·000042` = note id on chain. **Denomination** printed large = the note's notional cap tier.
 - **Void pantograph**: when a note is voided, a hidden "VOID" pattern emerges across the note (as on security paper when copied).
 - **Perforated HONOURED** stamp (cancelled-cheque perforation) when the target is reached. LAPSED = an inked date stamp.
@@ -128,10 +131,10 @@ Respect prefers-reduced-motion.
 
 - `/` home: hero = the current outstanding note (or the latest settled one) as a full security note with the live needle;
   the sworn sentence; three live numbers (calibration, denomination, P&L); how a note works (annotated note, real data);
-  the ledger of recent notes; what Dictum declined to swear (journal); the mandate rosette; the market it watches (HSKSwap vs
+  the ledger of recent notes; what Avow declined to swear (journal); the mandate rosette; the market it watches (HSKSwap vs
   HashKey Global vs Chainlink, live); architecture; guarantees → tests table; contracts with explorer links; rich footer.
 - `/notes` the full ledger (filters by status/asset), `/notes/[id]` one note with its corridor chart, settlement, tx links, recomputed rosette.
 - `/mandate` the mandate as a charter: each clause with live usage and blocked attempts; amendment flow (owner wallet signs).
-- `/desk` chat with Dictum (positions, P&L, why, change strategy). Read tools + propose amendment + agent-side tighten.
+- `/desk` chat with Avow (positions, P&L, why, change strategy). Read tools + propose amendment + agent-side tighten.
 - `/record` calibration: reliability diagram, Brier vs the 0.25 coin-flip line, tier ladder, P&L curve, rehearsal (replay on real HSKSwap history, labelled).
 - `/how` how it works + verify (addresses, `cast` commands to reproduce every claim), `/journal` the agent's full deliberation log.
