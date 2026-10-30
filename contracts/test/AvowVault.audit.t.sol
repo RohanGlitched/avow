@@ -107,7 +107,7 @@ contract AvowVaultAuditTest is Test {
         v.swear(ETH, AvowVault.Side.Long, 5e6, t, vd, uint40(vm.getBlockTimestamp() + 10 minutes), 3000, "x", bytes32(0));
         // five calibrated coin flips that all missed do not earn Apprentice: a tier needs at least one honoured note
         for (uint256 i; i < 5; i++) {
-            uint256 id = _swear(ETH, AvowVault.Side.Long, 5e6, 5000);
+            uint256 id = _swearX(ETH, AvowVault.Side.Long, 5e6, 5000, 200, 200, 6 hours);
             vm.prank(agentKey);
             v.retract(id);
             _wait(601);
@@ -122,7 +122,7 @@ contract AvowVaultAuditTest is Test {
         (uint96 t, uint96 vd) = _levels(ETH, true, 50, 240);
         vm.prank(agentKey);
         vm.expectRevert(abi.encodeWithSelector(AvowVault.ExceedsDenomination.selector, 0, 10e6));
-        v.swear(ETH, AvowVault.Side.Long, 0, t, vd, uint40(vm.getBlockTimestamp() + 10 minutes), 6000, "z", bytes32(0));
+        v.swear(ETH, AvowVault.Side.Long, 0, t, vd, uint40(vm.getBlockTimestamp() + 10 minutes), 9000, "z", bytes32(0));
     }
 
     // ═════════════════════════════════════════════ M-1  fixed: $1 minimum note, revoke always unlocks
@@ -237,10 +237,10 @@ contract AvowVaultAuditTest is Test {
         uint256 id = _swear(ETH, AvowVault.Side.Long, 10e6, 6000);
         _push(ETH, false, 3e18);
         _wait(900);
-        uint256 ratio0 = v.nav() * 1e18 / v.hwm();
+        uint256 ratio0 = v.equity() * 1e18 / v.hwm();
         vm.prank(owner);
         v.withdraw(HSK.USDT, 150e6, owner);
-        assertApproxEqRel(v.nav() * 1e18 / v.hwm(), ratio0, 0.001e18, "drawdown ratio unchanged by a withdrawal");
+        assertApproxEqRel(v.equity() * 1e18 / v.hwm(), ratio0, 0.001e18, "drawdown ratio unchanged by a withdrawal");
         v.settle(id);
         assertFalse(v.frozen());
     }
@@ -328,7 +328,7 @@ contract VaultHandler is Test {
 
     function _record(uint256 id) internal {
         AvowVault.Note memory n = v.getNote(id);
-        if (n.status == AvowVault.Status.Revoked || n.status == AvowVault.Status.Outstanding) return;
+        if (n.status == AvowVault.Status.Outstanding) return;
         uint256 p = uint256(n.confidenceBps) * 1e4;
         uint256 o = n.status == AvowVault.Status.Honoured ? 1e8 : 0;
         uint256 d = p > o ? p - o : o - p;
@@ -403,7 +403,9 @@ contract VaultHandler is Test {
         (bool ok, uint256 id) = _pick(seed);
         if (!ok) return;
         vm.prank(owner);
-        try v.revoke(id) {} catch {}
+        try v.revoke(id) {
+            _record(id);
+        } catch {}
     }
 
     function push(uint256 seed, uint256 amt, bool up) external {
@@ -542,7 +544,7 @@ contract AvowVaultInvariantTest is Test {
     function invariant_gradingMatchesReplay() public view {
         AvowVault.Ledger memory l = v.ledger();
         assertEq(l.graded, h.gGraded(), "graded");
-        assertEq(l.graded, uint256(l.honoured) + l.voided + l.lapsed + l.retracted, "outcome counts");
+        assertEq(l.graded, uint256(l.honoured) + l.voided + l.lapsed + l.retracted + l.revoked, "outcome counts");
         assertEq(l.windowCount, h.gCount(), "windowCount");
         assertEq(l.windowSqErrSum, h.gSum(), "windowSqErrSum");
         assertEq(int256(l.realisedPnl), h.gPnl(), "realisedPnl");

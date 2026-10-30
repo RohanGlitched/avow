@@ -117,7 +117,8 @@ contract AvowVault {
     uint256 public lockedUsdt; // proceeds held by outstanding shorts
     uint256 public exposure; // Σ notional of outstanding notes
     uint256 public lastSwearAt;
-    uint256 public hwm; // high-water NAV, USDT raw
+    uint256 public hwm; // high-water mark of realised equity, USDT raw
+    uint256 public equity; // value at the first note, adjusted for deposits and withdrawals, plus realised P&L
     bool public frozen;
     uint256 public lossDay; // UTC day index of dailyLoss
     uint256 public dailyLoss; // USDT raw
@@ -266,7 +267,7 @@ contract AvowVault {
         Asset memory a = _assets[assetId];
         uint256 entry = _twap(a);
         _checkSpot(a, entry, m);
-        _checkLevels(side, entry, targetPx, voidPx, confidenceBps, m);
+        _checkLevels(side, entry, targetPx, voidPx, confidenceBps, entry * 2 * a.fee / 1e6, m);
 
         uint8 t = tier();
         uint256 cap = denominationOf(t);
@@ -319,7 +320,10 @@ contract AvowVault {
         openNoteOf[assetId] = id + 1;
         exposure += notional;
         lastSwearAt = block.timestamp;
-        if (hwm == 0) hwm = nav();
+        if (hwm == 0) {
+            equity = nav();
+            hwm = equity;
+        }
 
         emit NoteSworn(
             id,
@@ -355,7 +359,7 @@ contract AvowVault {
         _close(id, n, Status.Retracted);
     }
 
-    /// @notice The owner closes any note. Not graded.
+    /// @notice The owner closes any note without trading. Marked at the TWAP and graded as a miss.
     function revoke(uint256 id) external onlyOwner nonReentrant {
         Note storage n = _note(id);
         _close(id, n, Status.Revoked);
@@ -364,9 +368,12 @@ contract AvowVault {
     /// @notice The agent may move a stop toward the entry, never away from it.
     function tightenStop(uint256 id, uint96 newVoidPx) external onlyAgent {
         Note storage n = _note(id);
-        if (n.side == Side.Long ? newVoidPx <= n.voidPx || newVoidPx >= n.targetPx : newVoidPx >= n.voidPx || newVoidPx <= n.targetPx) {
-            revert StopNotTighter();
-        }
+        uint256 gap = uint256(n.entryPx) * MIN_STOP_BPS / BPS;
+        if (
+            n.side == Side.Long
+                ? newVoidPx <= n.voidPx || newVoidPx > n.entryPx - gap
+                : newVoidPx >= n.voidPx || newVoidPx < n.entryPx + gap
+        ) revert StopNotTighter();
         emit StopTightened(id, n.voidPx, newVoidPx);
         n.voidPx = newVoidPx;
     }
@@ -402,9 +409,11 @@ contract AvowVault {
 
     function deposit(address token, uint256 amount) external nonReentrant {
         uint256 value = _valueOf(token, amount);
-        uint256 v0 = nav();
         _pull(token, msg.sender, amount);
-        hwm = v0 == 0 ? hwm + value : hwm * (v0 + value) / v0;
+        if (hwm != 0) {
+            hwm = hwm * (equity + value) / equity;
+            equity += value;
+        }
         emit Deposited(token, msg.sender, amount, value);
     }
 
@@ -412,16 +421,19 @@ contract AvowVault {
         uint256 locked = token == usdt ? lockedUsdt * 6 / 5 : _lockedOf(token);
         require(IERC20(token).balanceOf(address(this)) - locked >= amount, "locked");
         uint256 value = _valueOf(token, amount);
-        uint256 v0 = nav();
-        hwm = v0 > value ? hwm * (v0 - value) / v0 : 0;
+        if (hwm != 0) {
+            uint256 e = equity > value ? equity - value : 0;
+            hwm = hwm * e / equity;
+            equity = e;
+        }
         _push(token, to, amount);
         emit Withdrawn(token, to, amount, value);
     }
 
     function unfreeze() external onlyOwner {
         frozen = false;
-        hwm = nav();
-        emit VaultUnfrozen(hwm);
+        hwm = equity;
+        emit VaultUnfrozen(equity);
     }
 
     function setAgent(address agent_) external onlyOwner {
@@ -505,17 +517,19 @@ contract AvowVault {
         if (id >= _notes.length) return (false, Status.None);
         Note memory n = _notes[id];
         if (n.status != Status.Outstanding) return (false, n.status);
-        if (block.timestamp >= n.expiry) return (true, Status.Lapsed);
         Asset memory a = _assets[n.asset];
-        (bool hasTwap, uint256 px) = _tryTwap(a);
+        (bool hasTwap, int24 mt) = _meanTick(a.pool, TWAP_WINDOW);
         if (!hasTwap) return (false, Status.Outstanding);
-        (, int24 tick,,,,,) = IUniswapV3PoolLike(a.pool).slot0();
-        uint256 spot = _pxAtTick(a, tick);
+        uint256 px = _pxAtTick(a, mt);
+        uint256 spot = _spot(a);
+        bool calm = (spot > px ? spot - px : px - spot) * BPS / px <= _mandate.maxSpotDevBps;
         bool long_ = n.side == Side.Long;
-        bool hit = long_ ? px >= n.targetPx && spot >= n.targetPx : px <= n.targetPx && spot <= n.targetPx;
         bool broke = long_ ? px <= n.voidPx && spot <= n.voidPx : px >= n.voidPx && spot >= n.voidPx;
-        if (!hit && !broke) return (false, Status.Outstanding);
-        return (true, hit ? Status.Honoured : Status.Void);
+        if (broke) return (true, Status.Void); // a stop never waits
+        if (!calm) return (false, Status.Outstanding); // no one settles a target or an expiry into a spike
+        if (block.timestamp >= n.expiry) return (true, Status.Lapsed);
+        bool hit = long_ ? px >= n.targetPx && spot >= n.targetPx : px <= n.targetPx && spot <= n.targetPx;
+        return hit ? (true, Status.Honoured) : (false, Status.Outstanding);
     }
 
     /// @notice Net asset value in USDT raw at pool TWAPs.
@@ -535,7 +549,7 @@ contract AvowVault {
     function _close(uint256 id, Note storage n, Status s) internal {
         Asset memory a = _assets[n.asset];
         Mandate memory m = _mandate;
-        uint256 exitSlip = s == Status.Retracted ? m.maxSlippageBps : uint256(m.maxSlippageBps) * 2 > 150 ? uint256(m.maxSlippageBps) * 2 : 150;
+        uint256 exitSlip = s == Status.Retracted ? m.maxSlippageBps : uint256(m.maxSlippageBps) + 2 * uint256(a.fee) / 100;
         (bool hasTwap, uint256 px) = _tryTwap(a);
         if (!hasTwap) {
             (, int24 tick,,,,,) = IUniswapV3PoolLike(a.pool).slot0();
@@ -545,9 +559,15 @@ contract AvowVault {
         int256 pnl;
         uint256 exitPx;
         if (s == Status.Revoked) {
-            // the owner's escape hatch: unlock without trading, so no note can be stuck forever
-            if (n.side == Side.Long) lockedAsset[n.asset] -= n.amountOut;
-            else lockedUsdt -= n.amountOut;
+            // the owner's escape hatch: unlock without trading (no note can be stuck forever), marked at the TWAP
+            if (n.side == Side.Long) {
+                lockedAsset[n.asset] -= n.amountOut;
+                pnl = int256(_assetToUsdt(n.amountOut, px, a.decimals)) - int256(uint256(n.amountIn));
+            } else {
+                lockedUsdt -= n.amountOut;
+                pnl = int256(uint256(n.amountOut)) - int256(_assetToUsdt(n.amountIn, px, a.decimals));
+            }
+            exitPx = px;
         } else if (n.side == Side.Long) {
             uint256 qty = n.amountOut;
             uint256 expected = _assetToUsdt(qty, px, a.decimals);
@@ -575,15 +595,14 @@ contract AvowVault {
         _rollDay();
         if (pnl < 0) dailyLoss += uint256(-pnl);
 
-        uint256 sqErr;
-        if (s != Status.Revoked) sqErr = _grade(n, s, pnl);
-        else _ledger.revoked += 1;
+        uint256 sqErr = _grade(n, s, pnl);
 
-        uint256 v = nav();
-        if (pnl > 0) hwm += uint256(pnl);
-        if (!frozen && v < hwm * (BPS - m.maxDrawdownBps) / BPS) {
+        uint256 e = pnl < 0 ? (equity > uint256(-pnl) ? equity - uint256(-pnl) : 0) : equity + uint256(pnl);
+        equity = e;
+        if (e > hwm) hwm = e;
+        if (!frozen && e < hwm * (BPS - m.maxDrawdownBps) / BPS) {
             frozen = true;
-            emit VaultFrozen(v, hwm);
+            emit VaultFrozen(e, hwm);
         }
         emit NoteSettled(id, s, exitPx, pnl, sqErr, msg.sender);
     }
@@ -615,9 +634,11 @@ contract AvowVault {
             l.voidStreak += 1;
         } else if (s == Status.Lapsed) {
             l.lapsed += 1;
-        } else {
+        } else if (s == Status.Retracted) {
             l.retracted += 1;
             l.voidStreak += 1;
+        } else {
+            l.revoked += 1;
         }
         uint8 afterT = tier();
         if (afterT != before) emit TierChanged(before, afterT);
@@ -625,10 +646,15 @@ contract AvowVault {
 
     // ─────────────────────────────────────────────────────────────── internals: checks
 
-    function _checkLevels(Side side, uint256 entry, uint256 target, uint256 voidPx, uint256 conf, Mandate memory m)
-        internal
-        pure
-    {
+    function _checkLevels(
+        Side side,
+        uint256 entry,
+        uint256 target,
+        uint256 voidPx,
+        uint256 conf,
+        uint256 cost,
+        Mandate memory m
+    ) internal pure {
         uint256 risk;
         uint256 reward;
         if (side == Side.Long) {
@@ -645,8 +671,8 @@ contract AvowVault {
         if (stopBps < MIN_STOP_BPS) revert StopTooTight(stopBps);
         uint256 rr = reward * 100 / risk;
         if (rr < m.minRewardRiskX100) revert RewardRiskTooLow(rr, m.minRewardRiskX100);
-        // no note the agent expects to lose at its own stated odds: p·reward > (1 − p)·risk
-        if (conf * (reward + risk) <= BPS * risk) revert NegativeExpectancy(conf, rr);
+        // no note the agent expects to lose at its own stated odds, after paying the pool fee in and out
+        if (reward <= cost || conf * (reward + risk) <= BPS * (risk + cost)) revert NegativeExpectancy(conf, rr);
     }
 
     function _checkSpot(Asset memory a, uint256 twap, Mandate memory m) internal view {

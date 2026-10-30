@@ -169,17 +169,26 @@ contract AvowVaultForkTest is Test {
     }
 
     function test_noNegativeExpectancyNotes() public {
-        // with a mandate that allows reward/risk 0.6, a 60% note expects to lose (0.6·0.6 < 0.4) and is refused; 70% passes
-        AvowVault.Mandate memory m = v.mandate();
-        m.minRewardRiskX100 = 50;
-        vm.prank(owner);
-        v.amend(m);
-        (uint96 tg, uint96 vd) = _levels(ETH, true, 200, 60);
+        // reward 3%, risk 2%: a coin flip would win on paper (0.5·3 > 0.5·2) but loses to the 0.60% round-trip fee
+        (uint96 tg, uint96 vd) = _levels(ETH, true, 200, 150);
         vm.prank(agentKey);
         vm.expectPartialRevert(AvowVault.NegativeExpectancy.selector);
-        v.swear(ETH, AvowVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
+        v.swear(ETH, AvowVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 1 hours), 5000, "x", bytes32(0));
+        // at 60% it clears the fee: 0.6·(3 − 0.6) > 0.4·(2 + 0.6)
         vm.prank(agentKey);
-        v.swear(ETH, AvowVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 1 hours), 7000, "x", bytes32(0));
+        v.swear(ETH, AvowVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
+    }
+
+    function test_aTargetInsideTheFeeIsRefused() public {
+        // a 0.5% target cannot pay a 0.6% round trip, whatever the odds
+        AvowVault.Mandate memory m = v.mandate();
+        m.minRewardRiskX100 = 100;
+        vm.prank(owner);
+        v.amend(m);
+        uint256 e = v.twapPx(ETH);
+        vm.prank(agentKey);
+        vm.expectPartialRevert(AvowVault.NegativeExpectancy.selector);
+        v.swear(ETH, AvowVault.Side.Long, 5e6, uint96(e * 1005 / 1000), uint96(e * 9960 / 10_000), uint40(vm.getBlockTimestamp() + 1 hours), 9900, "x", bytes32(0));
     }
 
     function test_aNoteCannotBeFulfilledByItsOwnSwap() public {
@@ -195,7 +204,7 @@ contract AvowVaultForkTest is Test {
         uint256 e = v.twapPx(ETH);
         vm.prank(agentKey);
         vm.expectPartialRevert(AvowVault.SelfFulfilling.selector);
-        v.swear(ETH, AvowVault.Side.Long, 1_000e6, uint96(e * 1012 / 1000), uint96(e * 99 / 100), uint40(vm.getBlockTimestamp() + 1 hours), 6000, "x", bytes32(0));
+        v.swear(ETH, AvowVault.Side.Long, 1_000e6, uint96(e * 1012 / 1000), uint96(e * 99 / 100), uint40(vm.getBlockTimestamp() + 1 hours), 9000, "x", bytes32(0));
     }
 
     function test_confidenceBounds() public {
@@ -297,7 +306,7 @@ contract AvowVaultForkTest is Test {
         assertEq(v.lockedUsdt(), 0);
     }
 
-    function test_retractIsGradedAMissAndRevokeIsNotGraded() public {
+    function test_retractAndRevokeAreBothGradedAsMisses() public {
         uint256 a = _swear(ETH, AvowVault.Side.Long, 5e6, 9000);
         vm.prank(agentKey);
         v.retract(a);
@@ -305,10 +314,16 @@ contract AvowVaultForkTest is Test {
         assertEq(v.brier(), 81_000_000);
         _wait(601);
         uint256 b = _swear(ETH, AvowVault.Side.Long, 5e6, 9000);
+        uint256 wethBefore = IERC20(HSK.WETH).balanceOf(address(v));
         vm.prank(owner);
         v.revoke(b);
-        assertEq(v.ledger().graded, 1, "revoked notes are not graded");
+        // the owner's revoke does not trade, but it cannot hide the note: it is graded as a miss and marked at the TWAP
+        assertEq(IERC20(HSK.WETH).balanceOf(address(v)), wethBefore);
+        assertEq(v.ledger().graded, 2);
+        assertEq(v.ledger().revoked, 1);
+        assertEq(v.brier(), 81_000_000);
         assertEq(uint8(v.getNote(b).status), uint8(AvowVault.Status.Revoked));
+        assertLt(v.getNote(b).pnl, 0, "marked to market: the entry fee is a loss");
     }
 
     function test_tightenStopOnlyTowardEntry() public {
@@ -326,16 +341,20 @@ contract AvowVaultForkTest is Test {
 
     function test_fiveCalibratedNotesWithAHitEarnApprentice() public {
         assertEq(v.tier(), 0);
-        for (uint256 i; i < 4; i++) {
-            uint256 id = _swear(ETH, AvowVault.Side.Long, 5e6, 5000);
-            _wait(6 hours + 1);
-            v.settle(id);
+        for (uint256 i; i < 5; i++) {
+            (uint96 tg, uint96 vd) = _levels(ETH, true, 200, 200); // reward 4%, risk 2%: a coin flip clears the fee
+            vm.prank(agentKey);
+            uint256 id = v.swear(ETH, AvowVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 6 hours), 5000, "x", bytes32(0));
+            if (i == 4) {
+                _push(ETH, true, 4_500e6);
+                _wait(900);
+                v.settle(id);
+                assertEq(uint8(v.getNote(id).status), uint8(AvowVault.Status.Honoured));
+            } else {
+                _wait(6 hours + 1);
+                v.settle(id);
+            }
         }
-        uint256 win = _swear(ETH, AvowVault.Side.Long, 5e6, 5000);
-        _push(ETH, true, 2_500e6);
-        _wait(900);
-        v.settle(win);
-        assertEq(uint8(v.getNote(win).status), uint8(AvowVault.Status.Honoured));
         // five coin-flip notes, one honoured: Brier exactly 0.25 and a hit on record → Apprentice, denomination doubles
         assertEq(v.brier(), 25_000_000);
         assertEq(v.tier(), 1);
@@ -455,6 +474,40 @@ contract AvowVaultForkTest is Test {
         vm.expectRevert(AvowVault.NotOwner.selector);
         v.withdraw(HSK.USDT, 1, stranger);
         id;
+    }
+
+    function test_aLapsedNoteWaitsForACalmPool() public {
+        uint256 id = _swear(ETH, AvowVault.Side.Long, 10e6, 6000);
+        _wait(6 hours + 1);
+        _push(ETH, false, 0.5e18); // someone shoves the pool just as the note expires
+        (bool ok,) = v.settleable(id);
+        assertFalse(ok, "no one may settle an expiry into a spike");
+        _push(ETH, true, 1_100e6); // the price comes back
+        (ok,) = v.settleable(id);
+        assertTrue(ok);
+    }
+
+    function test_inventoryPriceMovesDoNotFreezeTheAgent() public {
+        AvowVault.Mandate memory m = v.mandate();
+        m.maxDrawdownBps = 100; // 1%
+        vm.prank(owner);
+        v.amend(m);
+        uint256 id = _swear(ETH, AvowVault.Side.Long, 10e6, 6000);
+        _push(HSKA, false, 2_000_000e18); // the owner's HSK inventory loses a large share of its value
+        _wait(6 hours + 1);
+        v.settle(id);
+        assertLt(v.nav() * 100, v.hwm() * 99, "NAV fell well over 1%");
+        assertFalse(v.frozen(), "only the agent's realised losses count toward the drawdown");
+    }
+
+    function test_tightenStopKeepsTheMinimumDistance() public {
+        uint256 id = _swear(ETH, AvowVault.Side.Long, 5e6, 6000);
+        AvowVault.Note memory n = v.getNote(id);
+        vm.prank(agentKey);
+        vm.expectRevert(AvowVault.StopNotTighter.selector);
+        v.tightenStop(id, uint96(uint256(n.entryPx) * 9990 / 10_000)); // 0.10% from entry: inside noise
+        vm.prank(agentKey);
+        v.tightenStop(id, uint96(uint256(n.entryPx) * 9970 / 10_000)); // 0.30%: allowed
     }
 
     function test_navCountsEverything() public view {
