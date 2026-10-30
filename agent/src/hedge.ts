@@ -35,8 +35,9 @@ export async function balances(k: HkKeys) {
 /** Public symbol rules: step size, minimum quantity and notional. */
 export async function symbolRules(symbol: string) {
   const r = await fetch(`${BASE}/api/v1/exchangeInfo?symbol=${symbol}`, { signal: AbortSignal.timeout(10_000) });
-  const j = (await r.json()) as { symbols?: { symbol: string; status: string; filters: Record<string, string>[] }[] };
-  const s = j.symbols?.find((x) => x.symbol === symbol);
+  type Sym = { symbol: string; status: string; filters: Record<string, string>[] };
+  const j = (await r.json()) as { symbols?: Sym[] } & Partial<Sym>;
+  const s = j.symbol === symbol ? (j as Sym) : j.symbols?.find((x) => x.symbol === symbol); // a filtered query returns the symbol itself
   if (!s) throw new Error(`no symbol ${symbol}`);
   const f = (type: string) => s.filters.find((x) => x.filterType === type) ?? {};
   return { status: s.status, stepSize: Number(f("LOT_SIZE").stepSize ?? 0), minQty: Number(f("LOT_SIZE").minQty ?? 0), minNotional: Number(f("MIN_NOTIONAL").minNotional ?? 0) };
