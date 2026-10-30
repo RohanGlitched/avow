@@ -11,6 +11,7 @@ remappings = [
   "@uniswap/v3-core/=lib/v3-core/",
   "forge-std/=lib/forge-std/src/",
 ]
+disable_code_size_limit = true # tests only (the price-math harness inherits the vault); `forge build --sizes` still reports AvowVault against EIP-170
 fs_permissions = [{ access = "read-write", path = "./deployments" }]
 
 [rpc_endpoints]

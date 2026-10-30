@@ -26,7 +26,7 @@ contract AvowVault {
         Void, // TWAP crossed the void level (the stop)
         Lapsed, // expired before either
         Retracted, // closed early by the agent (graded as a miss)
-        Revoked // closed by the owner (not graded)
+        Revoked // closed by the owner without trading (graded as a miss, marked at the TWAP)
     }
 
     struct Asset {
@@ -58,6 +58,8 @@ contract AvowVault {
         Status status;
         uint8 tierAtOpen;
         uint16 confidenceBps;
+        uint16 spotDevBps; // settlement terms fixed when sworn: later amendments cannot change how this note settles
+        uint16 exitSlipBps;
         uint40 openedAt;
         uint40 expiry;
         uint40 settledAt;
@@ -78,11 +80,12 @@ contract AvowVault {
         uint32 voided;
         uint32 lapsed;
         uint32 retracted;
-        uint32 revoked; // closed by the owner, not graded, counted in public
+        uint32 revoked; // closed by the owner without trading, graded as misses
         uint8 voidStreak;
         uint8 windowCount; // ≤ WINDOW
         uint8 windowHead;
         uint64 windowSqErrSum; // Σ (p - o)², scaled 1e8, over the window
+        uint64 confSum; // Σ stated odds in bps over every graded note (the hits the agent claimed, ×1e4)
         int64 realisedPnl; // USDT raw, lifetime
     }
 
@@ -104,7 +107,6 @@ contract AvowVault {
     address public agent;
     address public immutable usdt;
     ISwapRouter02 public immutable router;
-    string public name;
 
     Asset[] internal _assets;
     Mandate internal _mandate;
@@ -189,7 +191,6 @@ contract AvowVault {
     // ─────────────────────────────────────────────────────────────── setup
 
     constructor(
-        string memory name_,
         address owner_,
         address agent_,
         address usdt_,
@@ -198,7 +199,6 @@ contract AvowVault {
         Mandate memory mandate_
     ) {
         require(assets_.length > 0 && assets_.length <= 8, "assets");
-        name = name_;
         owner = owner_;
         agent = agent_;
         usdt = usdt_;
@@ -208,12 +208,14 @@ contract AvowVault {
             address t0 = IUniswapV3PoolLike(a.pool).token0();
             address t1 = IUniswapV3PoolLike(a.pool).token1();
             require((t0 == a.token && t1 == usdt_) || (t1 == a.token && t0 == usdt_), "pool");
+            require(IUniswapV3PoolLike(a.pool).fee() == a.fee, "fee");
             a.assetIsToken0 = t0 == a.token;
             a.decimals = IERC20(a.token).decimals();
             _assets.push(a);
             _approve(a.token, router_);
         }
         _approve(usdt_, router_);
+        _bounds(mandate_);
         _mandate = mandate_;
         emit MandateChanged(mandate_, owner_, false);
     }
@@ -303,6 +305,8 @@ contract AvowVault {
                 status: Status.Outstanding,
                 tierAtOpen: t,
                 confidenceBps: confidenceBps,
+                spotDevBps: m.maxSpotDevBps,
+                exitSlipBps: uint16(uint256(m.maxSlippageBps) + 2 * uint256(a.fee) / 100),
                 openedAt: uint40(block.timestamp),
                 expiry: expiry,
                 settledAt: 0,
@@ -401,6 +405,7 @@ contract AvowVault {
 
     /// @notice The owner may change anything.
     function amend(Mandate calldata next) external onlyOwner {
+        _bounds(next);
         _mandate = next;
         emit MandateChanged(next, msg.sender, false);
     }
@@ -461,10 +466,6 @@ contract AvowVault {
         return _assets;
     }
 
-    function assetCount() external view returns (uint256) {
-        return _assets.length;
-    }
-
     function noteCount() external view returns (uint256) {
         return _notes.length;
     }
@@ -484,7 +485,8 @@ contract AvowVault {
     function tier() public view returns (uint8 t) {
         Ledger memory l = _ledger;
         uint256 b = brier();
-        if (l.windowCount >= 5 && l.honoured > 0 && b <= 25_000_000) t = 1;
+        // better than a coin flip, and at least 80% of the hits it claimed (a 50% forecaster that hits 1 in 5 stays on Probation)
+        if (l.windowCount >= 5 && b < 25_000_000 && uint256(l.honoured) * 1e5 >= uint256(l.confSum) * 8) t = 1;
         if (t == 1 && l.graded >= 12 && b <= 22_000_000 && l.realisedPnl >= 0) t = 2;
         if (t == 2 && l.graded >= 25 && b <= 20_000_000 && l.realisedPnl > 0) t = 3;
         if (l.voidStreak >= 3 && t > 0) t -= 1;
@@ -522,7 +524,7 @@ contract AvowVault {
         if (!hasTwap) return (false, Status.Outstanding);
         uint256 px = _pxAtTick(a, mt);
         uint256 spot = _spot(a);
-        bool calm = (spot > px ? spot - px : px - spot) * BPS / px <= _mandate.maxSpotDevBps;
+        bool calm = (spot > px ? spot - px : px - spot) * BPS / px <= n.spotDevBps;
         bool long_ = n.side == Side.Long;
         bool broke = long_ ? px <= n.voidPx && spot <= n.voidPx : px >= n.voidPx && spot >= n.voidPx;
         if (broke) return (true, Status.Void); // a stop never waits
@@ -549,7 +551,7 @@ contract AvowVault {
     function _close(uint256 id, Note storage n, Status s) internal {
         Asset memory a = _assets[n.asset];
         Mandate memory m = _mandate;
-        uint256 exitSlip = s == Status.Retracted ? m.maxSlippageBps : uint256(m.maxSlippageBps) + 2 * uint256(a.fee) / 100;
+        uint256 exitSlip = s == Status.Retracted ? n.exitSlipBps - 2 * uint256(a.fee) / 100 : n.exitSlipBps;
         (bool hasTwap, uint256 px) = _tryTwap(a);
         if (!hasTwap) {
             (, int24 tick,,,,,) = IUniswapV3PoolLike(a.pool).slot0();
@@ -625,6 +627,7 @@ contract AvowVault {
         }
         l.windowSqErrSum += uint64(sqErr);
         l.graded += 1;
+        l.confSum += n.confidenceBps;
         l.realisedPnl += int64(pnl);
         if (s == Status.Honoured) {
             l.honoured += 1;
@@ -680,6 +683,14 @@ contract AvowVault {
         uint256 spot = _pxAtTick(a, tick);
         uint256 dev = (spot > twap ? spot - twap : twap - spot) * BPS / twap;
         if (dev > m.maxSpotDevBps) revert SpotDeviation(spot, twap, dev);
+    }
+
+    function _bounds(Mandate memory m) internal pure {
+        require(
+            m.maxSlippageBps <= 500 && m.maxSpotDevBps >= 10 && m.maxSpotDevBps <= 1000 && m.maxStopBps >= MIN_STOP_BPS
+                && m.maxStopBps <= 2000 && m.maxDrawdownBps <= BPS,
+            "bounds"
+        );
     }
 
     function _rollDay() internal {

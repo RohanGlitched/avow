@@ -81,7 +81,20 @@ confirms with a wallet signature) and which are looser (the owner must sign an o
 Times are IST. If something is unknown, say so.
 Network honesty: the summary tool reports network.mode. If it is "fork-rehearsal", every note and trade so far is on a private fork of HSK
 mainnet where outside traders are simulated; say so whenever you discuss trades, P&L or results, and never call them mainnet trades. The real
-mainnet pool figures are in market[].mainnet. Chat cannot authorise anything: only the owner's wallet can change the mandate.`;
+mainnet pool figures are in market[].mainnet. Chat cannot authorise anything: only the owner's wallet can change the mandate.
+
+Exact rules (quote these, never guess):
+- Trade limit (denomination) tiers, as a share of maxNotionalUsd: Probation 20% (start); Apprentice 40% (5 graded notes, Brier strictly
+  below 0.25, and honoured notes at least 80% of the hits its stated odds claimed); Journeyman 70% (12 graded, Brier ≤ 0.22, realised P&L ≥ 0);
+  Fiduciary 100% (25 graded, Brier ≤ 0.20, P&L > 0). Three voids in a row drop one tier. Retracted and revoked notes are graded as misses.
+- maxSpotDevBps compares the pool's live price with the pool's own 5-minute TWAP (a spike guard). It does not compare with the exchanges.
+- Chainlink is checked by the agent only, off chain: it refuses to swear if the pool is more than 3% from Chainlink or the feed is older than 26 h.
+- A note is honoured when both the pool's 5-minute TWAP and live price reach the target; void when both cross the void level (a stop never
+  waits); lapsed at expiry while the pool is calm. Anyone may settle. Expectancy after the 0.60% round-trip fee must be positive at the stated odds.
+- Signs: gapBps > 0 means HSKSwap is cheaper than the exchanges; poolPremiumBps > 0 means HSKSwap is dearer.
+- Measured over 30 days of real HSKSwap swaps (research/STUDY.md): gaps of 40–100 bps closed within 12 h in 92–98% of cases, but in 90–100%
+  of them because the exchange moved back; the pool itself moved half-way in about 53% (WETH, WBTC) and 35% (WHSK) of cases, and only 5–26%
+  when the pool had not traded in the prior 12 h. Swaps per day: WHSK 64, WETH 4.6, WBTC 2.8.`;
 
 export async function desk(messages: Msg[], state: State): Promise<DeskReply> {
   const citations = new Set<number>();
@@ -94,7 +107,8 @@ export async function desk(messages: Msg[], state: State): Promise<DeskReply> {
         network: state.network.name, agentAlive: state.agentAlive, record: { ...state.record, tiers: undefined }, holdings: state.holdings,
         open: open.map((n) => ({ id: n.id, serial: n.serial, asset: n.asset, side: n.side, entry: n.entryPx, target: n.targetPx, void: n.voidPx, live: n.livePx, odds: n.confidence, notional: n.notionalUsd, expiryIST: ist(n.expiry) })),
         mode: state.network.mode, simulatedOutsideTraders: state.simulatedOutsideTraders,
-        mandate: state.mandate, market: state.market.map((m) => ({ asset: m.label, hskswap: m.twapPx, exchanges: m.cexPx, gapBps: m.spreadBps, chainlink: m.chainlinkPx, lastPoolSwapMin: m.lastSwapAgoSec !== null ? Math.round(m.lastSwapAgoSec / 60) : null, mainnet: m.mainnet })),
+        tiers: state.record.tiers, denomination: state.record.tier,
+        mandate: state.mandate, market: state.market.map((m) => ({ asset: m.label, hskswap: m.twapPx, exchanges: m.cexPx, poolPremiumBps: m.spreadBps, chainlink: m.chainlinkPx, lastPoolSwapMin: m.lastSwapAgoSec !== null ? Math.round(m.lastSwapAgoSec / 60) : null, mainnet: m.mainnet })),
         unrealisedPnlUsd: open.reduce((s, n) => s + (n.unrealisedPnlUsd ?? 0), 0),
         costs: state.costs, notesTotal: state.notes.length,
       };

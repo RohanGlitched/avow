@@ -20,11 +20,11 @@ contract AvowVaultAuditTest is Test {
     uint8 constant HSKA = 2;
 
     function setUp() public {
-        vm.createSelectFork("hsk");
+        vm.createSelectFork("hsk", HSK.FORK_BLOCK);
         IUniswapV3PoolLike(HSK.POOL_WETH).increaseObservationCardinalityNext(64);
         IUniswapV3PoolLike(HSK.POOL_WBTC).increaseObservationCardinalityNext(64);
         IUniswapV3PoolLike(HSK.POOL_WHSK).increaseObservationCardinalityNext(64);
-        v = new AvowVault("Avow", owner, agentKey, HSK.USDT, HSK.ROUTER, HSK.assets(), HSK.defaultMandate());
+        v = new AvowVault(owner, agentKey, HSK.USDT, HSK.ROUTER, HSK.assets(), HSK.defaultMandate());
         deal(HSK.USDT, address(v), 200e6);
         deal(HSK.WETH, address(v), 0.02e18);
         deal(HSK.WHSK, address(v), 300e18);
@@ -290,7 +290,7 @@ contract AvowVaultAuditTest is Test {
 
 contract PxHarness is AvowVault {
     constructor(address o, address ag, address u, address r, Asset[] memory a, Mandate memory m)
-        AvowVault("h", o, ag, u, r, a, m)
+        AvowVault(o, ag, u, r, a, m)
     {}
 
     function pxAtTick(Asset memory a, int24 tick) external pure returns (uint256) {
@@ -464,14 +464,14 @@ contract AvowVaultInvariantTest is Test {
     address agentKey = makeAddr("agent");
 
     function setUp() public {
-        vm.createSelectFork("hsk");
+        vm.createSelectFork("hsk", HSK.FORK_BLOCK);
         IUniswapV3PoolLike(HSK.POOL_WETH).increaseObservationCardinalityNext(64);
         IUniswapV3PoolLike(HSK.POOL_WBTC).increaseObservationCardinalityNext(64);
         IUniswapV3PoolLike(HSK.POOL_WHSK).increaseObservationCardinalityNext(64);
         AvowVault.Mandate memory m = HSK.defaultMandate();
         m.dailyLossLimit = 1_000e6; // let the fuzzer keep trading
         m.maxDrawdownBps = 10_000;
-        v = new AvowVault("Avow", owner, agentKey, HSK.USDT, HSK.ROUTER, HSK.assets(), m);
+        v = new AvowVault(owner, agentKey, HSK.USDT, HSK.ROUTER, HSK.assets(), m);
         deal(HSK.USDT, address(v), 200e6);
         deal(HSK.WETH, address(v), 0.02e18);
         deal(HSK.WHSK, address(v), 300e18);

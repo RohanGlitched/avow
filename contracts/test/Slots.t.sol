@@ -8,7 +8,7 @@ import {HSK} from "../script/Addresses.sol";
 contract SlotsTest is Test {
     using stdStorage for StdStorage;
     function test_balanceSlots() public {
-        vm.createSelectFork("hsk");
+        vm.createSelectFork("hsk", HSK.FORK_BLOCK);
         address[4] memory toks = [HSK.USDT, HSK.WETH, HSK.WBTC, HSK.WHSK];
         address who = address(0xBEEF);
         for (uint256 i; i < 4; i++) {
@@ -29,7 +29,7 @@ interface IFeedProbe {
 /// Chainlink on HSK Chain refuses contract readers; this is why the vault does not use it.
 contract ChainlinkWhitelistTest is Test {
     function test_chainlinkIsWhitelistedForContracts() public {
-        vm.createSelectFork("hsk");
+        vm.createSelectFork("hsk", HSK.FORK_BLOCK);
         vm.expectRevert(bytes("No access"));
         IFeedProbe(0xbB091f3b515059b7A887eDcC73dC2a2Fa65E0242).latestRoundData();
     }

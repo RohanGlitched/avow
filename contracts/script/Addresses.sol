@@ -6,6 +6,9 @@ import {AvowVault} from "../src/AvowVault.sol";
 /// HSK Chain mainnet (chain 177): HSKSwap, tokens and Chainlink feeds, checked on hsk.blockscout.com on Oct 31 2026.
 /// The Chainlink proxies are read-whitelisted (contracts get "No access"), so only the agent reads them, off chain.
 library HSK {
+    /// tests fork this block so reruns are reproducible and served from Foundry's RPC cache
+    uint256 internal constant FORK_BLOCK = 29_524_000;
+
     address internal constant USDT = 0xF1B50eD67A9e2CC94Ad3c477779E2d4cBfFf9029;
     address internal constant WETH = 0xefd4bC9afD210517803f293ABABd701CaeeCdfd0;
     address internal constant WBTC = 0x6119CA49a79f5825C8B345F8d7aC36B272565b14;

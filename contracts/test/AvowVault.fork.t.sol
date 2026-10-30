@@ -19,12 +19,12 @@ contract AvowVaultForkTest is Test {
     uint8 constant HSKA = 2;
 
     function setUp() public {
-        vm.createSelectFork("hsk");
+        vm.createSelectFork("hsk", HSK.FORK_BLOCK);
         // the WBTC pool keeps a single observation; give every pool room for a 5-minute TWAP
         IUniswapV3PoolLike(HSK.POOL_WETH).increaseObservationCardinalityNext(64);
         IUniswapV3PoolLike(HSK.POOL_WBTC).increaseObservationCardinalityNext(64);
         IUniswapV3PoolLike(HSK.POOL_WHSK).increaseObservationCardinalityNext(64);
-        v = new AvowVault("Avow", owner, agentKey, HSK.USDT, HSK.ROUTER, HSK.assets(), HSK.defaultMandate());
+        v = new AvowVault(owner, agentKey, HSK.USDT, HSK.ROUTER, HSK.assets(), HSK.defaultMandate());
         deal(HSK.USDT, address(v), 200e6);
         deal(HSK.WETH, address(v), 0.02e18);
         deal(HSK.WHSK, address(v), 300e18);
@@ -197,7 +197,7 @@ contract AvowVaultForkTest is Test {
         m.maxNotional = 5_000e6;
         m.maxExposure = 5_000e6;
         m.minRewardRiskX100 = 100;
-        m.maxSlippageBps = 1_000;
+        m.maxSlippageBps = 500;
         vm.prank(owner);
         v.amend(m);
         deal(HSK.USDT, address(v), 2_000e6);
@@ -339,26 +339,67 @@ contract AvowVaultForkTest is Test {
 
     // ───────────────────────────────────────────── trust is earned
 
-    function test_fiveCalibratedNotesWithAHitEarnApprentice() public {
-        assertEq(v.tier(), 0);
+    function test_coinFlipsWithOneHitStayOnProbation() public {
+        // five notes at 50% with one hit: Brier exactly 0.25 (no better than a coin) and 1 hit where 2.5 were claimed
         for (uint256 i; i < 5; i++) {
-            (uint96 tg, uint96 vd) = _levels(ETH, true, 200, 200); // reward 4%, risk 2%: a coin flip clears the fee
-            vm.prank(agentKey);
-            uint256 id = v.swear(ETH, AvowVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 6 hours), 5000, "x", bytes32(0));
+            uint256 id = _swearAt(5000, 200, 200);
             if (i == 4) {
                 _push(ETH, true, 4_500e6);
                 _wait(900);
                 v.settle(id);
                 assertEq(uint8(v.getNote(id).status), uint8(AvowVault.Status.Honoured));
+                _push(ETH, false, 2e18);
+                _wait(900);
             } else {
                 _wait(6 hours + 1);
                 v.settle(id);
             }
         }
-        // five coin-flip notes, one honoured: Brier exactly 0.25 and a hit on record → Apprentice, denomination doubles
         assertEq(v.brier(), 25_000_000);
+        assertEq(v.tier(), 0, "a coin flip that hits 1 in 5 earns nothing");
+        assertEq(v.denomination(), 10e6);
+    }
+
+    function test_aCalibratedRecordEarnsApprentice() public {
+        // five notes at 60%: three honoured, two lapsed. Brier 0.24, hits 3 of 3.0 claimed → Apprentice, denomination doubles
+        for (uint256 i; i < 5; i++) {
+            uint256 id = _swearAt(6000, 200, 200);
+            if (i < 3) {
+                _push(ETH, true, 4_500e6);
+                _wait(900);
+                v.settle(id);
+                assertEq(uint8(v.getNote(id).status), uint8(AvowVault.Status.Honoured));
+                _push(ETH, false, 2e18); // let the price come back for the next note
+                _wait(900);
+            } else {
+                _wait(6 hours + 1);
+                v.settle(id);
+            }
+        }
+        assertEq(v.brier(), 24_000_000);
         assertEq(v.tier(), 1);
         assertEq(v.denomination(), 20e6);
+    }
+
+    function _swearAt(uint16 conf, uint256 stopBps, uint256 rrX100) internal returns (uint256 id) {
+        (uint96 tg, uint96 vd) = _levels(ETH, true, stopBps, rrX100);
+        vm.prank(agentKey);
+        id = v.swear(ETH, AvowVault.Side.Long, 5e6, tg, vd, uint40(vm.getBlockTimestamp() + 6 hours), conf, "x", bytes32(0));
+    }
+
+    function test_amendHasBoundsAndSwornNotesKeepTheirTerms() public {
+        AvowVault.Mandate memory m = v.mandate();
+        m.maxSlippageBps = 5_000;
+        vm.prank(owner);
+        vm.expectRevert(bytes("bounds"));
+        v.amend(m);
+        uint256 id = _swear(ETH, AvowVault.Side.Long, 10e6, 6000);
+        uint16 dev = v.getNote(id).spotDevBps;
+        m = v.mandate();
+        m.maxSpotDevBps = 10;
+        vm.prank(owner);
+        v.amend(m);
+        assertEq(v.getNote(id).spotDevBps, dev, "a later amendment does not change how a sworn note settles");
     }
 
     function test_overconfidenceKeepsTheAgentOnProbation() public {

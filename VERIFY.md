@@ -21,8 +21,8 @@ cast call $VAULT "agent()(address)" --rpc-url $RPC
 ## The record, the grade and the denomination
 
 ```bash
-cast call $VAULT "ledger()((uint32,uint32,uint32,uint32,uint32,uint8,uint8,uint8,uint64,int64))" --rpc-url $RPC
-# graded, honoured, voided, lapsed, retracted, voidStreak, windowCount, windowHead, windowSqErrSum (1e8), realisedPnl (USDT 6 dec)
+cast call $VAULT "ledger()((uint32,uint32,uint32,uint32,uint32,uint32,uint8,uint8,uint8,uint64,uint64,int64))" --rpc-url $RPC
+# graded, honoured, voided, lapsed, retracted, revoked, voidStreak, windowCount, windowHead, windowSqErrSum (1e8), confSum (bps), realisedPnl (USDT 6 dec)
 cast call $VAULT "brier()(uint256)" --rpc-url $RPC        # ×1e8; 25000000 = 0.25, a coin flip
 cast call $VAULT "tier()(uint8)" --rpc-url $RPC           # 0 Probation · 1 Apprentice · 2 Journeyman · 3 Fiduciary
 cast call $VAULT "denomination()(uint256)" --rpc-url $RPC # largest note allowed now, USDT 6 dec
@@ -32,7 +32,7 @@ cast call $VAULT "denomination()(uint256)" --rpc-url $RPC # largest note allowed
 
 ```bash
 cast call $VAULT "noteCount()(uint256)" --rpc-url $RPC
-cast call $VAULT "getNote(uint256)((uint8,uint8,uint8,uint8,uint16,uint40,uint40,uint40,uint96,uint96,uint96,uint96,uint64,int64,uint128,uint128,bytes32))" 0 --rpc-url $RPC
+cast call $VAULT "getNote(uint256)((uint8,uint8,uint8,uint8,uint16,uint16,uint16,uint40,uint40,uint40,uint96,uint96,uint96,uint96,uint64,int64,uint128,uint128,bytes32))" 0 --rpc-url $RPC
 cast call $VAULT "settleable(uint256)(bool,uint8)" 0 --rpc-url $RPC
 # The statement text is in the NoteSworn event of the note's opening transaction:
 cast logs --address $VAULT "NoteSworn(uint256 indexed,uint8 indexed,uint8,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint8,bytes32,string)" --from-block <deploy block> --to-block +4999 --rpc-url $RPC
@@ -60,7 +60,7 @@ cast call $VAULT "spotPx(uint8)(uint256)" 0 --rpc-url $RPC   # the live pool pri
 git clone https://github.com/RohanGlitched/avow && cd avow/contracts
 git clone --depth 1 -b 0.8 https://github.com/Uniswap/v3-core lib/v3-core
 forge install foundry-rs/forge-std --no-git
-forge test        # 27+ tests on a fork of HSK Chain mainnet
+forge test        # 33 behaviour + 13 audit regression + invariants, on a fork of HSK mainnet pinned at block 29,524,000
 ```
 
 ## Why Chainlink is not read on chain

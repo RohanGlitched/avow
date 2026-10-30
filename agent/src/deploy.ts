@@ -33,7 +33,7 @@ async function main() {
   const bal = await chain.getBalance({ address: deployer.address });
   console.log("deployer HSK", Number(bal) / 1e18);
   const assets = ASSETS.map((a) => ({ token: a.token, pool: a.pool, fee: 3000, decimals: 0, assetIsToken0: false }));
-  const hash = await w.deployContract({ abi: vaultAbi, bytecode: vaultBytecode as Hex, args: ["Avow", owner, agent.address, USDT, ROUTER, assets, mandate] });
+  const hash = await w.deployContract({ abi: vaultAbi, bytecode: vaultBytecode as Hex, args: [owner, agent.address, USDT, ROUTER, assets, mandate] });
   const rc = await chain.waitForTransactionReceipt({ hash, timeout: 180_000 });
   const vault = rc.contractAddress!;
   console.log("vault", vault, "block", rc.blockNumber, "gas", rc.gasUsed);
