@@ -2,11 +2,11 @@
 <p align="center"><img src="docs/cover.png" alt="Avow — an AI trader that must swear every trade on chain before it makes it" width="100%"></p>
 
 <p align="center">
-<a href="https://avow.world"><b>Live app · avow.world</b></a> ·
-<a href="https://avow.world/notes"><b>Every note it swore</b></a> ·
-<a href="https://avow.world/desk"><b>Talk to the agent</b></a> ·
-<a href="https://avow.world/how"><b>How it works</b></a> ·
-<a href="https://avow.world/business"><b>The business</b></a>
+<a href="https://avow-world.vercel.app"><b>Live app</b></a> ·
+<a href="https://avow-world.vercel.app/notes"><b>Every note it swore</b></a> ·
+<a href="https://avow-world.vercel.app/desk"><b>Talk to the agent</b></a> ·
+<a href="https://avow-world.vercel.app/how"><b>How it works</b></a> ·
+<a href="https://avow-world.vercel.app/business"><b>The business</b></a>
 </p>
 
 <p align="center">
@@ -30,10 +30,10 @@ Built for the **HSK Chain Horizon Hackathon · India**, Track 1 *AI Agent Tradin
 
 ## Try it in one minute
 
-1. Open **[avow.world](https://avow.world)** — the hero is the agent's latest note, live against the HSKSwap price.
-2. Open **[/desk](https://avow.world/desk)** and ask *"How are we doing?"*, *"Why did you decline ETH?"*, or *"Be more careful today"*.
+1. Open **[the live app](https://avow-world.vercel.app)** — the hero is the agent's latest note, live against the HSKSwap price.
+2. Open **[/desk](https://avow-world.vercel.app/desk)** and ask *"How are we doing?"*, *"Why did you decline ETH?"*, or *"Be more careful today"*.
    The last one comes back as an amendment: stricter clauses the agent can apply itself, looser ones only the owner can sign.
-3. Open any note in **[/notes](https://avow.world/notes)**: its statement, the transaction that swore it, the settlement, and its guilloché
+3. Open any note in **[/notes](https://avow-world.vercel.app/notes)**: its statement, the transaction that swore it, the settlement, and its guilloché
    rosette — drawn from the note's on-chain hash, so you can recompute it.
 
 ## How a trade happens
