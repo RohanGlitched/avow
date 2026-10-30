@@ -149,6 +149,37 @@ export interface State {
   study?: Study;
   /** The agent's exact rules, and a small pre-declared family of alternatives, replayed over 30 days of real HSKSwap swaps (research/REPLAY.md). */
   replay?: Replay;
+  /** Every candidate the rules produced, sworn or declined, entered at the real HSK mainnet pool price and graded live against real mainnet prices by the vault's own rules. */
+  shadow?: Shadow;
+}
+
+export type ShadowStatus = "open" | "honoured" | "void" | "lapsed";
+export interface ShadowRow {
+  id: number;
+  t: number; // unix s, when the candidate was seen
+  sym: string; // "WETH"
+  side: Side;
+  kind: string; // "catch-up", "momentum"
+  entry: number;
+  target: number;
+  void: number;
+  expiry: number;
+  pMin: number; // break-even probability after fees and gas
+  notionalUsd: number;
+  decision: "sworn" | "declined" | "passed";
+  status: ShadowStatus;
+  exitPx?: number;
+  settledAt?: number;
+  pnlUsd?: number;
+}
+export interface Shadow {
+  method: string;
+  since: number | null;
+  counts: { total: number; open: number; honoured: number; void: number; lapsed: number };
+  pnlUsd: number; // every graded candidate
+  refusedPnlUsd: number; // the candidates Avow declined or passed: negative means a loss avoided
+  swornPnlUsd: number; // the candidates it swore
+  recent: ShadowRow[];
 }
 
 /** A metric bag from the replay: keys such as notes, hitRate, meanPMin, pnlUsd, pnlPerNoteUsd. */
@@ -168,6 +199,8 @@ export interface ReplayCurrent {
   feeUsdPerNote?: number | null;
   impactUsdPerNote?: number | null;
   gasUsdPerNote?: number | null;
+  /** What the vault would have done had the agent stated the odds these notes really achieved. */
+  calibratedForecaster?: { trueHitRate: number; notesPassingContractCheck: number; shareOfNotes?: number; beatsMeanPMin?: boolean; rule?: string };
   inSample?: ReplayStats;
   outOfSample?: ReplayStats;
 }

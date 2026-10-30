@@ -40,7 +40,7 @@ function Stats({ s }: { s?: ReplayStats }) {
     <span className="rstats">
       {keys.map((k) => (
         <span key={k}>
-          <b className={/usd|pnl/i.test(k) && typeof s[k] === "number" ? ((s[k] as number) >= 0 ? "pos" : "neg") : undefined}>{fmtStat(k, s[k])}</b>
+          <b className={/usd|pnl/i.test(k) && typeof s[k] === "number" && (s[k] as number) > 0 ? "pos" : undefined}>{fmtStat(k, s[k])}</b>
           {k === "pnlPerNoteUsd" && typeof s.seUsd === "number" ? ` ± ${usd(s.seUsd as number, { dp: 3 })}` : ""} {words(k)}
         </span>
       ))}
@@ -62,6 +62,11 @@ export function replayTotals(r: Replay) {
   const pw = r.current.filter((c) => c.meanPMin != null && c.notes > 0);
   const pmNotes = pw.reduce((a, c) => a + c.notes, 0);
   const breakEven = pmNotes ? pw.reduce((a, c) => a + (c.meanPMin as number) * c.notes, 0) / pmNotes : null;
+  // Had the agent stated the odds these notes really achieved, how many would the vault have accepted? Known only when
+  // every cell reports it.
+  const cf = r.current.filter((c) => c.notes > 0);
+  const honest = cf.length && cf.every((c) => c.calibratedForecaster) ? cf.reduce((a, c) => a + (c.calibratedForecaster?.notesPassingContractCheck ?? 0), 0) : null;
+  const rates = cf.map((c) => c.calibratedForecaster?.trueHitRate ?? c.hitRate).filter((v): v is number => v != null);
   return {
     notes,
     honoured,
@@ -69,28 +74,92 @@ export function replayTotals(r: Replay) {
     breakEven,
     perNote: notes ? pnl / notes : null,
     pnl,
+    /** notes the vault would have accepted at honest odds (null when the replay does not say) */
+    honest,
+    hitLo: rates.length ? Math.min(...rates) : null,
+    hitHi: rates.length ? Math.max(...rates) : null,
     windowDays: days(r.window.to - r.window.from),
     fitDays: days(r.window.splitAt - r.window.from),
     testDays: days(r.window.to - r.window.splitAt),
   };
 }
 
-/** Two lines for the home page and /how: what the replay found, and what it means for how often Avow trades. */
+/**
+ * The lead: what the restraint is worth. A naive bot following the same rules without the odds clause, against what
+ * the vault does with them. Every number comes from the replay; nothing here is hard-coded.
+ */
+export function Restraint({ replay, big = false }: { replay: Replay; big?: boolean }) {
+  const t = replayTotals(replay);
+  const lost = t.pnl < 0;
+  const range =
+    t.hitLo != null && t.hitHi != null ? (Math.round(t.hitLo * 100) === Math.round(t.hitHi * 100) ? pct(t.hitLo) : `${pct(t.hitLo)} to ${pct(t.hitHi)}`) : null;
+  if (!t.notes) {
+    return (
+      <div className={`restraint${big ? " restraint--big" : ""}`}>
+        <div className="restraint__text">
+          <p className="restraint__lead">
+            Over {t.windowDays} days of real HSKSwap swaps, these rules found no gap worth a trade after fees, price impact and gas. Avow swore nothing, and lost nothing.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className={`restraint${big ? " restraint--big" : ""}`}>
+      <div className="restraint__fig">
+        <span className="restraint__cap">{lost ? "Loss avoided by refusing" : "What these rules would have made"}</span>
+        <b>{usd(Math.abs(t.pnl))}</b>
+        <span className="restraint__sub">
+          {num(t.notes)} trades a naive bot would have opened in {t.windowDays} days
+        </span>
+      </div>
+      <div className="restraint__text">
+        <p className="restraint__lead">
+          A spread bot following these exact rules would have opened <b>{num(t.notes)}</b> trades in {t.windowDays} days and {lost ? "lost" : "made"} <b>{usd(Math.abs(t.pnl))}</b> after fees,
+          price impact and gas (<code>research/REPLAY.md</code>).{" "}
+          {lost ? (
+            t.honest === 0 ? (
+              <>
+                Avow&apos;s contract refuses every one of them: a trade must clear its fees at the odds the agent states, and at honest odds
+                {range ? (
+                  <>
+                    {" "}
+                    (these trades came good <span className="restraint__pct">{range}</span> of the time)
+                  </>
+                ) : null}{" "}
+                none does.
+              </>
+            ) : (
+              <>Avow&apos;s contract refuses any trade that does not clear its fees at the odds the agent states, so the agent declines them.</>
+            )
+          ) : (
+            <>Avow would still swear only the ones that clear their fees at the odds it states.</>
+          )}
+        </p>
+        <p className="restraint__honest">
+          {lost
+            ? "To be plain: Avow has not made money either. It has avoided losing it. Overstating its odds to force a trade through would be punished by the Brier grade and keep it on Probation."
+            : "A replay is not a forecast; the record that counts is the one graded on chain."}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+/** Home and /how: the restraint first, then one line on the evidence behind it. */
 export function ReplaySummary({ replay, title = "Why Avow trades so rarely" }: { replay: Replay; title?: string }) {
   const t = replayTotals(replay);
   return (
     <div className="replay-sum">
       <h3>{title}</h3>
-      <p>
-        Replayed over {t.windowDays} days of real HSKSwap swaps, Avow&apos;s exact rules would have sworn <b>{num(t.notes)}</b> {t.notes === 1 ? "note" : "notes"}
+      <Restraint replay={replay} />
+      <p className="replay-sum__more">
         {t.notes ? (
           <>
-            , honoured <b>{fmtStat("hitRate", t.hitRate)}</b> of the time against a break-even of {fmtStat("meanPMin", t.breakEven)}, for{" "}
-            <b className={(t.perNote ?? 0) >= 0 ? "pos" : "neg"}>{fmtStat("pnlPerNoteUsd", t.perNote)}</b> per $50 note after fees, price impact and gas.
+            The naive bot&apos;s trades came good <b>{fmtStat("hitRate", t.hitRate)}</b> of the time against a break-even of {fmtStat("meanPMin", t.breakEven)}, or {fmtStat("pnlPerNoteUsd", t.perNote)}{" "}
+            per $50 note.{" "}
           </>
-        ) : (
-          ": no gap cleared its costs at its own odds."
-        )}{" "}
+        ) : null}
         {replay.chosen
           ? `Of ${num(replay.configsTried)} configurations tried, ${replay.chosen.name} held up on the last ${t.testDays} days it had never seen.`
           : `None of the ${num(replay.configsTried)} alternatives tried beat costs by enough to trust on the ${t.testDays} days held back, so Avow keeps its rules and waits.`}{" "}
@@ -164,21 +233,22 @@ export function ReplaySection({ replay }: { replay: Replay }) {
     .filter(Boolean);
   return (
     <div>
-      <p className="study__takeaway">
-        Over {t.windowDays} days of real swaps ({day(replay.window.from)} to {day(replay.window.to)}), Avow&apos;s current rules would have sworn <b>{num(t.notes)}</b>{" "}
-        {t.notes === 1 ? "note" : "notes"}
+      <Restraint replay={replay} big />
+      <p className="replay__lede" style={{ marginTop: 26 }}>
+        The detail below is what a naive bot would have lost. Over {t.windowDays} days of real swaps ({day(replay.window.from)} to {day(replay.window.to)}) the same rules
         {t.notes ? (
           <>
-            , honoured <b>{fmtStat("hitRate", t.hitRate)}</b> of the time against a mean break-even of <b>{fmtStat("meanPMin", t.breakEven)}</b>: <b>{fmtStat("pnlPerNoteUsd", t.perNote)}</b> per $50 note
-            after fees, impact and gas.
+            {" "}
+            fire <b>{num(t.notes)}</b> times, come good <b>{fmtStat("hitRate", t.hitRate)}</b> of the time against a mean break-even of <b>{fmtStat("meanPMin", t.breakEven)}</b>, and give{" "}
+            <b>{fmtStat("pnlPerNoteUsd", t.perNote)}</b> per $50 note after fees, impact and gas.
           </>
         ) : (
-          "."
+          " never fire."
         )}{" "}
         The alternatives were fitted on the first {t.fitDays} days and tested once on the last {t.testDays}.
       </p>
 
-      <h3 className="replay__h">The current rules, replayed</h3>
+      <h3 className="replay__h">What a naive bot would have lost: the current rules, without the odds clause</h3>
       <div className="table-wrap">
         <table className="tbl tbl--stack">
           <thead>
@@ -187,8 +257,8 @@ export function ReplaySection({ replay }: { replay: Replay }) {
               <th className="r">Notes</th>
               <th className="r">Honoured, void, lapsed</th>
               <th className="r">Hit rate vs break-even</th>
-              <th className="r">P&amp;L per $50 note</th>
-              <th className="r">P&amp;L in all</th>
+              <th className="r">Naive bot, per $50 note</th>
+              <th className="r">Naive bot, in all</th>
               <th>First {t.fitDays} days (fitted)</th>
               <th>Last {t.testDays} days (tested once)</th>
             </tr>
@@ -209,11 +279,11 @@ export function ReplaySection({ replay }: { replay: Replay }) {
                   {c.honoured} / {c.void} / {c.lapsed}
                 </td>
                 <td data-h="Hit rate vs break-even" className="r">
-                  <b className={c.hitRate != null && c.meanPMin != null ? (c.hitRate >= c.meanPMin ? "pos" : "neg") : undefined}>{fmtStat("hitRate", c.hitRate)}</b>
+                  <b className={c.hitRate != null && c.meanPMin != null && c.hitRate >= c.meanPMin ? "pos" : undefined}>{fmtStat("hitRate", c.hitRate)}</b>
                   <span className="sub">break-even {fmtStat("meanPMin", c.meanPMin)}</span>
                 </td>
-                <td data-h="P&L per $50 note" className="r">
-                  <b className={(c.pnlPerNoteUsd ?? 0) >= 0 ? "pos" : "neg"}>{fmtStat("pnlPerNoteUsd", c.pnlPerNoteUsd)}</b>
+                <td data-h="Naive bot, per $50 note" className="r">
+                  <b className={(c.pnlPerNoteUsd ?? 0) > 0 ? "pos" : undefined}>{fmtStat("pnlPerNoteUsd", c.pnlPerNoteUsd)}</b>
                   {c.feeUsdPerNote != null ? (
                     <span className="sub">
                       {c.grossPnlPerNoteUsd != null ? `gross ${fmtStat("usd", c.grossPnlPerNoteUsd)}; ` : ""}fees {usd(c.feeUsdPerNote, { dp: 2 })}
@@ -222,7 +292,7 @@ export function ReplaySection({ replay }: { replay: Replay }) {
                     </span>
                   ) : null}
                 </td>
-                <td data-h="P&L in all" className={`r ${c.pnlUsd >= 0 ? "pos" : "neg"}`}>
+                <td data-h="Naive bot, in all" className={`r${c.pnlUsd > 0 ? " pos" : ""}`}>
                   {fmtStat("pnlUsd", c.pnlUsd)}
                 </td>
                 <td data-h={`First ${t.fitDays} days`}>
@@ -236,7 +306,7 @@ export function ReplaySection({ replay }: { replay: Replay }) {
           </tbody>
         </table>
       </div>
-      <p className="plate">After fees, price impact and gas: {replay.costModel}</p>
+      <p className="plate">What a naive bot would have lost, after fees, price impact and gas. Avow swore none of these trades. {replay.costModel}</p>
 
       <h3 className="replay__h">
         The alternatives: {num(replay.configsTried)} {replay.configsTried === 1 ? "configuration" : "configurations"} tried
@@ -269,7 +339,8 @@ export function ReplaySection({ replay }: { replay: Replay }) {
             <span className="replay-chosen__cap">Chosen</span>
             <h3>Nothing beat costs out of sample.</h3>
             <p>
-              No alternative cleared fees, price impact and gas by enough to trust, so none replaces the current rules. Avow keeps them, and keeps declining most gaps.
+              No alternative cleared fees, price impact and gas by enough to trust, so none replaces the current rules. Avow keeps them, and keeps declining most gaps: on today&apos;s
+              HSKSwap, declining is what protects the owner&apos;s money.
               {lucky.length
                 ? ` ${lucky.length} of ${num(replay.candidates.length)} show a profit on the last ${t.testDays} days, on ${luckyMax <= 1 ? "a single note" : `at most ${luckyMax} notes`} each: too few to tell an edge from luck.`
                 : ""}

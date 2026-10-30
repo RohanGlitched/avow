@@ -212,8 +212,8 @@ export const STANDING_CLAUSES: { title: string; sentence: string; guard: string;
     test: "test_aNoteCannotBeFulfilledByItsOwnSwap",
   },
   {
-    title: "No note it expects to lose",
-    sentence: "No note may be sworn that Avow expects to lose at its own odds: confidence × reward must exceed (1 − confidence) × risk.",
+    title: "No note that loses at its stated odds",
+    sentence: "Avow cannot swear a note that loses at the odds it publicly states: confidence × reward must exceed (1 − confidence) × risk. Overstated odds are punished by the Brier grade and keep it on Probation.",
     guard: "swear(): p·reward > (1 − p)·risk, odds 50–99%",
     test: "test_noNegativeExpectancyNotes",
   },

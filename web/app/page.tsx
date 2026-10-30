@@ -16,6 +16,7 @@ import { Term } from "@/components/Term";
 import { ROUND_TRIP_BPS, tradeGapBps } from "@/lib/chain";
 import { decisionCounts, LOGGED_WHEN } from "@/lib/decisions";
 import { ReplaySummary } from "@/components/Replay";
+import { ShadowLedger } from "@/components/Shadow";
 import { deskPrompts } from "@/lib/prompts";
 import { TEST_SUMMARY, GUARANTEES } from "@/lib/guarantees";
 import { ASSET_LABEL, duration, noteHref, num, pct, px, short, time, usd, when } from "@/lib/format";
@@ -57,7 +58,20 @@ export default async function Home() {
       <section className="hero" aria-labelledby="hero-title">
         <div className="wrap">
           <div className="hero__top">
-            <h1 id="hero-title">An AI trader that has to swear before it trades.</h1>
+            <div>
+              <h1 id="hero-title">An AI trader that has to swear before it trades.</h1>
+              <ol className="plainly hero__plainly" aria-label="Avow in three lines">
+                <li>
+                  <span aria-hidden="true">I</span>It bets in public before every trade.
+                </li>
+                <li>
+                  <span aria-hidden="true">II</span>If it&apos;s wrong, anyone can close the trade.
+                </li>
+                <li>
+                  <span aria-hidden="true">III</span>Good forecasters earn bigger limits.
+                </li>
+              </ol>
+            </div>
             <div>
               <p className="hero__lede">
                 Avow trades on HSKSwap only through a vault on HSK Chain. Before every swap it publishes a note: what will happen, by when, and the price at which it admits it was wrong,
@@ -77,33 +91,11 @@ export default async function Home() {
                   Ask Avow how it is doing
                 </Link>
               </div>
-              <ol className="plainly" aria-label="Avow in three lines">
-                <li>
-                  <span aria-hidden="true">I</span>It bets in public before every trade.
-                </li>
-                <li>
-                  <span aria-hidden="true">II</span>If it&apos;s wrong, anyone can close the trade.
-                </li>
-                <li>
-                  <span aria-hidden="true">III</span>Good forecasters earn bigger limits.
-                </li>
-              </ol>
               <p className="plainly__benefit">You don&apos;t have to trust the bot — the contract won&apos;t let it break its word.</p>
             </div>
           </div>
 
-          {hero ? (
-            <Note note={hero} state={s} print />
-          ) : (
-            <>
-              <div className="empty">
-                <b>No note sworn yet</b>
-                The vault is live and the agent is watching three pools; it swears only when a candidate clears its fees at its own odds. Until then, this is
-                what a note looks like (a specimen from sample data, not a note of this vault).
-              </div>
-              <Note note={specimenNote("outstanding")} state={s} print />
-            </>
-          )}
+          {hero ? <Note note={hero} state={s} print /> : <Note note={specimenNote("outstanding")} state={s} print />}
           <div className="plate hero__plate">
             <span>
               {hero ? (
@@ -114,7 +106,8 @@ export default async function Home() {
                 </>
               ) : (
                 <>
-                  Specimen. Notes settle on the HSKSwap 5-minute <Term k="twap" />.
+                  <b>Specimen, not a note of this vault.</b> No note sworn yet: the agent is watching three pools and swears only when a trade clears its fees at the odds it states.
+                  Notes settle on the HSKSwap 5-minute <Term k="twap" />.
                 </>
               )}
             </span>
@@ -291,7 +284,8 @@ export default async function Home() {
                 , <strong>{reviewed}</strong> {reviewed === 1 ? "review" : "reviews"} of open notes
               </>
             ) : null}{" "}
-            and <strong>{blocked}</strong> blocked by a clause. Abstaining is free; a note it barely believes costs it calibration.
+            and <strong>{blocked}</strong> blocked by a clause. Abstaining is free; a note it barely believes costs it calibration. Every candidate it declines is still graded below, so
+            refusing has a measured price either way.
             <span className="logged">
               It checks the pools every 30 seconds; decisions are {LOGGED_WHEN}. <LastCycle prefix="Last cycle " />.
             </span>
@@ -309,6 +303,15 @@ export default async function Home() {
             </div>
           )}
           {s.replay ? <ReplaySummary replay={s.replay} /> : null}
+          <h3 className="shadow__title">Every candidate, graded on real mainnet</h3>
+          {s.shadow ? (
+            <ShadowLedger shadow={s.shadow} compact />
+          ) : (
+            <div className="empty">
+              <b>No candidates yet</b>
+              The first candidates appear here as the agent sees them; each is graded against real mainnet prices.
+            </div>
+          )}
           <div className="actions">
             <Link href="/journal" className="btn btn--ghost">
               Read all {dc.total} decisions in the journal

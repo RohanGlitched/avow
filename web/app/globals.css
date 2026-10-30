@@ -1528,14 +1528,14 @@ a.ovi {
 
 /* ------------------------------------------------------------------ hero */
 .hero {
-  padding: 48px 0 72px;
+  padding: 28px 0 72px;
 }
 .hero__top {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: 24px 72px;
-  align-items: end;
-  margin-bottom: 36px;
+  align-items: start;
+  margin-bottom: 32px;
 }
 .hero__top > * {
   min-width: 0;
@@ -1551,6 +1551,9 @@ a.ovi {
 }
 .hero__lede + .actions {
   margin-top: 22px;
+}
+.hero .hero__plainly {
+  margin-top: 28px;
 }
 .hero__plate {
   display: flex;
@@ -4546,4 +4549,255 @@ a.stub:hover {
   white-space: normal;
   flex-wrap: wrap;
   row-gap: 0;
+}
+
+/* the restraint: what declining is worth, led in gilt (replay on home, /how, /record) */
+.restraint {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  gap: 18px 32px;
+  align-items: start;
+  margin-top: 4px;
+}
+.restraint__fig {
+  border-left: 3px solid var(--gilt);
+  padding: 2px 0 2px 16px;
+}
+.restraint__cap,
+.shadow__cap {
+  display: block;
+  font-size: 11.5px;
+  font-stretch: 125%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gilt-text);
+}
+.restraint__fig b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1.05;
+  margin-top: 6px;
+  color: var(--gilt-text);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.restraint__sub {
+  display: block;
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.restraint__lead {
+  font-size: 16.5px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.restraint__lead code {
+  font-size: 0.88em;
+}
+.restraint__honest {
+  margin-top: 10px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+.restraint--big {
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  gap: 24px 48px;
+  padding: 26px 28px;
+  background: var(--note);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.restraint--big .restraint__fig b {
+  font-size: 60px;
+}
+.restraint--big .restraint__lead {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1.4;
+}
+.restraint--big .restraint__honest {
+  font-size: 16px;
+}
+.replay-sum__more {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-2);
+  font-size: 14.5px !important;
+  color: var(--muted) !important;
+}
+@media (max-width: 720px) {
+  .restraint,
+  .restraint--big {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .restraint--big {
+    padding: 20px 18px;
+  }
+  .restraint--big .restraint__fig b {
+    font-size: 46px;
+  }
+  .restraint--big .restraint__lead {
+    font-size: 19px;
+  }
+}
+
+/* shadow ledger: every candidate, graded on real mainnet */
+.shadow__title {
+  margin: 40px 0 14px;
+  font-size: 22px;
+}
+.shadow__head {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 20px 40px;
+  align-items: stretch;
+  border-top: 1.5px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+  padding: 18px 0;
+}
+.shadow__fig {
+  border-left: 3px solid var(--gilt);
+  padding-left: 16px;
+}
+.shadow__fig--ink {
+  border-left-color: var(--ink-2);
+}
+.shadow__fig.shadow__fig--ink .shadow__cap,
+.shadow__fig.shadow__fig--ink b {
+  color: var(--ink);
+}
+.shadow__fig b {
+  display: block;
+  font-family: var(--serif);
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 1.1;
+  margin-top: 6px;
+  color: var(--gilt-text);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.shadow__sub {
+  display: block;
+  margin-top: 4px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.shadow__counts {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0;
+}
+.shadow__counts > div {
+  padding: 0 14px;
+  border-left: 1px solid var(--line-2);
+  min-width: 0;
+}
+.shadow__counts dt {
+  font-size: 13px;
+  color: var(--muted);
+  order: 2;
+}
+.shadow__counts dd {
+  margin: 0 0 2px;
+  font-family: var(--serif);
+  font-size: 30px;
+  line-height: 1.15;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.shadow__counts > div {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+}
+.shadow__method {
+  margin: 16px 0 22px;
+  font-size: 15px;
+  color: var(--ink-2);
+  max-width: 92ch;
+}
+.shadow-dec {
+  font-size: 13px;
+  font-weight: 600;
+  font-stretch: 112.5%;
+  letter-spacing: 0.02em;
+}
+.shadow-dec--sworn {
+  color: var(--gilt-text);
+}
+.shadow-dec--declined,
+.shadow-dec--passed {
+  color: var(--ink-2);
+}
+.shadow-tbl td {
+  vertical-align: top;
+}
+@media (max-width: 960px) {
+  .shadow__head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .shadow__counts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 14px;
+  }
+  .shadow__counts > div:nth-child(3n + 1) {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+
+/* business: where this goes, lead pricing stream */
+.reach {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+.reach__item {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.reach__item--now {
+  border-top: 2px solid var(--gilt);
+}
+.reach__tag {
+  font-size: 11.5px;
+  font-stretch: 125%;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.reach__item--now .reach__tag {
+  color: var(--gilt-text);
+}
+.reach__item h3 {
+  font-size: 20px;
+  margin-top: 6px;
+}
+.reach__item p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 15.5px;
+}
+.price-lead td {
+  background: color-mix(in srgb, var(--gilt) 7%, transparent);
+}
+.price-lead__cap {
+  font-family: var(--sans);
+  color: var(--gilt-text) !important;
+}
+@media (max-width: 960px) {
+  .reach {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .reach {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.restraint--big .restraint__pct {
+  font-family: var(--sans);
+  font-size: 0.8em;
+  font-weight: 600;
 }

@@ -9,6 +9,7 @@ import { TIER_RULES } from "@/lib/tiers";
 import { StatusMark } from "@/components/NoteStub";
 import { NETWORK_WORDS, rehearsalShort } from "@/lib/chain";
 import { ReplaySection } from "@/components/Replay";
+import { ShadowLedger } from "@/components/Shadow";
 import { noteHref, pct, realisedDrawdown, usd, when } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -279,18 +280,35 @@ export default async function RecordPage() {
           </p>
         </div>
       </section>
+      <section className="sec" id="shadow" aria-labelledby="shadow-h">
+        <div className="wrap">
+          <SecHead id="shadow-h" title="Every candidate, graded on real mainnet.">
+            Declining is a decision too, so it is graded. Each candidate the rules produce, sworn or declined, is entered at the real HSK mainnet pool price and settled by the vault&apos;s own
+            rules against real mainnet prices. If refusing costs Avow a gain, this ledger shows it.
+          </SecHead>
+          {s.shadow ? (
+            <ShadowLedger shadow={s.shadow} />
+          ) : (
+            <div className="empty">
+              <b>No candidates yet</b>
+              The first candidates appear here as the agent sees them; each is graded against real mainnet prices.
+            </div>
+          )}
+        </div>
+      </section>
       {s.replay ? (
-        <section className="sec" id="replay" aria-labelledby="replay-h">
+        <section className="sec sec--tint" id="replay" aria-labelledby="replay-h">
           <div className="wrap">
-            <SecHead id="replay-h" title="Replay on real HSKSwap history.">
-              Avow&apos;s exact rules, and a family of alternatives, replayed over real HSKSwap swaps on mainnet, not the rehearsal. This is why it trades so rarely.
+            <SecHead id="replay-h" title="What the restraint is worth, replayed on real HSKSwap history.">
+              Avow&apos;s exact rules, and a family of alternatives, replayed over 30 days of real HSKSwap swaps on mainnet, not the rehearsal. This is why it trades so rarely, and why that is
+              the product working.
             </SecHead>
             <ReplaySection replay={s.replay} />
           </div>
         </section>
       ) : null}
       {s.study && s.study.rows.length ? (
-        <section className={`sec${s.replay ? " sec--tint" : ""}`} aria-labelledby="odds">
+        <section className={`sec${s.replay ? "" : " sec--tint"}`} aria-labelledby="odds">
           <div className="wrap">
             <SecHead id="odds" title="Measured odds: do HSKSwap gaps really close?">
               The question every catch-up note bets on, answered from {s.study.windowDays} days of real HSKSwap swap logs on mainnet, not from the rehearsal.
