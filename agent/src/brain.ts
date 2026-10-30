@@ -80,7 +80,7 @@ export async function decide(cands: Candidate[], passes: Pass[], snaps: Snap[], 
 export function unsupportedNumbers(text: string, c: Candidate): string[] {
   const allowed = new Set<string>();
   const add = (x: number) => {
-    for (const p of [0, 1, 2, 3, 4, 5, 6]) allowed.add(Number(x.toFixed(p)).toString());
+    for (const p of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) allowed.add(Number(x.toFixed(p)).toString());
   };
   const src = c.facts.join(" ") + " " + c.why;
   for (const m of src.match(/-?\d[\d,]*\.?\d*/g) ?? []) add(Number(m.replace(/,/g, "")));

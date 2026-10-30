@@ -39,7 +39,7 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
       amountIn: n.side === 0 ? Number(n.amountIn) / 1e6 : Number(n.amountIn) / 10 ** a.decimals,
       amountOut: n.side === 0 ? Number(n.amountOut) / 10 ** a.decimals : Number(n.amountOut) / 1e6,
       statement: n.statement ?? "",
-      rationale: r?.rationale ?? "",
+      rationale: r?.rationale ?? (journal.all().find((j) => j.kind === "sworn" && j.noteId === n.id)?.detail ?? "").replace(/ \(The published reason was replaced.*$/, ""),
       signals: s ? { spreadBps: s.gapBps ?? undefined, momentum1h: s.r1h ?? undefined, momentum4h: s.r4h ?? undefined, volatility: s.vol1h ?? undefined, fairPx: s.fairPx ?? undefined, kind: r?.candidate?.kind } : {},
       hash: n.statementHash,
       openTx: n.openTx ?? null,

@@ -29,6 +29,6 @@ export const journal = {
   lastBeat: () => lastBeat,
   recent(n = 200) { return entries.slice(-n).reverse(); },
   all: () => entries,
-  rationale(id: number, r: unknown) { rationales[String(id)] = r; writeFileSync(RAT, JSON.stringify(rationales)); },
+  rationale(id: number, r: unknown) { rationales[String(id)] = JSON.parse(JSON.stringify(r, (_k, v) => (typeof v === "bigint" ? v.toString() : v))); writeFileSync(RAT, JSON.stringify(rationales)); },
   rationaleOf: (id: number) => rationales[String(id)] as { rationale: string; candidate: unknown; snaps: unknown } | undefined,
 };

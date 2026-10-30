@@ -87,7 +87,7 @@ export async function keep(v: VaultView) {
   }
 }
 
-export const serial = (id: number) => `AVW·${String(id).padStart(6, "0")}`;
+export const serial = (id: number) => `AVW·${String(id + 1).padStart(6, "0")}`;
 
 const declined = new Map<string, number>(); // candidate key → last time the model declined it
 let lastThink = 0;
@@ -163,7 +163,11 @@ export async function think(snaps: Snap[], v: VaultView) {
     const v2 = await readVault();
     const id = v2.noteCount - 1;
     journal.add({ kind: "sworn", asset: c.sym, noteId: id, tx: tx.hash, title: `Swore ${serial(id)}: ${ASSETS[c.assetId].label} ${c.side}, $${c.notionalUsd.toFixed(2)} at ${Math.round(p * 100)}%`, detail: d.rationale + (bad.length ? ` (The published reason was replaced by the rule's own line because it quoted ${bad.join(", ")}, which is not in the facts.)` : ""), model: d.model, tokens: d.tokens });
-    journal.rationale(id, { rationale: d.rationale, candidate: c, snaps: snaps.find((s) => s.sym === c.sym) ?? null });
+    try {
+      journal.rationale(id, { rationale: d.rationale, candidate: c, snaps: snaps.find((s) => s.sym === c.sym) ?? null });
+    } catch (e) {
+      console.error("rationale not saved", (e as Error).message);
+    }
   } catch (e) {
     const w = words(e);
     declined.set(c.key, Date.now());
