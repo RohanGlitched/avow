@@ -8,6 +8,7 @@ import { journal } from "./journal.js";
 import { history } from "./history.js";
 import { spend24h, spendAll } from "./llm.js";
 import { gasLog, serial } from "./agent.js";
+import { shadowState } from "./shadow.js";
 
 let hskUsd = 0.087;
 
@@ -161,6 +162,7 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string, mainn
     simulatedOutsideTraders: MODE === "fork-rehearsal",
     study,
     replay,
+    shadow: shadowState(),
     holdings,
     notes,
     market,

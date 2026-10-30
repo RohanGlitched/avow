@@ -2,9 +2,10 @@ import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { BaseError, ContractFunctionRevertedError, createWalletClient, http, keccak256, toHex, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { AGENT_KEY_FILE, ASSETS, DATA_DIR, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
+import { AGENT_KEY_FILE, ASSETS, DATA_DIR, MODE, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
 import { vaultAbi } from "./abi.js";
-import { chain, snapshot, type Snap } from "./market.js";
+import { chain, mainnetPool, snapshot, type MainnetPool, type Snap } from "./market.js";
+import { enter, grade, mark } from "./shadow.js";
 import { mandateEvents, mandateWords, readVault, type VaultView } from "./vault.js";
 import { candidates, reshape } from "./signals.js";
 import { reviewNote } from "./brain.js";
@@ -105,6 +106,7 @@ export async function think(snaps: Snap[], v: VaultView) {
   const cooldownLeft = v.lastSwearAt + v.mandate.cooldown - v.blockTime;
   if (v.lastSwearAt && cooldownLeft > 0) return;
   const { list, passes } = candidates(snaps, v);
+  for (const c of list) enter(c, "passed", mainnetPools[c.sym], v.blockTime);
   if (process.env.DICTUM_DEBUG) console.log("think", list.map((c) => c.key).join(",") || "-", passes.map((p) => p.sym + ":" + p.reason.slice(0, 40)).join(" | "), "sinceThink", Math.round((Date.now() - lastThink) / 1000));
 
   const sig = passes.map((p) => `${p.sym}:${p.reason.replace(/[\d.]+%/g, "#")}`).join("|") + "|" + list.map((c) => c.key).join(",");
@@ -134,7 +136,10 @@ export async function think(snaps: Snap[], v: VaultView) {
   // the model may shape the target and horizon; the rules re-check reward/risk and costs, and fall back to the rule's own shape
   const c = c0 ? reshape(c0, v, d.targetScale, d.horizonHours) ?? c0 : undefined;
   if (d.decision !== "swear" || !c) {
-    for (const x of fresh) declined.set(x.key, Date.now());
+    for (const x of fresh) {
+      declined.set(x.key, Date.now());
+      mark(x.sym, x.kind, "declined");
+    }
     journal.add({ kind: "declined", asset: fresh[0].sym, title: `Declined to swear: ${fresh.map((x) => `${ASSETS[x.assetId].label} ${x.side} (${x.kind})`).join(", ")}`, detail: d.rationale || d.because, model: d.model, tokens: d.tokens });
     return;
   }
@@ -170,6 +175,7 @@ export async function think(snaps: Snap[], v: VaultView) {
     logGas(tx);
     const v2 = await readVault();
     const id = v2.noteCount - 1;
+    mark(c.sym, c.kind, "sworn");
     journal.add({ kind: "sworn", asset: c.sym, noteId: id, tx: tx.hash, title: `Swore ${serial(id)}: ${ASSETS[c.assetId].label} ${c.side}, $${c.notionalUsd.toFixed(2)} at ${Math.round(p * 100)}%`, detail: d.rationale + (bad.length ? ` (The published reason was replaced by the rule's own line because it quoted ${bad.join(", ")}, which is not in the facts.)` : ""), model: d.model, tokens: d.tokens });
     try {
       journal.rationale(id, { rationale: d.rationale, candidate: c, snaps: snaps.find((s) => s.sym === c.sym) ?? null });
@@ -250,8 +256,13 @@ function journalMandateEvents() {
   }
 }
 
+export const mainnetPools: Record<string, MainnetPool> = {};
+
 export async function tick() {
   const [snaps, v] = await Promise.all([snapshot(), readVault()]);
+  if (MODE === "mainnet") for (const s of snaps) mainnetPools[s.sym] = { twapPx: s.twapPx, spotPx: s.spotPx, lastSwapAgoSec: s.lastSwapAgoSec, swaps3h: s.swaps3h };
+  else for (const a of ASSETS) mainnetPools[a.sym] = await mainnetPool(a);
+  grade(mainnetPools, Math.floor(Date.now() / 1000));
   history.push(snaps);
   journalMandateEvents();
   await keep(v).catch((e) => journal.add({ kind: "error", title: "Keeper error", detail: words(e).text }));

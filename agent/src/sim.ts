@@ -1,4 +1,5 @@
-// Rehearsal only. On the fork nobody else trades, so simulated outside traders stand in for real ones, calibrated to what
+// Rehearsal only. On the fork nobody else trades, so the fork's pools are kept at the real mainnet pool prices (a mirror): the
+// rehearsal sees mainnet's own market. Earlier versions simulated outside traders, calibrated to what
 // 30 days of real HSKSwap swaps show (research/STUDY.md): swaps arrive at each pool's measured rate (WETH 4.6, WBTC 2.8,
 // WHSK 64.1 a day, exponential gaps). Only the measured pool-side share of them are arbitrageurs (≈15% on WETH and WBTC, ≈5% on
 // WHSK, where gaps almost always closed because the exchange moved) and each closes 30–70% of the gap in one swap; the rest are
@@ -39,34 +40,26 @@ async function swap(tokenIn: Address, tokenOut: Address, amountIn: bigint) {
   await chain.waitForTransactionReceipt({ hash: h });
 }
 
-export async function simulateOutsideTraders(snaps: Snap[]) {
+/** Keep each fork pool at the real mainnet pool price: the rehearsal sees mainnet's own market, and nothing invented. */
+export async function simulateOutsideTraders(snaps: Snap[], main: Record<string, { spotPx: number | null }>) {
   await fund();
-  const now = Date.now();
   for (const s of snaps) {
     const a = ASSETS.find((x) => x.sym === s.sym)!;
-    const due = nextAt.get(s.sym) ?? now + nextGap(s.sym);
-    if (!nextAt.has(s.sym)) nextAt.set(s.sym, due);
-    if (now < due || s.spotPx === null || s.fairPx === null || s.poolUsdt === null) continue;
-    nextAt.set(s.sym, now + nextGap(s.sym));
-    const gap = (s.fairPx - s.spotPx) / s.spotPx; // + = pool cheap
-    if (Math.abs(gap) > 0.0035 && Math.random() < (ARB_SHARE[s.sym] ?? 0.1)) {
-      // an arbitrageur closes part of the gap in a few clips
-      const goal = s.fairPx - gap * s.spotPx * rnd(0.3, 0.7);
-      for (let i = 0; i < 4; i++) {
-        const spot = Number(await chain.readContract({ address: process.env.DICTUM_VAULT as Address, abi: parseAbi(["function spotPx(uint8) view returns (uint256)"]), functionName: "spotPx", args: [a.id] })) / 1e8;
-        if (gap > 0 ? spot >= goal : spot <= goal) break;
-        const usd = s.poolUsdt * 0.0015;
-        if (gap > 0) await swap(USDT, a.token, BigInt(Math.floor(usd * 1e6)));
-        else await swap(a.token, USDT, BigInt(Math.floor((usd / spot) * 10 ** a.decimals)));
-      }
-    } else {
-      // a noise trader
-      const usd = rnd(20, 250);
-      if (Math.random() < 0.5) await swap(USDT, a.token, BigInt(Math.floor(usd * 1e6)));
-      else await swap(a.token, USDT, BigInt(Math.floor((usd / s.spotPx) * 10 ** a.decimals)));
+    const target = main[s.sym]?.spotPx;
+    if (!target || s.spotPx === null || s.poolUsdt === null) continue;
+    if (Date.now() < (scenarioHold.get(s.sym) ?? 0)) continue; // a labelled scenario is playing out
+    for (let i = 0; i < 6; i++) {
+      const spot = Number(await chain.readContract({ address: process.env.DICTUM_VAULT as Address, abi: parseAbi(["function spotPx(uint8) view returns (uint256)"]), functionName: "spotPx", args: [a.id] })) / 1e8;
+      const dev = (spot - target) / target;
+      if (Math.abs(dev) < 0.0015) break;
+      const usd = Math.min(s.poolUsdt * 0.002 * Math.min(1, Math.abs(dev) / 0.01), 2_000);
+      if (dev < 0) await swap(USDT, a.token, BigInt(Math.floor(Math.max(20, usd) * 1e6)));
+      else await swap(a.token, USDT, BigInt(Math.floor((Math.max(20, usd) / spot) * 10 ** a.decimals)));
     }
   }
 }
+
+const scenarioHold = new Map<string, number>();
 
 /** Rehearsal scenario: push one fork pool `gapBps` away from the exchanges, as on Oct 15–16 2026 when the real WHSK pool had not
  *  traded for five days and sat 200+ bps from the exchanges (research/REPLAY.md). Labelled in the journal; fork only. */
@@ -75,6 +68,7 @@ export async function scenario(sym: string, fairPx: number, gapBps: number) {
   const a = ASSETS.find((x) => x.sym === sym);
   if (!a) throw new Error("unknown asset");
   const goal = fairPx * (1 + gapBps / 1e4); // negative gap = pool below the exchanges
+  scenarioHold.set(sym, Date.now() + 6 * 3600_000); // the mirror leaves this pool alone for six hours
   const spotOf = async () => Number(await chain.readContract({ address: process.env.DICTUM_VAULT as Address, abi: parseAbi(["function spotPx(uint8) view returns (uint256)"]), functionName: "spotPx", args: [a.id] })) / 1e8;
   for (let i = 0; i < 60; i++) {
     const spot = await spotOf();

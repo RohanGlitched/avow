@@ -4,10 +4,7 @@ import { buildState } from "./state.js";
 import { live, serve } from "./server.js";
 import { journal } from "./journal.js";
 import { simulateOutsideTraders } from "./sim.js";
-import { mainnetPool, type MainnetPool } from "./market.js";
-import { ASSETS } from "./config.js";
-
-const mainnetPools: Record<string, MainnetPool> = {};
+import { mainnetPools } from "./agent.js";
 
 serve();
 console.log(`Avow started (${MODE === "mainnet" ? "HSK Chain mainnet" : "rehearsal on a fork of HSK mainnet"})`);
@@ -21,9 +18,8 @@ async function loop() {
     const { snaps, v } = await tick();
     if (process.env.DICTUM_DEBUG) console.log("tick", snaps.map((x) => `${x.label} gap ${x.gapBps?.toFixed(1)}`).join(" "));
     live.vault = v;
-    if (MODE !== "mainnet") for (const a of ASSETS) mainnetPools[a.sym] = await mainnetPool(a);
-    live.state = buildState(snaps, v, account.address, mainnetPools);
-    if (MODE === "fork-rehearsal") await simulateOutsideTraders(snaps).catch((e) => console.error("sim", e?.shortMessage ?? e));
+    live.state = buildState(snaps, v, account.address, MODE === "mainnet" ? {} : mainnetPools);
+    if (MODE === "fork-rehearsal") await simulateOutsideTraders(snaps, mainnetPools).catch((e) => console.error("sim", e?.shortMessage ?? e));
   } catch (e) {
     console.error("tick failed", (e as Error)?.message ?? e);
   } finally {

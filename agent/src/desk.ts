@@ -94,7 +94,12 @@ Exact rules (quote these, never guess):
 - Signs: gapBps > 0 means HSKSwap is cheaper than the exchanges; poolPremiumBps > 0 means HSKSwap is dearer.
 - Measured over 30 days of real HSKSwap swaps (research/STUDY.md): gaps of 40–100 bps closed within 12 h in 92–98% of cases, but in 90–100%
   of them because the exchange moved back; the pool itself moved half-way in about 53% (WETH, WBTC) and 35% (WHSK) of cases, and only 5–26%
-  when the pool had not traded in the prior 12 h. Swaps per day: WHSK 64, WETH 4.6, WBTC 2.8.`;
+  when the pool had not traded in the prior 12 h. Swaps per day: WHSK 64, WETH 4.6, WBTC 2.8.
+- Replay of the exact rules on those 30 days (research/REPLAY.md), with both fees, measured price impact and gas: catch-up opened 111 notes,
+  hit 16% against a mean break-even of 78%, and lost $0.16 per $50 note; momentum opened 90, hit 7% against 57%, lost $0.24 per note; every
+  asset lost in-sample and out-of-sample, and none of 88 pre-declared alternatives cleared a pre-set bar. That is why Avow mostly passes.
+- The shadow ledger (summary.shadow) grades every candidate, sworn or declined, against real mainnet prices; refusedPnlUsd is what the
+  declined ones would have made (negative means loss avoided). If asked "is it profitable?", answer with these numbers, plainly.`;
 
 export async function desk(messages: Msg[], state: State): Promise<DeskReply> {
   const citations = new Set<number>();
@@ -111,6 +116,7 @@ export async function desk(messages: Msg[], state: State): Promise<DeskReply> {
         mandate: state.mandate, market: state.market.map((m) => ({ asset: m.label, hskswap: m.twapPx, exchanges: m.cexPx, poolPremiumBps: m.spreadBps, chainlink: m.chainlinkPx, lastPoolSwapMin: m.lastSwapAgoSec !== null ? Math.round(m.lastSwapAgoSec / 60) : null, mainnet: m.mainnet })),
         unrealisedPnlUsd: open.reduce((s, n) => s + (n.unrealisedPnlUsd ?? 0), 0),
         costs: state.costs, notesTotal: state.notes.length,
+        shadow: state.shadow ? { ...state.shadow, recent: undefined } : null,
       };
     }
     if (name === "list_notes") {
