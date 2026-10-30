@@ -67,3 +67,21 @@ export async function simulateOutsideTraders(snaps: Snap[]) {
     }
   }
 }
+
+/** Rehearsal scenario: push one fork pool `gapBps` away from the exchanges, as on Oct 15–16 2026 when the real WHSK pool had not
+ *  traded for five days and sat 200+ bps from the exchanges (research/REPLAY.md). Labelled in the journal; fork only. */
+export async function scenario(sym: string, fairPx: number, gapBps: number) {
+  await fund();
+  const a = ASSETS.find((x) => x.sym === sym);
+  if (!a) throw new Error("unknown asset");
+  const goal = fairPx * (1 + gapBps / 1e4); // negative gap = pool below the exchanges
+  const spotOf = async () => Number(await chain.readContract({ address: process.env.DICTUM_VAULT as Address, abi: parseAbi(["function spotPx(uint8) view returns (uint256)"]), functionName: "spotPx", args: [a.id] })) / 1e8;
+  for (let i = 0; i < 60; i++) {
+    const spot = await spotOf();
+    if (gapBps < 0 ? spot <= goal : spot >= goal) return spot;
+    const usd = 400;
+    if (gapBps < 0) await swap(a.token, USDT, BigInt(Math.floor((usd / spot) * 10 ** a.decimals)));
+    else await swap(USDT, a.token, BigInt(Math.floor(usd * 1e6)));
+  }
+  return spotOf();
+}

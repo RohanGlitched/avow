@@ -3,6 +3,7 @@ import { verifyMessage, type Hex } from "viem";
 import { DESK_SECRET, MODE, PORT, VAULT } from "./config.js";
 import { desk, classify, type Msg } from "./desk.js";
 import { mcp } from "./mcp.js";
+import { scenario } from "./sim.js";
 import { journal } from "./journal.js";
 import { chain } from "./market.js";
 import { account, tightenMandate, words } from "./agent.js";
@@ -56,6 +57,19 @@ export function serve() {
         const msgs = (b.messages ?? []).filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string").slice(-10);
         if (!msgs.length || !live.state) return send(res, 400, { error: "no question" });
         return send(res, 200, await desk(msgs, live.state));
+      }
+      if (req.method === "POST" && url.pathname === "/scenario") {
+        // rehearsal only: re-create a historical dislocation on the fork so the agent's reaction can be watched
+        if (MODE !== "fork-rehearsal") return send(res, 404, { error: "not found" });
+        if (!DESK_SECRET || req.headers["x-desk-secret"] !== DESK_SECRET) return send(res, 401, { error: "unauthorised" });
+        const b = (await body(req)) as { sym?: string; gapBps?: number };
+        const sym = String(b.sym ?? "WHSK");
+        const gap = Math.max(-500, Math.min(500, Number(b.gapBps ?? -250)));
+        const fair = live.state?.market.find((m) => m.asset === sym)?.cexPx;
+        if (!fair) return send(res, 503, { error: "no exchange price" });
+        const spot = await scenario(sym, fair, gap);
+        journal.add({ kind: "heartbeat", asset: sym as never, title: `Rehearsal scenario: the fork's ${sym.slice(1)} pool was pushed ${Math.abs(gap) / 100}% ${gap < 0 ? "below" : "above"} the exchanges`, detail: `Re-creates the kind of dislocation seen on real HSKSwap on Oct 15–16 2026, when the WHSK pool had not traded for five days (research/REPLAY.md). Pool now ${spot}. Fork only; the agent decides as it would on mainnet.` });
+        return send(res, 200, { spot });
       }
       if (url.pathname === "/mcp") {
         if (req.method === "GET") { res.writeHead(405, { allow: "POST" }); return res.end(); }
