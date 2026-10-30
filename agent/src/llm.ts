@@ -25,10 +25,10 @@ async function token(): Promise<string> {
 
 export interface Usage { model: string; inTokens: number; outTokens: number; usd: number; ms: number }
 mkdirSync(DATA_DIR, { recursive: true });
+const NL = String.fromCharCode(10);
 const USAGE = join(DATA_DIR, "usage.jsonl");
 export const usageLog: (Usage & { t: number; purpose: string })[] = existsSync(USAGE)
-  ? readFileSync(USAGE, "utf8").split("
-").filter(Boolean).flatMap((l) => { try { return [JSON.parse(l)]; } catch { return []; } }).slice(-5000)
+  ? readFileSync(USAGE, "utf8").split(NL).filter(Boolean).flatMap((l) => { try { return [JSON.parse(l)]; } catch { return []; } }).slice(-5000)
   : [];
 
 // list prices per 1M tokens (USD); flash-lite is the budget fallback
@@ -79,8 +79,7 @@ export async function generate(o: GenOpts): Promise<GenResult> {
       const usage = { model, inTokens: inT, outTokens: outT, usd: (inT * pi + outT * po) / 1e6, ms: Date.now() - t0 };
       const row = { ...usage, t: Math.floor(Date.now() / 1000), purpose: o.purpose };
       usageLog.push(row);
-      appendFileSync(USAGE, JSON.stringify(row) + "
-");
+      appendFileSync(USAGE, JSON.stringify(row) + NL);
       if (usageLog.length > 5000) usageLog.splice(0, 1000);
       if (!text && !parts.some((p) => p.functionCall)) throw new Error(`empty answer (${j.candidates?.[0]?.finishReason ?? "?"})`);
       if (o.schema) {

@@ -59,14 +59,13 @@ async function send(fn: "swear" | "settle" | "tighten" | "retract" | "tightenSto
   return { hash, gasUsed: rc.gasUsed, effectiveGasPrice: rc.effectiveGasPrice };
 }
 
+const NL = String.fromCharCode(10);
 const GAS = join(DATA_DIR, "gas.jsonl");
-export const gasLog: { t: number; hsk: number }[] = existsSync(GAS) ? readFileSync(GAS, "utf8").split("
-").filter(Boolean).map((l) => JSON.parse(l)) : [];
+export const gasLog: { t: number; hsk: number }[] = existsSync(GAS) ? readFileSync(GAS, "utf8").split(NL).filter(Boolean).map((l) => JSON.parse(l)) : [];
 function logGas(r: { gasUsed: bigint; effectiveGasPrice: bigint }) {
   const row = { t: Math.floor(Date.now() / 1000), hsk: Number(r.gasUsed * r.effectiveGasPrice) / 1e18 };
   gasLog.push(row);
-  appendFileSync(GAS, JSON.stringify(row) + "
-");
+  appendFileSync(GAS, JSON.stringify(row) + NL);
 }
 
 // ── keeper: anyone may settle; the agent does it every loop so stops are never late
