@@ -35,7 +35,7 @@ export function words(e: unknown): { name: string; text: string } {
       NegativeExpectancy: `At ${(n(0) / 100).toFixed(0)}% odds this note would be expected to lose.`,
       SelfFulfilling: "The agent's own swap would reach the target; that note would prove nothing.",
       BadExpiry: "The expiry is outside the horizon the mandate allows.",
-      BadConfidence: "The stated odds are outside 30–99%.",
+      BadConfidence: "The stated odds are outside 50–99%: a note must claim at least even odds.",
       ExceedsDenomination: `$${(n(0) / 1e6).toFixed(2)} is more than the agent's denomination of $${(n(1) / 1e6).toFixed(2)}.`,
       ExceedsExposure: `Open exposure would reach $${(n(0) / 1e6).toFixed(2)}, above the $${(n(1) / 1e6).toFixed(2)} limit.`,
       DailyLossReached: `Today's realised loss ($${(n(0) / 1e6).toFixed(2)}) has reached the daily limit.`,
@@ -136,7 +136,7 @@ export async function think(snaps: Snap[], v: VaultView) {
     return;
   }
   // ── guards: the model chooses and states odds; rules decide what may be sworn
-  const p = Math.min(0.99, Math.max(0.3, Number(d.confidence)));
+  const p = Math.min(0.99, Math.max(0.5, Number(d.confidence)));
   if (!Number.isFinite(p) || p <= c.pMin + 0.01) {
     declined.set(c.key, Date.now());
     journal.add({ kind: "declined", asset: c.sym, title: `Declined ${ASSETS[c.assetId].label} ${c.side}: odds below break-even`, detail: `The model gave ${Math.round(p * 100)}%; this note breaks even at ${Math.round(c.pMin * 100)}%. ${d.rationale}`, model: d.model, tokens: d.tokens });

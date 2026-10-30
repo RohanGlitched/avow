@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
-import {DictumVault} from "../src/DictumVault.sol";
+import {AvowVault} from "../src/AvowVault.sol";
 
 /// HSK Chain mainnet (chain 177): HSKSwap, tokens and Chainlink feeds, checked on hsk.blockscout.com on Oct 31 2026.
 /// The Chainlink proxies are read-whitelisted (contracts get "No access"), so only the agent reads them, off chain.
@@ -21,15 +21,15 @@ library HSK {
     address internal constant FEED_HSK = 0x86CE42c1b714149Dc3A7b17169EF67b5F78A224b;
     address internal constant FEED_USDT = 0x823d7f90f7A3498DB6595886b6B5dC95E6B0B7f3;
 
-    function assets() internal pure returns (DictumVault.Asset[] memory a) {
-        a = new DictumVault.Asset[](3);
-        a[0] = DictumVault.Asset(WETH, POOL_WETH, 3000, 0, false);
-        a[1] = DictumVault.Asset(WBTC, POOL_WBTC, 3000, 0, false);
-        a[2] = DictumVault.Asset(WHSK, POOL_WHSK, 3000, 0, false);
+    function assets() internal pure returns (AvowVault.Asset[] memory a) {
+        a = new AvowVault.Asset[](3);
+        a[0] = AvowVault.Asset(WETH, POOL_WETH, 3000, 0, false);
+        a[1] = AvowVault.Asset(WBTC, POOL_WBTC, 3000, 0, false);
+        a[2] = AvowVault.Asset(WHSK, POOL_WHSK, 3000, 0, false);
     }
 
-    function defaultMandate() internal pure returns (DictumVault.Mandate memory) {
-        return DictumVault.Mandate({
+    function defaultMandate() internal pure returns (AvowVault.Mandate memory) {
+        return AvowVault.Mandate({
             maxSlippageBps: 60,
             maxSpotDevBps: 100,
             maxStopBps: 800,

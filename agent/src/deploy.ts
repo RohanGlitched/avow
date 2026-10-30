@@ -1,4 +1,4 @@
-// Deploys an Avow vault (DictumVault.sol until the rename) and prepares the HSKSwap pools (5-minute TWAP needs observation slots).
+// Deploys an AvowVault and prepares the HSKSwap pools: 240 observation slots, so a flood of tiny swaps cannot shorten the 5-minute TWAP.
 // Fork rehearsal: also funds the vault and the keys with anvil cheat calls. Mainnet: spends real HSK on gas only.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { createWalletClient, encodeAbiParameters, http, keccak256, parseAbi, toHex, type Address, type Hex } from "viem";
@@ -39,10 +39,10 @@ async function main() {
   console.log("vault", vault, "block", rc.blockNumber, "gas", rc.gasUsed);
   for (const a of ASSETS) {
     const s0 = await chain.readContract({ address: a.pool, abi: poolAbi, functionName: "slot0" });
-    if (s0[4] < 64) {
-      const h = await w.writeContract({ address: a.pool, abi: poolAbi, functionName: "increaseObservationCardinalityNext", args: [64] });
+    if (s0[4] < 240) {
+      const h = await w.writeContract({ address: a.pool, abi: poolAbi, functionName: "increaseObservationCardinalityNext", args: [240] });
       const r = await chain.waitForTransactionReceipt({ hash: h });
-      console.log("cardinality →64", a.label, r.gasUsed);
+      console.log("cardinality →240", a.label, r.gasUsed);
     }
   }
   if (MODE === "fork-rehearsal") {

@@ -80,6 +80,7 @@ export interface VaultView {
   balances: { sym: "USDT" | Sym; raw: bigint; amount: number; locked: number }[];
   notes: ChainNote[];
   blockTime: number;
+  blockNumber: number;
 }
 
 // ── events, read incrementally in 5,000-block chunks (the public RPC refuses ranges ≥ 10,000)
@@ -217,6 +218,7 @@ export async function readVault(): Promise<VaultView> {
     ],
     notes,
     blockTime: Number(blk.timestamp),
+    blockNumber: Number(blk.number),
   };
 }
 

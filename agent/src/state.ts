@@ -40,7 +40,17 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
       amountOut: n.side === 0 ? Number(n.amountOut) / 10 ** a.decimals : Number(n.amountOut) / 1e6,
       statement: n.statement ?? "",
       rationale: r?.rationale ?? (journal.all().find((j) => j.kind === "sworn" && j.noteId === n.id)?.detail ?? "").replace(/ \(The published reason was replaced.*$/, ""),
-      signals: s ? { spreadBps: s.gapBps ?? undefined, momentum1h: s.r1h ?? undefined, momentum4h: s.r4h ?? undefined, volatility: s.vol1h ?? undefined, fairPx: s.fairPx ?? undefined, kind: r?.candidate?.kind } : {},
+      // spread = HSKSwap premium over the exchanges in bps; momentum and volatility in percent
+      signals: s
+        ? {
+            spreadBps: s.twapPx && s.fairPx ? ((s.twapPx - s.fairPx) / s.fairPx) * 1e4 : undefined,
+            momentum1h: s.r1h !== null ? s.r1h * 100 : undefined,
+            momentum4h: s.r4h !== null ? s.r4h * 100 : undefined,
+            volatility: s.vol1h !== null ? s.vol1h * 100 : undefined,
+            fairPx: s.fairPx ?? undefined,
+            kind: r?.candidate?.kind,
+          }
+        : {},
       hash: n.statementHash,
       openTx: n.openTx ?? null,
       openBlock: n.openBlock ?? null,
@@ -95,6 +105,8 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
     },
     contracts: { vault: VAULT, factory: null, agent: agentAddr, owner: v.owner, deployBlock: DEPLOY_BLOCK ? Number(DEPLOY_BLOCK) : null },
     asOf: now,
+    source: "chain" as const,
+    block: v.blockNumber,
     agentAlive: beat > 0 && now - beat < 180,
     lastHeartbeat: beat || null,
     mandate: mandateWords(v.mandate),

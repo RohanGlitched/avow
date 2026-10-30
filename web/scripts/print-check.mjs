@@ -1,0 +1,23 @@
+// Captures the hero's printing moment mid-way and at rest, plus the dark theme.
+import { chromium } from "playwright";
+import { fileURLToPath } from "node:url";
+const base = process.argv[2] ?? "http://localhost:3417";
+const out = fileURLToPath(new URL("../.shots/", import.meta.url));
+const b = await chromium.launch();
+const ctx = await b.newContext({ viewport: { width: 1440, height: 1100 } });
+const p = await ctx.newPage();
+const t0 = Date.now();
+await p.goto(base + "/", { waitUntil: "commit" });
+await p.waitForSelector(".note--print");
+await p.waitForTimeout(Math.max(0, 1100 - (Date.now() - t0)));
+await p.screenshot({ path: out + "print-mid.png" });
+await p.waitForTimeout(2200);
+await p.screenshot({ path: out + "print-end.png" });
+const dark = await b.newContext({ viewport: { width: 1440, height: 1100 }, colorScheme: "dark", reducedMotion: "reduce" });
+const d = await dark.newPage();
+await d.goto(base + "/", { waitUntil: "networkidle" });
+await d.screenshot({ path: out + "home-dark-1440.png" });
+await d.goto(base + "/notes/7", { waitUntil: "networkidle" });
+await d.screenshot({ path: out + "note7-dark-1440.png" });
+await b.close();
+console.log("done");

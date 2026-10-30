@@ -1,0 +1,4210 @@
+{
+ "network": {
+  "chainId": 177,
+  "name": "HashKey Chain",
+  "explorer": "https://hsk.blockscout.com",
+  "rpc": "https://mainnet.hsk.xyz",
+  "mode": "fork-rehearsal"
+ },
+ "contracts": {
+  "vault": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  "factory": null,
+  "agent": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  "owner": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "deployBlock": 23054960
+ },
+ "asOf": 1793428200,
+ "source": "fixture",
+ "block": 23184560,
+ "agentAlive": true,
+ "lastHeartbeat": 1793428160,
+ "mandate": {
+  "maxSlippageBps": 60,
+  "maxSpotDevBps": 100,
+  "cooldownSec": 600,
+  "maxHorizonSec": 86400,
+  "maxNotionalUsd": 50,
+  "maxExposureUsd": 150,
+  "dailyLossLimitUsd": 10,
+  "maxDrawdownBps": 1500,
+  "minRewardRisk": 1.2,
+  "maxStopBps": 800,
+  "assets": [
+   "WETH",
+   "WBTC",
+   "WHSK"
+  ],
+  "paused": false
+ },
+ "record": {
+  "graded": 7,
+  "honoured": 3,
+  "void": 2,
+  "lapsed": 1,
+  "retracted": 1,
+  "brier": 0.2349,
+  "pnlUsd": -0.7108,
+  "tier": {
+   "index": 1,
+   "name": "Apprentice",
+   "share": 0.4,
+   "requirement": "5 graded notes, Brier 0.25 or better",
+   "capUsd": 20
+  },
+  "tiers": [
+   {
+    "index": 0,
+    "name": "Probation",
+    "share": 0.2,
+    "requirement": "Every new vault starts here. Fewer than 5 graded notes.",
+    "capUsd": 10
+   },
+   {
+    "index": 1,
+    "name": "Apprentice",
+    "share": 0.4,
+    "requirement": "5 graded notes, Brier 0.25 or better",
+    "capUsd": 20
+   },
+   {
+    "index": 2,
+    "name": "Journeyman",
+    "share": 0.7,
+    "requirement": "12 graded notes, Brier 0.22 or better, P&L at least zero",
+    "capUsd": 35
+   },
+   {
+    "index": 3,
+    "name": "Fiduciary",
+    "share": 1,
+    "requirement": "25 graded notes, Brier 0.20 or better, P&L above zero",
+    "capUsd": 50
+   }
+  ],
+  "voidStreak": 1,
+  "navUsd": 203.18,
+  "hwmUsd": 206.4,
+  "frozen": false,
+  "dailyLossUsd": 0.1048
+ },
+ "holdings": [
+  {
+   "sym": "USDT",
+   "amount": 151.37,
+   "usd": 151.37,
+   "locked": 38.48
+  },
+  {
+   "sym": "WETH",
+   "amount": 0.00912,
+   "usd": 20.38,
+   "locked": 0
+  },
+  {
+   "sym": "WBTC",
+   "amount": 0.000183,
+   "usd": 14.06,
+   "locked": 0
+  },
+  {
+   "sym": "WHSK",
+   "amount": 105.4,
+   "usd": 9.21,
+   "locked": 0
+  }
+ ],
+ "notes": [
+  {
+   "id": 10,
+   "serial": "AVW·000010",
+   "asset": "WBTC",
+   "side": "short",
+   "entryPx": 76912,
+   "targetPx": 76080,
+   "voidPx": 77470,
+   "openedAt": 1793419560,
+   "expiry": 1793505960,
+   "confidence": 0.61,
+   "notionalUsd": 19.4,
+   "amountIn": 0.000252236,
+   "amountOut": 19.3418,
+   "statement": "Avow swears that BTC will trade below 76,080.00 on HSKSwap before 09:36 IST on 1 Nov, or this note is void at 77,470.00.",
+   "rationale": "BTC is 52 bps rich on HSKSwap and down 0.81% in four hours on HashKey Global. The pool has 0.66 BTC of depth, so one arbitrage swap closes most of the gap. Target is just under the exchange mid; void sits above the 24 h pool high.",
+   "signals": {
+    "spreadBps": 52,
+    "momentum1h": -0.24,
+    "momentum4h": -0.81,
+    "volatility": 2.2,
+    "fairPx": 76514.13
+   },
+   "hash": "0x820f84d46a056c8683652bee0e7f0ba56e326db6c1bde57e47780ffe95c39758",
+   "openTx": "0xcb5a2242b706456a980fd73905bd74a593994719dcfff5ccdeeda6297ba2272f",
+   "openBlock": 23180240,
+   "tierAtOpen": 1,
+   "status": "outstanding",
+   "livePx": 76827
+  },
+  {
+   "id": 9,
+   "serial": "AVW·000009",
+   "asset": "WHSK",
+   "side": "short",
+   "entryPx": 0.08802,
+   "targetPx": 0.0869,
+   "voidPx": 0.0888,
+   "swornVoidPx": 0.08893,
+   "openedAt": 1793395800,
+   "expiry": 1793482200,
+   "confidence": 0.63,
+   "notionalUsd": 19.2,
+   "amountIn": 218.132,
+   "amountOut": 19.1424,
+   "statement": "Avow swears that HSK will trade below 0.08690 on HSKSwap before 03:00 IST on 1 Nov, or this note is void at 0.08893.",
+   "rationale": "HSK trades 55 bps rich on HSKSwap and the exchange keeps leaking lower. Target is the exchange level; the void level sits beyond the last 12 h high on the pool. Stop tightened once since.",
+   "signals": {
+    "spreadBps": 55,
+    "momentum1h": -0.15,
+    "momentum4h": -0.48,
+    "volatility": 2.5,
+    "fairPx": 0.08754
+   },
+   "hash": "0x5ac8f850999e1f7f76c672e39abb008599a02e38e1a49ce851e9828e1cf78638",
+   "openTx": "0x9b73cdacef698cfb92847ebd581a62df587ddcddc5f6bdb72a5e81d3baae7ea4",
+   "openBlock": 23168360,
+   "tierAtOpen": 1,
+   "status": "outstanding",
+   "livePx": 0.08735873
+  },
+  {
+   "id": 8,
+   "serial": "AVW·000008",
+   "asset": "WHSK",
+   "side": "short",
+   "entryPx": 0.0884,
+   "targetPx": 0.08734,
+   "voidPx": 0.0892,
+   "openedAt": 1793341800,
+   "expiry": 1793428200,
+   "confidence": 0.6,
+   "notionalUsd": 18.9,
+   "amountIn": 213.801,
+   "amountOut": 18.8433,
+   "statement": "Avow swears that HSK will trade below 0.08734 on HSKSwap before 12:00 IST on 31 Oct, or this note is void at 0.08920.",
+   "rationale": "HSKSwap HSK 51 bps above the exchange, exchange drifting lower. Revoked by the owner before a mandate amendment; revoked notes are not graded.",
+   "signals": {
+    "spreadBps": 51,
+    "momentum1h": -0.09,
+    "momentum4h": -0.3,
+    "volatility": 2.3,
+    "fairPx": 0.08795
+   },
+   "hash": "0xa449045a2d9a5e226b03d2751577abbb1a360102ece5146c1a698ffeef10bd2b",
+   "openTx": "0x34b7a89c0774d7d6a1339f74769c36545ecaa54729d1b492c234dff323d83072",
+   "openBlock": 23141360,
+   "tierAtOpen": 1,
+   "status": "revoked",
+   "exitPx": 0.08822,
+   "settledAt": 1793356200,
+   "settleTx": "0xda585044511b2e2e2377d4f225623e7f2a30a071db4fcbe2b3339848f8f51fcf",
+   "settler": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+   "pnlUsd": -0.1048
+  },
+  {
+   "id": 7,
+   "serial": "AVW·000007",
+   "asset": "WETH",
+   "side": "short",
+   "entryPx": 2255.3,
+   "targetPx": 2230.49,
+   "voidPx": 2275.6,
+   "openedAt": 1793320200,
+   "expiry": 1793406600,
+   "confidence": 0.58,
+   "notionalUsd": 19.6,
+   "amountIn": 0.00869064,
+   "amountOut": 19.5412,
+   "statement": "Avow swears that ETH will trade below 2,230.49 on HSKSwap before 06:00 IST on 31 Oct, or this note is void at 2,275.60.",
+   "rationale": "A 54 bps premium on ETH. Momentum is flat, so this is a pure convergence note; the risk is that the exchange catches up to the pool rather than the other way round.",
+   "signals": {
+    "spreadBps": 54,
+    "momentum1h": 0.05,
+    "momentum4h": -0.21,
+    "volatility": 2.8,
+    "fairPx": 2243.19
+   },
+   "hash": "0xf7ca508f9ef21f465a2b19d8a8c04ffa09b03802cf4e42fa5133ad2d40932861",
+   "openTx": "0x5801e03b5de17e694304a5fbde5ba376400ac1ade3e90984b06215e9ed125bcd",
+   "openBlock": 23130560,
+   "tierAtOpen": 1,
+   "status": "void",
+   "exitPx": 2276.51,
+   "settledAt": 1793334600,
+   "settleTx": "0x367d192707933b9f3e87a249f6b1b5334a5bb4fe9c58d13c24b78f3ab053d63c",
+   "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+   "pnlUsd": -0.3302,
+   "sqError": 0.3364
+  },
+  {
+   "id": 6,
+   "serial": "AVW·000006",
+   "asset": "WBTC",
+   "side": "long",
+   "entryPx": 77120,
+   "targetPx": 78122.56,
+   "voidPx": 76387.36,
+   "openedAt": 1793284200,
+   "expiry": 1793370600,
+   "confidence": 0.55,
+   "notionalUsd": 9.85,
+   "amountIn": 9.85,
+   "amountOut": 0.00012734,
+   "statement": "Avow swears that BTC will trade above 78,122.56 on HSKSwap before 20:00 IST on 30 Oct, or this note is void at 76,387.36.",
+   "rationale": "BTC broke above its 12 h range on the exchange; HSKSwap lags by 14 bps. Retracted after 4 h when the exchange reversed 0.4% in one hour; retreating is graded as a miss.",
+   "signals": {
+    "spreadBps": -14,
+    "momentum1h": 0.27,
+    "momentum4h": 0.66,
+    "volatility": 2,
+    "fairPx": 77228.12
+   },
+   "hash": "0x0473261b0177eb16528a8437eb81e3a56b30013a15e823aa11c1a1b7063927a8",
+   "openTx": "0xb1f45e76789d5e0e2f3435b995dc6e77a4f413fb4410fd75e94e8a3002a8d952",
+   "openBlock": 23112560,
+   "tierAtOpen": 0,
+   "status": "retracted",
+   "exitPx": 76980,
+   "settledAt": 1793298600,
+   "settleTx": "0xaa42ee46904acbd815df08d23566b91b3a9009c81c15c12f605d73c5436db89f",
+   "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+   "pnlUsd": -0.107,
+   "sqError": 0.3025
+  },
+  {
+   "id": 5,
+   "serial": "AVW·000005",
+   "asset": "WETH",
+   "side": "short",
+   "entryPx": 2281.7,
+   "targetPx": 2254.32,
+   "voidPx": 2302.24,
+   "openedAt": 1793248200,
+   "expiry": 1793334600,
+   "confidence": 0.66,
+   "notionalUsd": 9.75,
+   "amountIn": 0.00427313,
+   "amountOut": 9.72075,
+   "statement": "Avow swears that ETH will trade below 2,254.32 on HSKSwap before 10:00 IST on 30 Oct, or this note is void at 2,302.24.",
+   "rationale": "A 63 bps HSKSwap premium on ETH with the exchange easing lower. The premium alone pays for the round trip; momentum adds to it.",
+   "signals": {
+    "spreadBps": 63,
+    "momentum1h": -0.18,
+    "momentum4h": -0.52,
+    "volatility": 2.6,
+    "fairPx": 2267.42
+   },
+   "hash": "0xb36e5182ad1856aa54bb1b46a4b7923a1406da20728b434d87e952ccc3ba4d09",
+   "openTx": "0xff3fd0c11e19225fa80fc25d6dffd0837e7a9652a92a3ec6111e691bc30ee5ca",
+   "openBlock": 23094560,
+   "tierAtOpen": 0,
+   "status": "honoured",
+   "exitPx": 2253.42,
+   "settledAt": 1793269800,
+   "settleTx": "0xe46620c759dcce8d4d3a9c197a1756b7848a039f27db04483484888db4807178",
+   "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+   "pnlUsd": 0.0339,
+   "sqError": 0.1156
+  },
+  {
+   "id": 4,
+   "serial": "AVW·000004",
+   "asset": "WHSK",
+   "side": "long",
+   "entryPx": 0.0877,
+   "targetPx": 0.08893,
+   "voidPx": 0.08678,
+   "openedAt": 1793230200,
+   "expiry": 1793316600,
+   "confidence": 0.55,
+   "notionalUsd": 9.5,
+   "amountIn": 9.5,
+   "amountOut": 107.999,
+   "statement": "Avow swears that HSK will trade above 0.08893 on HSKSwap before 05:00 IST on 30 Oct, or this note is void at 0.08678.",
+   "rationale": "HSK has climbed 0.7% in four hours on HashKey Global with rising volume; HSKSwap is roughly at par. A momentum note with a wide horizon, sworn at low confidence.",
+   "signals": {
+    "spreadBps": -8,
+    "momentum1h": 0.18,
+    "momentum4h": 0.71,
+    "volatility": 2.2,
+    "fairPx": 0.08777
+   },
+   "hash": "0x39d7bf95072ee4584acdac2acf46ab222c005d3e1fdb70cd8f6f8424c2721349",
+   "openTx": "0x86a7da91b96afd5121ce8df332a2c200078b3aa0a927d81886d88dd0797d2eba",
+   "openBlock": 23085560,
+   "tierAtOpen": 0,
+   "status": "lapsed",
+   "exitPx": 0.0879,
+   "settledAt": 1793316600,
+   "settleTx": "0x7e431376f912ecef08855d4671126e16d205625ea3acc67fd765ee159ed6bddf",
+   "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+   "pnlUsd": -0.0653,
+   "sqError": 0.3025
+  },
+  {
+   "id": 3,
+   "serial": "AVW·000003",
+   "asset": "WBTC",
+   "side": "short",
+   "entryPx": 77940,
+   "targetPx": 77160.6,
+   "voidPx": 78563.52,
+   "openedAt": 1793212200,
+   "expiry": 1793298600,
+   "confidence": 0.64,
+   "notionalUsd": 9.9,
+   "amountIn": 0.000127021,
+   "amountOut": 9.8703,
+   "statement": "Avow swears that BTC will trade below 77,160.60 on HSKSwap before 00:00 IST on 30 Oct, or this note is void at 78,563.52.",
+   "rationale": "BTC trades 49 bps rich on HSKSwap and the exchange is falling. The WBTC pool is thin (0.7 BTC), so a single arbitrage swap would close the gap.",
+   "signals": {
+    "spreadBps": 49,
+    "momentum1h": -0.21,
+    "momentum4h": -0.63,
+    "volatility": 2.1,
+    "fairPx": 77559.96
+   },
+   "hash": "0xab83d98481c91ced6447b9d48c8a86d66fbd57cd4826cd89bb77f0fa0f8c7bb1",
+   "openTx": "0x6279325a06241b52bbf6b746c7a92103e32c247d2fb59cedceb823926f7e4b70",
+   "openBlock": 23076560,
+   "tierAtOpen": 0,
+   "status": "honoured",
+   "exitPx": 77129.74,
+   "settledAt": 1793244600,
+   "settleTx": "0xfb6ecbdd05d1a701cd0c9c05665502d5ab78f8ff774debb5e25813c72ae84c89",
+   "settler": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+   "pnlUsd": 0.0146,
+   "sqError": 0.1296
+  },
+  {
+   "id": 2,
+   "serial": "AVW·000002",
+   "asset": "WETH",
+   "side": "long",
+   "entryPx": 2262.4,
+   "targetPx": 2296.34,
+   "voidPx": 2237.51,
+   "openedAt": 1793190600,
+   "expiry": 1793277000,
+   "confidence": 0.56,
+   "notionalUsd": 9.6,
+   "amountIn": 9.6,
+   "amountOut": 0.00423055,
+   "statement": "Avow swears that ETH will trade above 2,296.34 on HSKSwap before 18:00 IST on 29 Oct, or this note is void at 2,237.51.",
+   "rationale": "ETH is up 0.9% in four hours on HashKey Global while HSKSwap trails it by 22 bps. Momentum and a discount point the same way. Confidence is modest because the 4 h move is already large.",
+   "signals": {
+    "spreadBps": -22,
+    "momentum1h": 0.31,
+    "momentum4h": 0.92,
+    "volatility": 2.9,
+    "fairPx": 2267.39
+   },
+   "hash": "0xb4f5baba73c8c220d1dc5c7bd70837e6733479b14747a5c47872df754887977d",
+   "openTx": "0x0d7b3a493c1e07e3eabc2f2f137a875a7394ce168e3388d1a4b1287a1f1fde93",
+   "openBlock": 23065760,
+   "tierAtOpen": 0,
+   "status": "void",
+   "exitPx": 2236.61,
+   "settledAt": 1793219400,
+   "settleTx": "0xce72d4d4af852fcf35377309d9d7542ebe030779b7e98427240c3f33a8d3cf3b",
+   "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+   "pnlUsd": -0.197,
+   "sqError": 0.3136
+  },
+  {
+   "id": 1,
+   "serial": "AVW·000001",
+   "asset": "WHSK",
+   "side": "short",
+   "entryPx": 0.08912,
+   "targetPx": 0.08796,
+   "voidPx": 0.08997,
+   "openedAt": 1793176200,
+   "expiry": 1793262600,
+   "confidence": 0.62,
+   "notionalUsd": 9.8,
+   "amountIn": 109.964,
+   "amountOut": 9.7706,
+   "statement": "Avow swears that HSK will trade below 0.08796 on HSKSwap before 14:00 IST on 29 Oct, or this note is void at 0.08997.",
+   "rationale": "HSKSwap HSK sits 58 bps above the HashKey Global mid and the exchange has drifted lower for four hours. The pool last traded 3 h ago, so the premium is stale rather than informed. A sale here and a buy-back near the exchange price clears the 60 bps round trip with room to spare.",
+   "signals": {
+    "spreadBps": 58,
+    "momentum1h": -0.12,
+    "momentum4h": -0.44,
+    "volatility": 2.4,
+    "fairPx": 0.08861
+   },
+   "hash": "0xfe3f0251a34c64b7f31de7aea98713913e5f39bd75b19734f6659fa3a3870496",
+   "openTx": "0x3857bb93456d63eae5662b7f19308f795e326141106539f5ed29d6a357fcce72",
+   "openBlock": 23058560,
+   "tierAtOpen": 0,
+   "status": "honoured",
+   "exitPx": 0.08792,
+   "settledAt": 1793197800,
+   "settleTx": "0x08acdec0d29496605943b4a1abe919533680c0c42054216ed03dcd27e58ab48c",
+   "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+   "pnlUsd": 0.045,
+   "sqError": 0.1444
+  }
+ ],
+ "market": [
+  {
+   "asset": "WETH",
+   "label": "ETH",
+   "dexPx": 2235,
+   "twapPx": 2235,
+   "cexPx": 2224.6,
+   "chainlinkPx": 2256,
+   "chainlinkAgeSec": 12600,
+   "spreadBps": 46.7,
+   "poolUsdt": 48210,
+   "poolAsset": 21.4,
+   "lastSwapAgoSec": 7800,
+   "history": [
+    {
+     "t": 1793169000,
+     "dex": 2251.4,
+     "cex": 2241.372
+    },
+    {
+     "t": 1793170200,
+     "dex": 2251.4,
+     "cex": 2242.146
+    },
+    {
+     "t": 1793171400,
+     "dex": 2251.192,
+     "cex": 2243.299
+    },
+    {
+     "t": 1793172600,
+     "dex": 2251.192,
+     "cex": 2247.219
+    },
+    {
+     "t": 1793173800,
+     "dex": 2255.979,
+     "cex": 2246.831
+    },
+    {
+     "t": 1793175000,
+     "dex": 2255.979,
+     "cex": 2245.361
+    },
+    {
+     "t": 1793176200,
+     "dex": 2261.557,
+     "cex": 2247.524
+    },
+    {
+     "t": 1793177400,
+     "dex": 2261.557,
+     "cex": 2246.169
+    },
+    {
+     "t": 1793178600,
+     "dex": 2263.457,
+     "cex": 2251.204
+    },
+    {
+     "t": 1793179800,
+     "dex": 2265.287,
+     "cex": 2251.818
+    },
+    {
+     "t": 1793181000,
+     "dex": 2261.952,
+     "cex": 2250.386
+    },
+    {
+     "t": 1793182200,
+     "dex": 2261.952,
+     "cex": 2251.624
+    },
+    {
+     "t": 1793183400,
+     "dex": 2261.952,
+     "cex": 2258.546
+    },
+    {
+     "t": 1793184600,
+     "dex": 2261.952,
+     "cex": 2256.008
+    },
+    {
+     "t": 1793185800,
+     "dex": 2261.952,
+     "cex": 2252.323
+    },
+    {
+     "t": 1793187000,
+     "dex": 2261.952,
+     "cex": 2249.9
+    },
+    {
+     "t": 1793188200,
+     "dex": 2261.952,
+     "cex": 2245.399
+    },
+    {
+     "t": 1793189400,
+     "dex": 2258.513,
+     "cex": 2243.632
+    },
+    {
+     "t": 1793190600,
+     "dex": 2262.4,
+     "cex": 2246.867
+    },
+    {
+     "t": 1793191800,
+     "dex": 2262.4,
+     "cex": 2242.379
+    },
+    {
+     "t": 1793193000,
+     "dex": 2249.666,
+     "cex": 2232.048
+    },
+    {
+     "t": 1793194200,
+     "dex": 2249.666,
+     "cex": 2231.907
+    },
+    {
+     "t": 1793195400,
+     "dex": 2249.666,
+     "cex": 2230.658
+    },
+    {
+     "t": 1793196600,
+     "dex": 2249.666,
+     "cex": 2231.801
+    },
+    {
+     "t": 1793197800,
+     "dex": 2245.676,
+     "cex": 2233.206
+    },
+    {
+     "t": 1793199000,
+     "dex": 2245.676,
+     "cex": 2234.384
+    },
+    {
+     "t": 1793200200,
+     "dex": 2244.433,
+     "cex": 2233.056
+    },
+    {
+     "t": 1793201400,
+     "dex": 2244.355,
+     "cex": 2235.743
+    },
+    {
+     "t": 1793202600,
+     "dex": 2244.355,
+     "cex": 2230.233
+    },
+    {
+     "t": 1793203800,
+     "dex": 2244.355,
+     "cex": 2232.354
+    },
+    {
+     "t": 1793205000,
+     "dex": 2241.04,
+     "cex": 2229.964
+    },
+    {
+     "t": 1793206200,
+     "dex": 2241.04,
+     "cex": 2230.293
+    },
+    {
+     "t": 1793207400,
+     "dex": 2241.04,
+     "cex": 2230.156
+    },
+    {
+     "t": 1793208600,
+     "dex": 2241.04,
+     "cex": 2230.261
+    },
+    {
+     "t": 1793209800,
+     "dex": 2241.04,
+     "cex": 2233.531
+    },
+    {
+     "t": 1793211000,
+     "dex": 2241.04,
+     "cex": 2234.721
+    },
+    {
+     "t": 1793212200,
+     "dex": 2243.325,
+     "cex": 2234.676
+    },
+    {
+     "t": 1793213400,
+     "dex": 2244.872,
+     "cex": 2236.54
+    },
+    {
+     "t": 1793214600,
+     "dex": 2244.872,
+     "cex": 2238.934
+    },
+    {
+     "t": 1793215800,
+     "dex": 2244.233,
+     "cex": 2235.597
+    },
+    {
+     "t": 1793217000,
+     "dex": 2244.233,
+     "cex": 2232.034
+    },
+    {
+     "t": 1793218200,
+     "dex": 2244.233,
+     "cex": 2231.547
+    },
+    {
+     "t": 1793219400,
+     "dex": 2236.61,
+     "cex": 2225.315
+    },
+    {
+     "t": 1793220600,
+     "dex": 2236.61,
+     "cex": 2228.751
+    },
+    {
+     "t": 1793221800,
+     "dex": 2236.61,
+     "cex": 2231.688
+    },
+    {
+     "t": 1793223000,
+     "dex": 2236.61,
+     "cex": 2235.271
+    },
+    {
+     "t": 1793224200,
+     "dex": 2236.61,
+     "cex": 2236.249
+    },
+    {
+     "t": 1793225400,
+     "dex": 2236.61,
+     "cex": 2233.388
+    },
+    {
+     "t": 1793226600,
+     "dex": 2248.669,
+     "cex": 2238.066
+    },
+    {
+     "t": 1793227800,
+     "dex": 2254.07,
+     "cex": 2242.924
+    },
+    {
+     "t": 1793229000,
+     "dex": 2254.07,
+     "cex": 2245.534
+    },
+    {
+     "t": 1793230200,
+     "dex": 2254.07,
+     "cex": 2245.771
+    },
+    {
+     "t": 1793231400,
+     "dex": 2254.07,
+     "cex": 2246.092
+    },
+    {
+     "t": 1793232600,
+     "dex": 2253.382,
+     "cex": 2243.146
+    },
+    {
+     "t": 1793233800,
+     "dex": 2252.41,
+     "cex": 2245.812
+    },
+    {
+     "t": 1793235000,
+     "dex": 2253.245,
+     "cex": 2246.135
+    },
+    {
+     "t": 1793236200,
+     "dex": 2258.21,
+     "cex": 2250.793
+    },
+    {
+     "t": 1793237400,
+     "dex": 2262.353,
+     "cex": 2253.739
+    },
+    {
+     "t": 1793238600,
+     "dex": 2266.662,
+     "cex": 2257.128
+    },
+    {
+     "t": 1793239800,
+     "dex": 2266.662,
+     "cex": 2260.68
+    },
+    {
+     "t": 1793241000,
+     "dex": 2266.662,
+     "cex": 2262.244
+    },
+    {
+     "t": 1793242200,
+     "dex": 2266.662,
+     "cex": 2264.556
+    },
+    {
+     "t": 1793243400,
+     "dex": 2266.662,
+     "cex": 2266.732
+    },
+    {
+     "t": 1793244600,
+     "dex": 2266.662,
+     "cex": 2266.344
+    },
+    {
+     "t": 1793245800,
+     "dex": 2277.979,
+     "cex": 2263.343
+    },
+    {
+     "t": 1793247000,
+     "dex": 2279.66,
+     "cex": 2267.272
+    },
+    {
+     "t": 1793248200,
+     "dex": 2281.7,
+     "cex": 2271.768
+    },
+    {
+     "t": 1793249400,
+     "dex": 2275.786,
+     "cex": 2264.222
+    },
+    {
+     "t": 1793250600,
+     "dex": 2275.786,
+     "cex": 2267.644
+    },
+    {
+     "t": 1793251800,
+     "dex": 2275.786,
+     "cex": 2265.42
+    },
+    {
+     "t": 1793253000,
+     "dex": 2275.786,
+     "cex": 2265.151
+    },
+    {
+     "t": 1793254200,
+     "dex": 2275.786,
+     "cex": 2260.117
+    },
+    {
+     "t": 1793255400,
+     "dex": 2273.24,
+     "cex": 2261.349
+    },
+    {
+     "t": 1793256600,
+     "dex": 2271.142,
+     "cex": 2256.554
+    },
+    {
+     "t": 1793257800,
+     "dex": 2271.142,
+     "cex": 2256.274
+    },
+    {
+     "t": 1793259000,
+     "dex": 2267.762,
+     "cex": 2252.689
+    },
+    {
+     "t": 1793260200,
+     "dex": 2267.762,
+     "cex": 2246.535
+    },
+    {
+     "t": 1793261400,
+     "dex": 2267.762,
+     "cex": 2246.635
+    },
+    {
+     "t": 1793262600,
+     "dex": 2267.762,
+     "cex": 2246.007
+    },
+    {
+     "t": 1793263800,
+     "dex": 2263.227,
+     "cex": 2245.17
+    },
+    {
+     "t": 1793265000,
+     "dex": 2260.23,
+     "cex": 2244.763
+    },
+    {
+     "t": 1793266200,
+     "dex": 2260.23,
+     "cex": 2247.82
+    },
+    {
+     "t": 1793267400,
+     "dex": 2260.23,
+     "cex": 2243.123
+    },
+    {
+     "t": 1793268600,
+     "dex": 2260.23,
+     "cex": 2243.543
+    },
+    {
+     "t": 1793269800,
+     "dex": 2253.42,
+     "cex": 2236.868
+    },
+    {
+     "t": 1793271000,
+     "dex": 2254.207,
+     "cex": 2237.768
+    },
+    {
+     "t": 1793272200,
+     "dex": 2250.376,
+     "cex": 2233.133
+    },
+    {
+     "t": 1793273400,
+     "dex": 2251.052,
+     "cex": 2233.313
+    },
+    {
+     "t": 1793274600,
+     "dex": 2251.052,
+     "cex": 2233.995
+    },
+    {
+     "t": 1793275800,
+     "dex": 2250.297,
+     "cex": 2233.994
+    },
+    {
+     "t": 1793277000,
+     "dex": 2248.009,
+     "cex": 2232.351
+    },
+    {
+     "t": 1793278200,
+     "dex": 2251.151,
+     "cex": 2234.891
+    },
+    {
+     "t": 1793279400,
+     "dex": 2251.151,
+     "cex": 2234.593
+    },
+    {
+     "t": 1793280600,
+     "dex": 2251.151,
+     "cex": 2240.704
+    },
+    {
+     "t": 1793281800,
+     "dex": 2251.151,
+     "cex": 2242.34
+    },
+    {
+     "t": 1793283000,
+     "dex": 2258.846,
+     "cex": 2247.633
+    },
+    {
+     "t": 1793284200,
+     "dex": 2258.846,
+     "cex": 2249.568
+    },
+    {
+     "t": 1793285400,
+     "dex": 2255.032,
+     "cex": 2247.183
+    },
+    {
+     "t": 1793286600,
+     "dex": 2257.925,
+     "cex": 2250.184
+    },
+    {
+     "t": 1793287800,
+     "dex": 2257.268,
+     "cex": 2252.616
+    },
+    {
+     "t": 1793289000,
+     "dex": 2257.268,
+     "cex": 2253.77
+    },
+    {
+     "t": 1793290200,
+     "dex": 2260.041,
+     "cex": 2253.556
+    },
+    {
+     "t": 1793291400,
+     "dex": 2257.292,
+     "cex": 2249.122
+    },
+    {
+     "t": 1793292600,
+     "dex": 2257.292,
+     "cex": 2246.019
+    },
+    {
+     "t": 1793293800,
+     "dex": 2257.516,
+     "cex": 2249.647
+    },
+    {
+     "t": 1793295000,
+     "dex": 2257.516,
+     "cex": 2251.525
+    },
+    {
+     "t": 1793296200,
+     "dex": 2257.516,
+     "cex": 2253.577
+    },
+    {
+     "t": 1793297400,
+     "dex": 2257.516,
+     "cex": 2251.844
+    },
+    {
+     "t": 1793298600,
+     "dex": 2265.959,
+     "cex": 2255.892
+    },
+    {
+     "t": 1793299800,
+     "dex": 2265.959,
+     "cex": 2251.062
+    },
+    {
+     "t": 1793301000,
+     "dex": 2259.593,
+     "cex": 2246.079
+    },
+    {
+     "t": 1793302200,
+     "dex": 2259.593,
+     "cex": 2246.257
+    },
+    {
+     "t": 1793303400,
+     "dex": 2259.593,
+     "cex": 2242.602
+    },
+    {
+     "t": 1793304600,
+     "dex": 2257.675,
+     "cex": 2241.382
+    },
+    {
+     "t": 1793305800,
+     "dex": 2255.349,
+     "cex": 2239.064
+    },
+    {
+     "t": 1793307000,
+     "dex": 2252.935,
+     "cex": 2237.777
+    },
+    {
+     "t": 1793308200,
+     "dex": 2255.164,
+     "cex": 2241.764
+    },
+    {
+     "t": 1793309400,
+     "dex": 2255.164,
+     "cex": 2248.581
+    },
+    {
+     "t": 1793310600,
+     "dex": 2255.164,
+     "cex": 2250.071
+    },
+    {
+     "t": 1793311800,
+     "dex": 2255.164,
+     "cex": 2249.608
+    },
+    {
+     "t": 1793313000,
+     "dex": 2256.762,
+     "cex": 2249.042
+    },
+    {
+     "t": 1793314200,
+     "dex": 2256.762,
+     "cex": 2248.417
+    },
+    {
+     "t": 1793315400,
+     "dex": 2256.762,
+     "cex": 2246.075
+    },
+    {
+     "t": 1793316600,
+     "dex": 2250.974,
+     "cex": 2241.836
+    },
+    {
+     "t": 1793317800,
+     "dex": 2250.974,
+     "cex": 2244.312
+    },
+    {
+     "t": 1793319000,
+     "dex": 2250.974,
+     "cex": 2249.448
+    },
+    {
+     "t": 1793320200,
+     "dex": 2255.3,
+     "cex": 2241.718
+    },
+    {
+     "t": 1793321400,
+     "dex": 2256.733,
+     "cex": 2243.961
+    },
+    {
+     "t": 1793322600,
+     "dex": 2256.733,
+     "cex": 2249.443
+    },
+    {
+     "t": 1793323800,
+     "dex": 2263.66,
+     "cex": 2252.198
+    },
+    {
+     "t": 1793325000,
+     "dex": 2263.66,
+     "cex": 2256.426
+    },
+    {
+     "t": 1793326200,
+     "dex": 2263.66,
+     "cex": 2258.109
+    },
+    {
+     "t": 1793327400,
+     "dex": 2263.66,
+     "cex": 2250.899
+    },
+    {
+     "t": 1793328600,
+     "dex": 2263.66,
+     "cex": 2251.348
+    },
+    {
+     "t": 1793329800,
+     "dex": 2269.332,
+     "cex": 2258.661
+    },
+    {
+     "t": 1793331000,
+     "dex": 2269.332,
+     "cex": 2260.734
+    },
+    {
+     "t": 1793332200,
+     "dex": 2269.332,
+     "cex": 2256.829
+    },
+    {
+     "t": 1793333400,
+     "dex": 2269.332,
+     "cex": 2258.767
+    },
+    {
+     "t": 1793334600,
+     "dex": 2276.51,
+     "cex": 2260.866
+    },
+    {
+     "t": 1793335800,
+     "dex": 2276.51,
+     "cex": 2256.193
+    },
+    {
+     "t": 1793337000,
+     "dex": 2276.51,
+     "cex": 2255.7
+    },
+    {
+     "t": 1793338200,
+     "dex": 2276.51,
+     "cex": 2252.842
+    },
+    {
+     "t": 1793339400,
+     "dex": 2270.809,
+     "cex": 2252.747
+    },
+    {
+     "t": 1793340600,
+     "dex": 2270.03,
+     "cex": 2253.278
+    },
+    {
+     "t": 1793341800,
+     "dex": 2267.325,
+     "cex": 2250.511
+    },
+    {
+     "t": 1793343000,
+     "dex": 2268.936,
+     "cex": 2251.387
+    },
+    {
+     "t": 1793344200,
+     "dex": 2265.338,
+     "cex": 2251.149
+    },
+    {
+     "t": 1793345400,
+     "dex": 2260.539,
+     "cex": 2246.378
+    },
+    {
+     "t": 1793346600,
+     "dex": 2262.208,
+     "cex": 2251.842
+    },
+    {
+     "t": 1793347800,
+     "dex": 2257.096,
+     "cex": 2245.142
+    },
+    {
+     "t": 1793349000,
+     "dex": 2257.096,
+     "cex": 2241.344
+    },
+    {
+     "t": 1793350200,
+     "dex": 2257.096,
+     "cex": 2242.246
+    },
+    {
+     "t": 1793351400,
+     "dex": 2257.096,
+     "cex": 2238.589
+    },
+    {
+     "t": 1793352600,
+     "dex": 2257.096,
+     "cex": 2241.077
+    },
+    {
+     "t": 1793353800,
+     "dex": 2257.096,
+     "cex": 2242.539
+    },
+    {
+     "t": 1793355000,
+     "dex": 2257.096,
+     "cex": 2238.651
+    },
+    {
+     "t": 1793356200,
+     "dex": 2257.096,
+     "cex": 2238.182
+    },
+    {
+     "t": 1793357400,
+     "dex": 2257.096,
+     "cex": 2239.924
+    },
+    {
+     "t": 1793358600,
+     "dex": 2257.096,
+     "cex": 2241.95
+    },
+    {
+     "t": 1793359800,
+     "dex": 2257.096,
+     "cex": 2242.944
+    },
+    {
+     "t": 1793361000,
+     "dex": 2257.096,
+     "cex": 2242.188
+    },
+    {
+     "t": 1793362200,
+     "dex": 2257.096,
+     "cex": 2239.314
+    },
+    {
+     "t": 1793363400,
+     "dex": 2252.003,
+     "cex": 2239.902
+    },
+    {
+     "t": 1793364600,
+     "dex": 2258.091,
+     "cex": 2244.757
+    },
+    {
+     "t": 1793365800,
+     "dex": 2258.091,
+     "cex": 2245.668
+    },
+    {
+     "t": 1793367000,
+     "dex": 2253.328,
+     "cex": 2241.394
+    },
+    {
+     "t": 1793368200,
+     "dex": 2253.328,
+     "cex": 2240.049
+    },
+    {
+     "t": 1793369400,
+     "dex": 2248.315,
+     "cex": 2239.56
+    },
+    {
+     "t": 1793370600,
+     "dex": 2248.315,
+     "cex": 2236.947
+    },
+    {
+     "t": 1793371800,
+     "dex": 2253.199,
+     "cex": 2243.566
+    },
+    {
+     "t": 1793373000,
+     "dex": 2253.199,
+     "cex": 2241.123
+    },
+    {
+     "t": 1793374200,
+     "dex": 2253.199,
+     "cex": 2237.593
+    },
+    {
+     "t": 1793375400,
+     "dex": 2246.565,
+     "cex": 2236.584
+    },
+    {
+     "t": 1793376600,
+     "dex": 2246.565,
+     "cex": 2233.977
+    },
+    {
+     "t": 1793377800,
+     "dex": 2244.184,
+     "cex": 2232.122
+    },
+    {
+     "t": 1793379000,
+     "dex": 2244.184,
+     "cex": 2235.938
+    },
+    {
+     "t": 1793380200,
+     "dex": 2245.336,
+     "cex": 2235.488
+    },
+    {
+     "t": 1793381400,
+     "dex": 2245.584,
+     "cex": 2235.651
+    },
+    {
+     "t": 1793382600,
+     "dex": 2245.066,
+     "cex": 2234.057
+    },
+    {
+     "t": 1793383800,
+     "dex": 2245.522,
+     "cex": 2234.84
+    },
+    {
+     "t": 1793385000,
+     "dex": 2243.071,
+     "cex": 2231.1
+    },
+    {
+     "t": 1793386200,
+     "dex": 2240.433,
+     "cex": 2231.571
+    },
+    {
+     "t": 1793387400,
+     "dex": 2240.433,
+     "cex": 2233.04
+    },
+    {
+     "t": 1793388600,
+     "dex": 2238.512,
+     "cex": 2231.033
+    },
+    {
+     "t": 1793389800,
+     "dex": 2240.74,
+     "cex": 2231.88
+    },
+    {
+     "t": 1793391000,
+     "dex": 2241.652,
+     "cex": 2234.856
+    },
+    {
+     "t": 1793392200,
+     "dex": 2241.652,
+     "cex": 2235.592
+    },
+    {
+     "t": 1793393400,
+     "dex": 2241.652,
+     "cex": 2233.783
+    },
+    {
+     "t": 1793394600,
+     "dex": 2241.652,
+     "cex": 2231.692
+    },
+    {
+     "t": 1793395800,
+     "dex": 2240.05,
+     "cex": 2233.858
+    },
+    {
+     "t": 1793397000,
+     "dex": 2238.563,
+     "cex": 2229.716
+    },
+    {
+     "t": 1793398200,
+     "dex": 2238.563,
+     "cex": 2231.445
+    },
+    {
+     "t": 1793399400,
+     "dex": 2238.563,
+     "cex": 2232.118
+    },
+    {
+     "t": 1793400600,
+     "dex": 2238.563,
+     "cex": 2231.936
+    },
+    {
+     "t": 1793401800,
+     "dex": 2238.563,
+     "cex": 2227.393
+    },
+    {
+     "t": 1793403000,
+     "dex": 2238.563,
+     "cex": 2229.452
+    },
+    {
+     "t": 1793404200,
+     "dex": 2242.417,
+     "cex": 2233.411
+    },
+    {
+     "t": 1793405400,
+     "dex": 2242.417,
+     "cex": 2229.438
+    },
+    {
+     "t": 1793406600,
+     "dex": 2242.417,
+     "cex": 2228.147
+    },
+    {
+     "t": 1793407800,
+     "dex": 2242.417,
+     "cex": 2227.197
+    },
+    {
+     "t": 1793409000,
+     "dex": 2242.417,
+     "cex": 2225.683
+    },
+    {
+     "t": 1793410200,
+     "dex": 2242.417,
+     "cex": 2227.389
+    },
+    {
+     "t": 1793411400,
+     "dex": 2240.14,
+     "cex": 2229.493
+    },
+    {
+     "t": 1793412600,
+     "dex": 2237.882,
+     "cex": 2227.262
+    },
+    {
+     "t": 1793413800,
+     "dex": 2237.882,
+     "cex": 2222.993
+    },
+    {
+     "t": 1793415000,
+     "dex": 2237.882,
+     "cex": 2220.22
+    },
+    {
+     "t": 1793416200,
+     "dex": 2237.882,
+     "cex": 2221.805
+    },
+    {
+     "t": 1793417400,
+     "dex": 2237.882,
+     "cex": 2223.723
+    },
+    {
+     "t": 1793418600,
+     "dex": 2234.073,
+     "cex": 2224.878
+    },
+    {
+     "t": 1793419800,
+     "dex": 2234.073,
+     "cex": 2224.499
+    },
+    {
+     "t": 1793421000,
+     "dex": 2235,
+     "cex": 2224.271
+    },
+    {
+     "t": 1793422200,
+     "dex": 2235,
+     "cex": 2225.821
+    },
+    {
+     "t": 1793423400,
+     "dex": 2235,
+     "cex": 2225.033
+    },
+    {
+     "t": 1793424600,
+     "dex": 2235,
+     "cex": 2225.824
+    },
+    {
+     "t": 1793425800,
+     "dex": 2235,
+     "cex": 2225.689
+    },
+    {
+     "t": 1793427000,
+     "dex": 2235,
+     "cex": 2223.921
+    },
+    {
+     "t": 1793428200,
+     "dex": 2235,
+     "cex": 2224.6
+    }
+   ]
+  },
+  {
+   "asset": "WBTC",
+   "label": "BTC",
+   "dexPx": 76827,
+   "twapPx": 76827,
+   "cexPx": 76556,
+   "chainlinkPx": 77569,
+   "chainlinkAgeSec": 18720,
+   "spreadBps": 35.4,
+   "poolUsdt": 50140,
+   "poolAsset": 0.66,
+   "lastSwapAgoSec": 6600,
+   "history": [
+    {
+     "t": 1793169000,
+     "dex": 77620,
+     "cex": 77346.09
+    },
+    {
+     "t": 1793170200,
+     "dex": 77686.66,
+     "cex": 77482.93
+    },
+    {
+     "t": 1793171400,
+     "dex": 77686.66,
+     "cex": 77447.62
+    },
+    {
+     "t": 1793172600,
+     "dex": 77686.66,
+     "cex": 77354.81
+    },
+    {
+     "t": 1793173800,
+     "dex": 77530.68,
+     "cex": 77208.25
+    },
+    {
+     "t": 1793175000,
+     "dex": 77530.68,
+     "cex": 77253.34
+    },
+    {
+     "t": 1793176200,
+     "dex": 77700.99,
+     "cex": 77363.16
+    },
+    {
+     "t": 1793177400,
+     "dex": 77700.99,
+     "cex": 77398.7
+    },
+    {
+     "t": 1793178600,
+     "dex": 77683.28,
+     "cex": 77330.95
+    },
+    {
+     "t": 1793179800,
+     "dex": 77683.28,
+     "cex": 77283.67
+    },
+    {
+     "t": 1793181000,
+     "dex": 77683.28,
+     "cex": 77114.63
+    },
+    {
+     "t": 1793182200,
+     "dex": 77589.88,
+     "cex": 77136.99
+    },
+    {
+     "t": 1793183400,
+     "dex": 77566.14,
+     "cex": 77043.13
+    },
+    {
+     "t": 1793184600,
+     "dex": 77566.14,
+     "cex": 77060.35
+    },
+    {
+     "t": 1793185800,
+     "dex": 77555.56,
+     "cex": 77039.31
+    },
+    {
+     "t": 1793187000,
+     "dex": 77555.56,
+     "cex": 77154.21
+    },
+    {
+     "t": 1793188200,
+     "dex": 77555.56,
+     "cex": 77170.73
+    },
+    {
+     "t": 1793189400,
+     "dex": 77477.34,
+     "cex": 76983.78
+    },
+    {
+     "t": 1793190600,
+     "dex": 77578.84,
+     "cex": 77106.7
+    },
+    {
+     "t": 1793191800,
+     "dex": 77578.84,
+     "cex": 77073.23
+    },
+    {
+     "t": 1793193000,
+     "dex": 77592.32,
+     "cex": 77085.24
+    },
+    {
+     "t": 1793194200,
+     "dex": 77592.32,
+     "cex": 77022.77
+    },
+    {
+     "t": 1793195400,
+     "dex": 77575.37,
+     "cex": 77097.36
+    },
+    {
+     "t": 1793196600,
+     "dex": 77575.37,
+     "cex": 77176.8
+    },
+    {
+     "t": 1793197800,
+     "dex": 77575.37,
+     "cex": 77112.13
+    },
+    {
+     "t": 1793199000,
+     "dex": 77575.37,
+     "cex": 77301.2
+    },
+    {
+     "t": 1793200200,
+     "dex": 77888.47,
+     "cex": 77346.98
+    },
+    {
+     "t": 1793201400,
+     "dex": 77867.14,
+     "cex": 77301.39
+    },
+    {
+     "t": 1793202600,
+     "dex": 77867.14,
+     "cex": 77462.24
+    },
+    {
+     "t": 1793203800,
+     "dex": 77991.1,
+     "cex": 77548.28
+    },
+    {
+     "t": 1793205000,
+     "dex": 77970.33,
+     "cex": 77527.65
+    },
+    {
+     "t": 1793206200,
+     "dex": 77898.1,
+     "cex": 77400.98
+    },
+    {
+     "t": 1793207400,
+     "dex": 78052.07,
+     "cex": 77577.08
+    },
+    {
+     "t": 1793208600,
+     "dex": 78052.07,
+     "cex": 77708.05
+    },
+    {
+     "t": 1793209800,
+     "dex": 78052.07,
+     "cex": 77654.63
+    },
+    {
+     "t": 1793211000,
+     "dex": 78052.07,
+     "cex": 77644.18
+    },
+    {
+     "t": 1793212200,
+     "dex": 77940,
+     "cex": 77504.3
+    },
+    {
+     "t": 1793213400,
+     "dex": 77866.75,
+     "cex": 77397.31
+    },
+    {
+     "t": 1793214600,
+     "dex": 77866.75,
+     "cex": 77255.08
+    },
+    {
+     "t": 1793215800,
+     "dex": 77866.75,
+     "cex": 77293.39
+    },
+    {
+     "t": 1793217000,
+     "dex": 77866.75,
+     "cex": 77372.49
+    },
+    {
+     "t": 1793218200,
+     "dex": 77866.75,
+     "cex": 77354.98
+    },
+    {
+     "t": 1793219400,
+     "dex": 77503.53,
+     "cex": 77228.86
+    },
+    {
+     "t": 1793220600,
+     "dex": 77503.53,
+     "cex": 77156.63
+    },
+    {
+     "t": 1793221800,
+     "dex": 77503.53,
+     "cex": 77093.36
+    },
+    {
+     "t": 1793223000,
+     "dex": 77503.53,
+     "cex": 77080.34
+    },
+    {
+     "t": 1793224200,
+     "dex": 77376.86,
+     "cex": 77093.71
+    },
+    {
+     "t": 1793225400,
+     "dex": 77355.21,
+     "cex": 77038.91
+    },
+    {
+     "t": 1793226600,
+     "dex": 77399.95,
+     "cex": 77093.14
+    },
+    {
+     "t": 1793227800,
+     "dex": 77418.01,
+     "cex": 77087.02
+    },
+    {
+     "t": 1793229000,
+     "dex": 77347.38,
+     "cex": 77017.72
+    },
+    {
+     "t": 1793230200,
+     "dex": 77253.25,
+     "cex": 76893.84
+    },
+    {
+     "t": 1793231400,
+     "dex": 77244.78,
+     "cex": 76845.37
+    },
+    {
+     "t": 1793232600,
+     "dex": 77244.78,
+     "cex": 76851.68
+    },
+    {
+     "t": 1793233800,
+     "dex": 77244.78,
+     "cex": 76886.95
+    },
+    {
+     "t": 1793235000,
+     "dex": 77244.78,
+     "cex": 76885.16
+    },
+    {
+     "t": 1793236200,
+     "dex": 77244.78,
+     "cex": 76894.04
+    },
+    {
+     "t": 1793237400,
+     "dex": 77244.78,
+     "cex": 76907.76
+    },
+    {
+     "t": 1793238600,
+     "dex": 77244.78,
+     "cex": 76874.84
+    },
+    {
+     "t": 1793239800,
+     "dex": 77244.78,
+     "cex": 76776.39
+    },
+    {
+     "t": 1793241000,
+     "dex": 77244.78,
+     "cex": 76752.16
+    },
+    {
+     "t": 1793242200,
+     "dex": 77244.78,
+     "cex": 76815.77
+    },
+    {
+     "t": 1793243400,
+     "dex": 77244.78,
+     "cex": 76834.98
+    },
+    {
+     "t": 1793244600,
+     "dex": 77129.74,
+     "cex": 76729.65
+    },
+    {
+     "t": 1793245800,
+     "dex": 77172.36,
+     "cex": 76812.72
+    },
+    {
+     "t": 1793247000,
+     "dex": 77172.36,
+     "cex": 76888.05
+    },
+    {
+     "t": 1793248200,
+     "dex": 77172.36,
+     "cex": 76787.94
+    },
+    {
+     "t": 1793249400,
+     "dex": 77059.92,
+     "cex": 76803.87
+    },
+    {
+     "t": 1793250600,
+     "dex": 77059.92,
+     "cex": 76699.29
+    },
+    {
+     "t": 1793251800,
+     "dex": 77059.92,
+     "cex": 76646.94
+    },
+    {
+     "t": 1793253000,
+     "dex": 77059.92,
+     "cex": 76777.52
+    },
+    {
+     "t": 1793254200,
+     "dex": 77059.92,
+     "cex": 76934.43
+    },
+    {
+     "t": 1793255400,
+     "dex": 77262.13,
+     "cex": 76958.81
+    },
+    {
+     "t": 1793256600,
+     "dex": 77262.13,
+     "cex": 77019.69
+    },
+    {
+     "t": 1793257800,
+     "dex": 77262.13,
+     "cex": 77017.01
+    },
+    {
+     "t": 1793259000,
+     "dex": 77212.3,
+     "cex": 77000.46
+    },
+    {
+     "t": 1793260200,
+     "dex": 77212.3,
+     "cex": 77063.17
+    },
+    {
+     "t": 1793261400,
+     "dex": 77195.57,
+     "cex": 76919.56
+    },
+    {
+     "t": 1793262600,
+     "dex": 77195.57,
+     "cex": 77153.49
+    },
+    {
+     "t": 1793263800,
+     "dex": 77195.57,
+     "cex": 77139.87
+    },
+    {
+     "t": 1793265000,
+     "dex": 77318.18,
+     "cex": 77111.41
+    },
+    {
+     "t": 1793266200,
+     "dex": 77318.18,
+     "cex": 77221.5
+    },
+    {
+     "t": 1793267400,
+     "dex": 77417.79,
+     "cex": 77195.75
+    },
+    {
+     "t": 1793268600,
+     "dex": 77436.76,
+     "cex": 77179.48
+    },
+    {
+     "t": 1793269800,
+     "dex": 77436.76,
+     "cex": 77038.36
+    },
+    {
+     "t": 1793271000,
+     "dex": 77368.7,
+     "cex": 77062.13
+    },
+    {
+     "t": 1793272200,
+     "dex": 77295.13,
+     "cex": 76889.76
+    },
+    {
+     "t": 1793273400,
+     "dex": 77295.13,
+     "cex": 76857.89
+    },
+    {
+     "t": 1793274600,
+     "dex": 77295.13,
+     "cex": 76917.63
+    },
+    {
+     "t": 1793275800,
+     "dex": 77295.13,
+     "cex": 76933.09
+    },
+    {
+     "t": 1793277000,
+     "dex": 77295.13,
+     "cex": 76761.11
+    },
+    {
+     "t": 1793278200,
+     "dex": 77068.88,
+     "cex": 76771.78
+    },
+    {
+     "t": 1793279400,
+     "dex": 77068.88,
+     "cex": 76626.86
+    },
+    {
+     "t": 1793280600,
+     "dex": 77153.78,
+     "cex": 76767.32
+    },
+    {
+     "t": 1793281800,
+     "dex": 77153.78,
+     "cex": 76767.06
+    },
+    {
+     "t": 1793283000,
+     "dex": 77153.78,
+     "cex": 76736.97
+    },
+    {
+     "t": 1793284200,
+     "dex": 77120,
+     "cex": 76630.66
+    },
+    {
+     "t": 1793285400,
+     "dex": 77238.25,
+     "cex": 76771.59
+    },
+    {
+     "t": 1793286600,
+     "dex": 77155.3,
+     "cex": 76630.65
+    },
+    {
+     "t": 1793287800,
+     "dex": 77155.3,
+     "cex": 76515.64
+    },
+    {
+     "t": 1793289000,
+     "dex": 77103,
+     "cex": 76504.47
+    },
+    {
+     "t": 1793290200,
+     "dex": 77103,
+     "cex": 76537.68
+    },
+    {
+     "t": 1793291400,
+     "dex": 77103,
+     "cex": 76570.18
+    },
+    {
+     "t": 1793292600,
+     "dex": 76964.04,
+     "cex": 76448.17
+    },
+    {
+     "t": 1793293800,
+     "dex": 76964.04,
+     "cex": 76351.04
+    },
+    {
+     "t": 1793295000,
+     "dex": 76964.04,
+     "cex": 76349.5
+    },
+    {
+     "t": 1793296200,
+     "dex": 76964.04,
+     "cex": 76508.46
+    },
+    {
+     "t": 1793297400,
+     "dex": 76964.04,
+     "cex": 76640.91
+    },
+    {
+     "t": 1793298600,
+     "dex": 76980,
+     "cex": 76566.8
+    },
+    {
+     "t": 1793299800,
+     "dex": 77022.53,
+     "cex": 76682.59
+    },
+    {
+     "t": 1793301000,
+     "dex": 77003.26,
+     "cex": 76701.84
+    },
+    {
+     "t": 1793302200,
+     "dex": 77003.26,
+     "cex": 76740.08
+    },
+    {
+     "t": 1793303400,
+     "dex": 77003.26,
+     "cex": 76773.27
+    },
+    {
+     "t": 1793304600,
+     "dex": 76990.53,
+     "cex": 76692.96
+    },
+    {
+     "t": 1793305800,
+     "dex": 76932.95,
+     "cex": 76643.89
+    },
+    {
+     "t": 1793307000,
+     "dex": 77027.3,
+     "cex": 76692.26
+    },
+    {
+     "t": 1793308200,
+     "dex": 77027.3,
+     "cex": 76556.2
+    },
+    {
+     "t": 1793309400,
+     "dex": 76906.31,
+     "cex": 76611.15
+    },
+    {
+     "t": 1793310600,
+     "dex": 76906.31,
+     "cex": 76599.78
+    },
+    {
+     "t": 1793311800,
+     "dex": 76906.31,
+     "cex": 76605.72
+    },
+    {
+     "t": 1793313000,
+     "dex": 76939.75,
+     "cex": 76702.17
+    },
+    {
+     "t": 1793314200,
+     "dex": 76926.47,
+     "cex": 76679.3
+    },
+    {
+     "t": 1793315400,
+     "dex": 76926.47,
+     "cex": 76730.34
+    },
+    {
+     "t": 1793316600,
+     "dex": 76890.67,
+     "cex": 76656.18
+    },
+    {
+     "t": 1793317800,
+     "dex": 76861.69,
+     "cex": 76671.15
+    },
+    {
+     "t": 1793319000,
+     "dex": 76861.69,
+     "cex": 76634.76
+    },
+    {
+     "t": 1793320200,
+     "dex": 76781.76,
+     "cex": 76631.09
+    },
+    {
+     "t": 1793321400,
+     "dex": 76947.75,
+     "cex": 76836
+    },
+    {
+     "t": 1793322600,
+     "dex": 76834.69,
+     "cex": 76700.36
+    },
+    {
+     "t": 1793323800,
+     "dex": 76834.69,
+     "cex": 76753.88
+    },
+    {
+     "t": 1793325000,
+     "dex": 76834.69,
+     "cex": 76628.54
+    },
+    {
+     "t": 1793326200,
+     "dex": 76834.69,
+     "cex": 76636.11
+    },
+    {
+     "t": 1793327400,
+     "dex": 76834.69,
+     "cex": 76569.85
+    },
+    {
+     "t": 1793328600,
+     "dex": 76834.69,
+     "cex": 76572.04
+    },
+    {
+     "t": 1793329800,
+     "dex": 76834.69,
+     "cex": 76562.74
+    },
+    {
+     "t": 1793331000,
+     "dex": 76834.69,
+     "cex": 76697.09
+    },
+    {
+     "t": 1793332200,
+     "dex": 76834.69,
+     "cex": 76723.86
+    },
+    {
+     "t": 1793333400,
+     "dex": 76834.69,
+     "cex": 76852.62
+    },
+    {
+     "t": 1793334600,
+     "dex": 76834.69,
+     "cex": 76870.17
+    },
+    {
+     "t": 1793335800,
+     "dex": 76834.69,
+     "cex": 76757.7
+    },
+    {
+     "t": 1793337000,
+     "dex": 76834.69,
+     "cex": 76646.24
+    },
+    {
+     "t": 1793338200,
+     "dex": 76834.69,
+     "cex": 76766.36
+    },
+    {
+     "t": 1793339400,
+     "dex": 76834.69,
+     "cex": 76729.26
+    },
+    {
+     "t": 1793340600,
+     "dex": 76950.85,
+     "cex": 76686.54
+    },
+    {
+     "t": 1793341800,
+     "dex": 76950.85,
+     "cex": 76706.43
+    },
+    {
+     "t": 1793343000,
+     "dex": 76950.85,
+     "cex": 76694.66
+    },
+    {
+     "t": 1793344200,
+     "dex": 77054.48,
+     "cex": 76796.63
+    },
+    {
+     "t": 1793345400,
+     "dex": 77054.48,
+     "cex": 76789.5
+    },
+    {
+     "t": 1793346600,
+     "dex": 77037.77,
+     "cex": 76765.27
+    },
+    {
+     "t": 1793347800,
+     "dex": 77037.77,
+     "cex": 76723.18
+    },
+    {
+     "t": 1793349000,
+     "dex": 77037.77,
+     "cex": 76669.42
+    },
+    {
+     "t": 1793350200,
+     "dex": 77037.77,
+     "cex": 76640.72
+    },
+    {
+     "t": 1793351400,
+     "dex": 77037.77,
+     "cex": 76721.52
+    },
+    {
+     "t": 1793352600,
+     "dex": 77037.77,
+     "cex": 76640.54
+    },
+    {
+     "t": 1793353800,
+     "dex": 77037.77,
+     "cex": 76771.67
+    },
+    {
+     "t": 1793355000,
+     "dex": 76945.57,
+     "cex": 76682
+    },
+    {
+     "t": 1793356200,
+     "dex": 76974.79,
+     "cex": 76699.88
+    },
+    {
+     "t": 1793357400,
+     "dex": 76974.79,
+     "cex": 76753.95
+    },
+    {
+     "t": 1793358600,
+     "dex": 76921.05,
+     "cex": 76682.29
+    },
+    {
+     "t": 1793359800,
+     "dex": 76874.76,
+     "cex": 76616.59
+    },
+    {
+     "t": 1793361000,
+     "dex": 76927.41,
+     "cex": 76574.77
+    },
+    {
+     "t": 1793362200,
+     "dex": 76927.41,
+     "cex": 76591.11
+    },
+    {
+     "t": 1793363400,
+     "dex": 76888.87,
+     "cex": 76604.5
+    },
+    {
+     "t": 1793364600,
+     "dex": 76888.87,
+     "cex": 76637.33
+    },
+    {
+     "t": 1793365800,
+     "dex": 76967.99,
+     "cex": 76690.8
+    },
+    {
+     "t": 1793367000,
+     "dex": 76967.23,
+     "cex": 76729.74
+    },
+    {
+     "t": 1793368200,
+     "dex": 76994.68,
+     "cex": 76761.76
+    },
+    {
+     "t": 1793369400,
+     "dex": 76995.66,
+     "cex": 76764.86
+    },
+    {
+     "t": 1793370600,
+     "dex": 76995.66,
+     "cex": 76607.07
+    },
+    {
+     "t": 1793371800,
+     "dex": 76995.66,
+     "cex": 76531.99
+    },
+    {
+     "t": 1793373000,
+     "dex": 76829.03,
+     "cex": 76498.44
+    },
+    {
+     "t": 1793374200,
+     "dex": 76755.93,
+     "cex": 76515.92
+    },
+    {
+     "t": 1793375400,
+     "dex": 76796.38,
+     "cex": 76555.75
+    },
+    {
+     "t": 1793376600,
+     "dex": 76741.22,
+     "cex": 76549.29
+    },
+    {
+     "t": 1793377800,
+     "dex": 76782.89,
+     "cex": 76545.01
+    },
+    {
+     "t": 1793379000,
+     "dex": 76782.89,
+     "cex": 76586.26
+    },
+    {
+     "t": 1793380200,
+     "dex": 76773.07,
+     "cex": 76629.89
+    },
+    {
+     "t": 1793381400,
+     "dex": 76817.93,
+     "cex": 76690.28
+    },
+    {
+     "t": 1793382600,
+     "dex": 76817.93,
+     "cex": 76675.58
+    },
+    {
+     "t": 1793383800,
+     "dex": 76920.3,
+     "cex": 76758.53
+    },
+    {
+     "t": 1793385000,
+     "dex": 76920.3,
+     "cex": 76770.1
+    },
+    {
+     "t": 1793386200,
+     "dex": 76920.3,
+     "cex": 76689.38
+    },
+    {
+     "t": 1793387400,
+     "dex": 76920.3,
+     "cex": 76697.41
+    },
+    {
+     "t": 1793388600,
+     "dex": 76930.74,
+     "cex": 76804.45
+    },
+    {
+     "t": 1793389800,
+     "dex": 76942.81,
+     "cex": 76778.66
+    },
+    {
+     "t": 1793391000,
+     "dex": 76942.81,
+     "cex": 76756.6
+    },
+    {
+     "t": 1793392200,
+     "dex": 76789.1,
+     "cex": 76607.74
+    },
+    {
+     "t": 1793393400,
+     "dex": 76854.96,
+     "cex": 76676.08
+    },
+    {
+     "t": 1793394600,
+     "dex": 76807.48,
+     "cex": 76568.63
+    },
+    {
+     "t": 1793395800,
+     "dex": 76870.77,
+     "cex": 76642.01
+    },
+    {
+     "t": 1793397000,
+     "dex": 76887.24,
+     "cex": 76649.79
+    },
+    {
+     "t": 1793398200,
+     "dex": 76824.16,
+     "cex": 76620.87
+    },
+    {
+     "t": 1793399400,
+     "dex": 76849.56,
+     "cex": 76598.37
+    },
+    {
+     "t": 1793400600,
+     "dex": 76890.91,
+     "cex": 76635.58
+    },
+    {
+     "t": 1793401800,
+     "dex": 76890.91,
+     "cex": 76727.59
+    },
+    {
+     "t": 1793403000,
+     "dex": 76890.91,
+     "cex": 76651.23
+    },
+    {
+     "t": 1793404200,
+     "dex": 76890.91,
+     "cex": 76748.03
+    },
+    {
+     "t": 1793405400,
+     "dex": 76890.91,
+     "cex": 76758.36
+    },
+    {
+     "t": 1793406600,
+     "dex": 77032.83,
+     "cex": 76772.84
+    },
+    {
+     "t": 1793407800,
+     "dex": 77032.83,
+     "cex": 76749.7
+    },
+    {
+     "t": 1793409000,
+     "dex": 77032.83,
+     "cex": 76734.55
+    },
+    {
+     "t": 1793410200,
+     "dex": 77032.83,
+     "cex": 76666.41
+    },
+    {
+     "t": 1793411400,
+     "dex": 77032.83,
+     "cex": 76647.03
+    },
+    {
+     "t": 1793412600,
+     "dex": 77032.83,
+     "cex": 76739.44
+    },
+    {
+     "t": 1793413800,
+     "dex": 77174.95,
+     "cex": 76886.46
+    },
+    {
+     "t": 1793415000,
+     "dex": 77174.95,
+     "cex": 76935.52
+    },
+    {
+     "t": 1793416200,
+     "dex": 77174.95,
+     "cex": 76874.15
+    },
+    {
+     "t": 1793417400,
+     "dex": 77174.95,
+     "cex": 76829.35
+    },
+    {
+     "t": 1793418600,
+     "dex": 77174.95,
+     "cex": 76730.01
+    },
+    {
+     "t": 1793419800,
+     "dex": 76912,
+     "cex": 76612.16
+    },
+    {
+     "t": 1793421000,
+     "dex": 76912,
+     "cex": 76590.02
+    },
+    {
+     "t": 1793422200,
+     "dex": 76827,
+     "cex": 76544.19
+    },
+    {
+     "t": 1793423400,
+     "dex": 76827,
+     "cex": 76463.7
+    },
+    {
+     "t": 1793424600,
+     "dex": 76827,
+     "cex": 76481.87
+    },
+    {
+     "t": 1793425800,
+     "dex": 76827,
+     "cex": 76508.93
+    },
+    {
+     "t": 1793427000,
+     "dex": 76827,
+     "cex": 76603.86
+    },
+    {
+     "t": 1793428200,
+     "dex": 76827,
+     "cex": 76556
+    }
+   ]
+  },
+  {
+   "asset": "WHSK",
+   "label": "HSK",
+   "dexPx": 0.08735,
+   "twapPx": 0.08735873,
+   "cexPx": 0.0869,
+   "chainlinkPx": 0.086957,
+   "chainlinkAgeSec": 3960,
+   "spreadBps": 51.8,
+   "poolUsdt": 436020,
+   "poolAsset": 5004300,
+   "lastSwapAgoSec": 2460,
+   "history": [
+    {
+     "t": 1793169000,
+     "dex": 0.0888,
+     "cex": 0.088332
+    },
+    {
+     "t": 1793170200,
+     "dex": 0.0889,
+     "cex": 0.088367
+    },
+    {
+     "t": 1793171400,
+     "dex": 0.0889,
+     "cex": 0.088351
+    },
+    {
+     "t": 1793172600,
+     "dex": 0.0889,
+     "cex": 0.088542
+    },
+    {
+     "t": 1793173800,
+     "dex": 0.089172,
+     "cex": 0.088752
+    },
+    {
+     "t": 1793175000,
+     "dex": 0.089172,
+     "cex": 0.088618
+    },
+    {
+     "t": 1793176200,
+     "dex": 0.08912,
+     "cex": 0.088773
+    },
+    {
+     "t": 1793177400,
+     "dex": 0.08912,
+     "cex": 0.088571
+    },
+    {
+     "t": 1793178600,
+     "dex": 0.08912,
+     "cex": 0.088459
+    },
+    {
+     "t": 1793179800,
+     "dex": 0.08912,
+     "cex": 0.088729
+    },
+    {
+     "t": 1793181000,
+     "dex": 0.08912,
+     "cex": 0.088732
+    },
+    {
+     "t": 1793182200,
+     "dex": 0.088874,
+     "cex": 0.088591
+    },
+    {
+     "t": 1793183400,
+     "dex": 0.088874,
+     "cex": 0.088214
+    },
+    {
+     "t": 1793184600,
+     "dex": 0.088512,
+     "cex": 0.088269
+    },
+    {
+     "t": 1793185800,
+     "dex": 0.088512,
+     "cex": 0.088044
+    },
+    {
+     "t": 1793187000,
+     "dex": 0.088512,
+     "cex": 0.088025
+    },
+    {
+     "t": 1793188200,
+     "dex": 0.088512,
+     "cex": 0.08805
+    },
+    {
+     "t": 1793189400,
+     "dex": 0.088512,
+     "cex": 0.088149
+    },
+    {
+     "t": 1793190600,
+     "dex": 0.088512,
+     "cex": 0.088148
+    },
+    {
+     "t": 1793191800,
+     "dex": 0.088321,
+     "cex": 0.088059
+    },
+    {
+     "t": 1793193000,
+     "dex": 0.088321,
+     "cex": 0.088077
+    },
+    {
+     "t": 1793194200,
+     "dex": 0.088228,
+     "cex": 0.088014
+    },
+    {
+     "t": 1793195400,
+     "dex": 0.088154,
+     "cex": 0.087894
+    },
+    {
+     "t": 1793196600,
+     "dex": 0.088154,
+     "cex": 0.087906
+    },
+    {
+     "t": 1793197800,
+     "dex": 0.08792,
+     "cex": 0.087613
+    },
+    {
+     "t": 1793199000,
+     "dex": 0.08792,
+     "cex": 0.087668
+    },
+    {
+     "t": 1793200200,
+     "dex": 0.08784,
+     "cex": 0.087584
+    },
+    {
+     "t": 1793201400,
+     "dex": 0.08784,
+     "cex": 0.087508
+    },
+    {
+     "t": 1793202600,
+     "dex": 0.08784,
+     "cex": 0.087519
+    },
+    {
+     "t": 1793203800,
+     "dex": 0.08784,
+     "cex": 0.087327
+    },
+    {
+     "t": 1793205000,
+     "dex": 0.08784,
+     "cex": 0.087392
+    },
+    {
+     "t": 1793206200,
+     "dex": 0.087841,
+     "cex": 0.087361
+    },
+    {
+     "t": 1793207400,
+     "dex": 0.088021,
+     "cex": 0.087529
+    },
+    {
+     "t": 1793208600,
+     "dex": 0.088021,
+     "cex": 0.087483
+    },
+    {
+     "t": 1793209800,
+     "dex": 0.08786,
+     "cex": 0.087334
+    },
+    {
+     "t": 1793211000,
+     "dex": 0.087641,
+     "cex": 0.087076
+    },
+    {
+     "t": 1793212200,
+     "dex": 0.087641,
+     "cex": 0.087211
+    },
+    {
+     "t": 1793213400,
+     "dex": 0.087641,
+     "cex": 0.087081
+    },
+    {
+     "t": 1793214600,
+     "dex": 0.087641,
+     "cex": 0.087059
+    },
+    {
+     "t": 1793215800,
+     "dex": 0.087559,
+     "cex": 0.087149
+    },
+    {
+     "t": 1793217000,
+     "dex": 0.087559,
+     "cex": 0.087057
+    },
+    {
+     "t": 1793218200,
+     "dex": 0.087537,
+     "cex": 0.087272
+    },
+    {
+     "t": 1793219400,
+     "dex": 0.087537,
+     "cex": 0.087004
+    },
+    {
+     "t": 1793220600,
+     "dex": 0.087537,
+     "cex": 0.087045
+    },
+    {
+     "t": 1793221800,
+     "dex": 0.087537,
+     "cex": 0.087047
+    },
+    {
+     "t": 1793223000,
+     "dex": 0.087453,
+     "cex": 0.087031
+    },
+    {
+     "t": 1793224200,
+     "dex": 0.087547,
+     "cex": 0.08722
+    },
+    {
+     "t": 1793225400,
+     "dex": 0.087547,
+     "cex": 0.087326
+    },
+    {
+     "t": 1793226600,
+     "dex": 0.087547,
+     "cex": 0.087255
+    },
+    {
+     "t": 1793227800,
+     "dex": 0.087547,
+     "cex": 0.087185
+    },
+    {
+     "t": 1793229000,
+     "dex": 0.087547,
+     "cex": 0.087092
+    },
+    {
+     "t": 1793230200,
+     "dex": 0.0877,
+     "cex": 0.087307
+    },
+    {
+     "t": 1793231400,
+     "dex": 0.0877,
+     "cex": 0.087469
+    },
+    {
+     "t": 1793232600,
+     "dex": 0.087861,
+     "cex": 0.087487
+    },
+    {
+     "t": 1793233800,
+     "dex": 0.087886,
+     "cex": 0.087477
+    },
+    {
+     "t": 1793235000,
+     "dex": 0.088043,
+     "cex": 0.087725
+    },
+    {
+     "t": 1793236200,
+     "dex": 0.08805,
+     "cex": 0.087847
+    },
+    {
+     "t": 1793237400,
+     "dex": 0.08805,
+     "cex": 0.08781
+    },
+    {
+     "t": 1793238600,
+     "dex": 0.088245,
+     "cex": 0.087956
+    },
+    {
+     "t": 1793239800,
+     "dex": 0.088245,
+     "cex": 0.08789
+    },
+    {
+     "t": 1793241000,
+     "dex": 0.088004,
+     "cex": 0.087879
+    },
+    {
+     "t": 1793242200,
+     "dex": 0.088048,
+     "cex": 0.087908
+    },
+    {
+     "t": 1793243400,
+     "dex": 0.088048,
+     "cex": 0.08791
+    },
+    {
+     "t": 1793244600,
+     "dex": 0.088048,
+     "cex": 0.088036
+    },
+    {
+     "t": 1793245800,
+     "dex": 0.08813,
+     "cex": 0.087936
+    },
+    {
+     "t": 1793247000,
+     "dex": 0.088316,
+     "cex": 0.088115
+    },
+    {
+     "t": 1793248200,
+     "dex": 0.088316,
+     "cex": 0.087808
+    },
+    {
+     "t": 1793249400,
+     "dex": 0.088316,
+     "cex": 0.087977
+    },
+    {
+     "t": 1793250600,
+     "dex": 0.088316,
+     "cex": 0.088168
+    },
+    {
+     "t": 1793251800,
+     "dex": 0.088316,
+     "cex": 0.088279
+    },
+    {
+     "t": 1793253000,
+     "dex": 0.088316,
+     "cex": 0.088285
+    },
+    {
+     "t": 1793254200,
+     "dex": 0.088561,
+     "cex": 0.088332
+    },
+    {
+     "t": 1793255400,
+     "dex": 0.088545,
+     "cex": 0.088316
+    },
+    {
+     "t": 1793256600,
+     "dex": 0.088545,
+     "cex": 0.088466
+    },
+    {
+     "t": 1793257800,
+     "dex": 0.088545,
+     "cex": 0.088514
+    },
+    {
+     "t": 1793259000,
+     "dex": 0.088801,
+     "cex": 0.088575
+    },
+    {
+     "t": 1793260200,
+     "dex": 0.088801,
+     "cex": 0.08847
+    },
+    {
+     "t": 1793261400,
+     "dex": 0.088801,
+     "cex": 0.088452
+    },
+    {
+     "t": 1793262600,
+     "dex": 0.088801,
+     "cex": 0.088408
+    },
+    {
+     "t": 1793263800,
+     "dex": 0.088801,
+     "cex": 0.088393
+    },
+    {
+     "t": 1793265000,
+     "dex": 0.088801,
+     "cex": 0.088493
+    },
+    {
+     "t": 1793266200,
+     "dex": 0.088801,
+     "cex": 0.088447
+    },
+    {
+     "t": 1793267400,
+     "dex": 0.088801,
+     "cex": 0.088423
+    },
+    {
+     "t": 1793268600,
+     "dex": 0.088801,
+     "cex": 0.088383
+    },
+    {
+     "t": 1793269800,
+     "dex": 0.088801,
+     "cex": 0.088503
+    },
+    {
+     "t": 1793271000,
+     "dex": 0.088801,
+     "cex": 0.088491
+    },
+    {
+     "t": 1793272200,
+     "dex": 0.088801,
+     "cex": 0.088504
+    },
+    {
+     "t": 1793273400,
+     "dex": 0.088801,
+     "cex": 0.088452
+    },
+    {
+     "t": 1793274600,
+     "dex": 0.088801,
+     "cex": 0.088406
+    },
+    {
+     "t": 1793275800,
+     "dex": 0.088801,
+     "cex": 0.088307
+    },
+    {
+     "t": 1793277000,
+     "dex": 0.088801,
+     "cex": 0.08839
+    },
+    {
+     "t": 1793278200,
+     "dex": 0.088431,
+     "cex": 0.088213
+    },
+    {
+     "t": 1793279400,
+     "dex": 0.088431,
+     "cex": 0.0881
+    },
+    {
+     "t": 1793280600,
+     "dex": 0.088431,
+     "cex": 0.088179
+    },
+    {
+     "t": 1793281800,
+     "dex": 0.088315,
+     "cex": 0.087978
+    },
+    {
+     "t": 1793283000,
+     "dex": 0.088315,
+     "cex": 0.087885
+    },
+    {
+     "t": 1793284200,
+     "dex": 0.088151,
+     "cex": 0.087783
+    },
+    {
+     "t": 1793285400,
+     "dex": 0.088151,
+     "cex": 0.087642
+    },
+    {
+     "t": 1793286600,
+     "dex": 0.088151,
+     "cex": 0.08758
+    },
+    {
+     "t": 1793287800,
+     "dex": 0.088151,
+     "cex": 0.087419
+    },
+    {
+     "t": 1793289000,
+     "dex": 0.087895,
+     "cex": 0.087587
+    },
+    {
+     "t": 1793290200,
+     "dex": 0.087869,
+     "cex": 0.087483
+    },
+    {
+     "t": 1793291400,
+     "dex": 0.087869,
+     "cex": 0.087462
+    },
+    {
+     "t": 1793292600,
+     "dex": 0.087869,
+     "cex": 0.087643
+    },
+    {
+     "t": 1793293800,
+     "dex": 0.087869,
+     "cex": 0.087526
+    },
+    {
+     "t": 1793295000,
+     "dex": 0.087986,
+     "cex": 0.087737
+    },
+    {
+     "t": 1793296200,
+     "dex": 0.087986,
+     "cex": 0.08769
+    },
+    {
+     "t": 1793297400,
+     "dex": 0.087917,
+     "cex": 0.087702
+    },
+    {
+     "t": 1793298600,
+     "dex": 0.087717,
+     "cex": 0.087459
+    },
+    {
+     "t": 1793299800,
+     "dex": 0.087717,
+     "cex": 0.087533
+    },
+    {
+     "t": 1793301000,
+     "dex": 0.087703,
+     "cex": 0.087452
+    },
+    {
+     "t": 1793302200,
+     "dex": 0.087703,
+     "cex": 0.087369
+    },
+    {
+     "t": 1793303400,
+     "dex": 0.087703,
+     "cex": 0.087257
+    },
+    {
+     "t": 1793304600,
+     "dex": 0.087703,
+     "cex": 0.087112
+    },
+    {
+     "t": 1793305800,
+     "dex": 0.087703,
+     "cex": 0.087138
+    },
+    {
+     "t": 1793307000,
+     "dex": 0.087776,
+     "cex": 0.087472
+    },
+    {
+     "t": 1793308200,
+     "dex": 0.087776,
+     "cex": 0.087371
+    },
+    {
+     "t": 1793309400,
+     "dex": 0.087776,
+     "cex": 0.087416
+    },
+    {
+     "t": 1793310600,
+     "dex": 0.087776,
+     "cex": 0.087627
+    },
+    {
+     "t": 1793311800,
+     "dex": 0.08782,
+     "cex": 0.087487
+    },
+    {
+     "t": 1793313000,
+     "dex": 0.087839,
+     "cex": 0.087544
+    },
+    {
+     "t": 1793314200,
+     "dex": 0.087902,
+     "cex": 0.087669
+    },
+    {
+     "t": 1793315400,
+     "dex": 0.087902,
+     "cex": 0.087726
+    },
+    {
+     "t": 1793316600,
+     "dex": 0.0879,
+     "cex": 0.08774
+    },
+    {
+     "t": 1793317800,
+     "dex": 0.087858,
+     "cex": 0.087656
+    },
+    {
+     "t": 1793319000,
+     "dex": 0.087858,
+     "cex": 0.087577
+    },
+    {
+     "t": 1793320200,
+     "dex": 0.087676,
+     "cex": 0.087449
+    },
+    {
+     "t": 1793321400,
+     "dex": 0.087676,
+     "cex": 0.087422
+    },
+    {
+     "t": 1793322600,
+     "dex": 0.087619,
+     "cex": 0.087403
+    },
+    {
+     "t": 1793323800,
+     "dex": 0.087619,
+     "cex": 0.087272
+    },
+    {
+     "t": 1793325000,
+     "dex": 0.087619,
+     "cex": 0.087233
+    },
+    {
+     "t": 1793326200,
+     "dex": 0.087619,
+     "cex": 0.087322
+    },
+    {
+     "t": 1793327400,
+     "dex": 0.087619,
+     "cex": 0.087491
+    },
+    {
+     "t": 1793328600,
+     "dex": 0.087619,
+     "cex": 0.087396
+    },
+    {
+     "t": 1793329800,
+     "dex": 0.087761,
+     "cex": 0.087618
+    },
+    {
+     "t": 1793331000,
+     "dex": 0.087761,
+     "cex": 0.087579
+    },
+    {
+     "t": 1793332200,
+     "dex": 0.087761,
+     "cex": 0.087434
+    },
+    {
+     "t": 1793333400,
+     "dex": 0.087761,
+     "cex": 0.087473
+    },
+    {
+     "t": 1793334600,
+     "dex": 0.087761,
+     "cex": 0.087429
+    },
+    {
+     "t": 1793335800,
+     "dex": 0.087761,
+     "cex": 0.08752
+    },
+    {
+     "t": 1793337000,
+     "dex": 0.087761,
+     "cex": 0.087815
+    },
+    {
+     "t": 1793338200,
+     "dex": 0.087761,
+     "cex": 0.087842
+    },
+    {
+     "t": 1793339400,
+     "dex": 0.0881,
+     "cex": 0.087663
+    },
+    {
+     "t": 1793340600,
+     "dex": 0.0881,
+     "cex": 0.087981
+    },
+    {
+     "t": 1793341800,
+     "dex": 0.0884,
+     "cex": 0.088012
+    },
+    {
+     "t": 1793343000,
+     "dex": 0.0884,
+     "cex": 0.08803
+    },
+    {
+     "t": 1793344200,
+     "dex": 0.0884,
+     "cex": 0.087842
+    },
+    {
+     "t": 1793345400,
+     "dex": 0.0884,
+     "cex": 0.087916
+    },
+    {
+     "t": 1793346600,
+     "dex": 0.088517,
+     "cex": 0.088033
+    },
+    {
+     "t": 1793347800,
+     "dex": 0.088517,
+     "cex": 0.087836
+    },
+    {
+     "t": 1793349000,
+     "dex": 0.088517,
+     "cex": 0.087924
+    },
+    {
+     "t": 1793350200,
+     "dex": 0.088517,
+     "cex": 0.08788
+    },
+    {
+     "t": 1793351400,
+     "dex": 0.088517,
+     "cex": 0.087869
+    },
+    {
+     "t": 1793352600,
+     "dex": 0.088517,
+     "cex": 0.087982
+    },
+    {
+     "t": 1793353800,
+     "dex": 0.088517,
+     "cex": 0.087859
+    },
+    {
+     "t": 1793355000,
+     "dex": 0.088517,
+     "cex": 0.087743
+    },
+    {
+     "t": 1793356200,
+     "dex": 0.08822,
+     "cex": 0.087805
+    },
+    {
+     "t": 1793357400,
+     "dex": 0.08822,
+     "cex": 0.087867
+    },
+    {
+     "t": 1793358600,
+     "dex": 0.088353,
+     "cex": 0.088039
+    },
+    {
+     "t": 1793359800,
+     "dex": 0.088258,
+     "cex": 0.087815
+    },
+    {
+     "t": 1793361000,
+     "dex": 0.088246,
+     "cex": 0.08785
+    },
+    {
+     "t": 1793362200,
+     "dex": 0.088246,
+     "cex": 0.087695
+    },
+    {
+     "t": 1793363400,
+     "dex": 0.088217,
+     "cex": 0.08776
+    },
+    {
+     "t": 1793364600,
+     "dex": 0.088511,
+     "cex": 0.088189
+    },
+    {
+     "t": 1793365800,
+     "dex": 0.088332,
+     "cex": 0.087894
+    },
+    {
+     "t": 1793367000,
+     "dex": 0.088332,
+     "cex": 0.087933
+    },
+    {
+     "t": 1793368200,
+     "dex": 0.088332,
+     "cex": 0.087842
+    },
+    {
+     "t": 1793369400,
+     "dex": 0.088332,
+     "cex": 0.087741
+    },
+    {
+     "t": 1793370600,
+     "dex": 0.088332,
+     "cex": 0.087639
+    },
+    {
+     "t": 1793371800,
+     "dex": 0.088193,
+     "cex": 0.087805
+    },
+    {
+     "t": 1793373000,
+     "dex": 0.088229,
+     "cex": 0.087881
+    },
+    {
+     "t": 1793374200,
+     "dex": 0.088239,
+     "cex": 0.087927
+    },
+    {
+     "t": 1793375400,
+     "dex": 0.088268,
+     "cex": 0.087939
+    },
+    {
+     "t": 1793376600,
+     "dex": 0.088024,
+     "cex": 0.087644
+    },
+    {
+     "t": 1793377800,
+     "dex": 0.088035,
+     "cex": 0.087604
+    },
+    {
+     "t": 1793379000,
+     "dex": 0.0881,
+     "cex": 0.08763
+    },
+    {
+     "t": 1793380200,
+     "dex": 0.0881,
+     "cex": 0.087593
+    },
+    {
+     "t": 1793381400,
+     "dex": 0.0881,
+     "cex": 0.087545
+    },
+    {
+     "t": 1793382600,
+     "dex": 0.0881,
+     "cex": 0.08766
+    },
+    {
+     "t": 1793383800,
+     "dex": 0.0881,
+     "cex": 0.087684
+    },
+    {
+     "t": 1793385000,
+     "dex": 0.0881,
+     "cex": 0.087825
+    },
+    {
+     "t": 1793386200,
+     "dex": 0.0881,
+     "cex": 0.087731
+    },
+    {
+     "t": 1793387400,
+     "dex": 0.087886,
+     "cex": 0.08747
+    },
+    {
+     "t": 1793388600,
+     "dex": 0.087886,
+     "cex": 0.08761
+    },
+    {
+     "t": 1793389800,
+     "dex": 0.087886,
+     "cex": 0.087624
+    },
+    {
+     "t": 1793391000,
+     "dex": 0.088172,
+     "cex": 0.087725
+    },
+    {
+     "t": 1793392200,
+     "dex": 0.088172,
+     "cex": 0.087776
+    },
+    {
+     "t": 1793393400,
+     "dex": 0.088172,
+     "cex": 0.087638
+    },
+    {
+     "t": 1793394600,
+     "dex": 0.087973,
+     "cex": 0.087517
+    },
+    {
+     "t": 1793395800,
+     "dex": 0.08802,
+     "cex": 0.087515
+    },
+    {
+     "t": 1793397000,
+     "dex": 0.08802,
+     "cex": 0.08739
+    },
+    {
+     "t": 1793398200,
+     "dex": 0.087968,
+     "cex": 0.087442
+    },
+    {
+     "t": 1793399400,
+     "dex": 0.087968,
+     "cex": 0.087501
+    },
+    {
+     "t": 1793400600,
+     "dex": 0.087968,
+     "cex": 0.087669
+    },
+    {
+     "t": 1793401800,
+     "dex": 0.087968,
+     "cex": 0.087723
+    },
+    {
+     "t": 1793403000,
+     "dex": 0.087968,
+     "cex": 0.087556
+    },
+    {
+     "t": 1793404200,
+     "dex": 0.087968,
+     "cex": 0.087531
+    },
+    {
+     "t": 1793405400,
+     "dex": 0.087968,
+     "cex": 0.087656
+    },
+    {
+     "t": 1793406600,
+     "dex": 0.087968,
+     "cex": 0.08768
+    },
+    {
+     "t": 1793407800,
+     "dex": 0.087968,
+     "cex": 0.087555
+    },
+    {
+     "t": 1793409000,
+     "dex": 0.087853,
+     "cex": 0.087329
+    },
+    {
+     "t": 1793410200,
+     "dex": 0.087837,
+     "cex": 0.087374
+    },
+    {
+     "t": 1793411400,
+     "dex": 0.087826,
+     "cex": 0.08734
+    },
+    {
+     "t": 1793412600,
+     "dex": 0.087826,
+     "cex": 0.087122
+    },
+    {
+     "t": 1793413800,
+     "dex": 0.08761,
+     "cex": 0.087088
+    },
+    {
+     "t": 1793415000,
+     "dex": 0.087752,
+     "cex": 0.087258
+    },
+    {
+     "t": 1793416200,
+     "dex": 0.087752,
+     "cex": 0.087125
+    },
+    {
+     "t": 1793417400,
+     "dex": 0.08752,
+     "cex": 0.087038
+    },
+    {
+     "t": 1793418600,
+     "dex": 0.08752,
+     "cex": 0.086938
+    },
+    {
+     "t": 1793419800,
+     "dex": 0.08752,
+     "cex": 0.086865
+    },
+    {
+     "t": 1793421000,
+     "dex": 0.08752,
+     "cex": 0.086901
+    },
+    {
+     "t": 1793422200,
+     "dex": 0.087221,
+     "cex": 0.086807
+    },
+    {
+     "t": 1793423400,
+     "dex": 0.087221,
+     "cex": 0.086796
+    },
+    {
+     "t": 1793424600,
+     "dex": 0.087266,
+     "cex": 0.086784
+    },
+    {
+     "t": 1793425800,
+     "dex": 0.08735,
+     "cex": 0.086884
+    },
+    {
+     "t": 1793427000,
+     "dex": 0.08735,
+     "cex": 0.086934
+    },
+    {
+     "t": 1793428200,
+     "dex": 0.08735,
+     "cex": 0.0869
+    }
+   ]
+  }
+ ],
+ "journal": [
+  {
+   "t": 1793428160,
+   "kind": "heartbeat",
+   "title": "Alive. 118 cycles in the last hour, 3 candidates, nothing new sworn.",
+   "detail": "Watching AVW·000009 (HSK) and AVW·000010 (BTC). Both inside their corridors."
+  },
+  {
+   "t": 1793426580,
+   "kind": "considered",
+   "asset": "WHSK",
+   "noteId": 9,
+   "title": "AVW·000009 is 76% of the way from its void level to its target",
+   "detail": "TWAP 0.08735 against target 0.08690. No action: the keeper settles the moment the TWAP crosses."
+  },
+  {
+   "t": 1793424600,
+   "kind": "declined",
+   "asset": "WETH",
+   "model": "gemini-3.5-flash",
+   "tokens": 2310,
+   "title": "Declined ETH: a 41 bps premium does not pay for the round trip",
+   "detail": "HSKSwap ETH sat 41 bps above HashKey Global. Selling here and buying back costs 60 bps in pool fees plus about 1 bp of gas, and I want 15 bps of edge on top. Momentum was flat (+0.08% in 1 h). Nothing worth swearing."
+  },
+  {
+   "t": 1793422440,
+   "kind": "declined",
+   "asset": "WHSK",
+   "title": "Skipped HSK: AVW·000009 is already outstanding",
+   "detail": "One outstanding note per asset. The candidate was dropped before reaching the model."
+  },
+  {
+   "t": 1793421000,
+   "kind": "heartbeat",
+   "title": "Alive. 120 cycles in the last hour, 2 candidates.",
+   "detail": "HashKey Global and Gate.io mids agree within 3 bps on all three assets."
+  },
+  {
+   "t": 1793419560,
+   "kind": "sworn",
+   "asset": "WBTC",
+   "noteId": 10,
+   "tx": "0xcb5a2242b706456a980fd73905bd74a593994719dcfff5ccdeeda6297ba2272f",
+   "model": "gemini-3.5-flash",
+   "tokens": 2470,
+   "title": "Swore AVW·000010 at 61% confidence for $19.40",
+   "detail": "Avow swears that BTC will trade below 76,080.00 on HSKSwap before 09:36 IST on 1 Nov, or this note is void at 77,470.00."
+  },
+  {
+   "t": 1793419440,
+   "kind": "considered",
+   "asset": "WBTC",
+   "title": "Candidate: BTC short, premium 52 bps, 4 h momentum −0.81%",
+   "detail": "Levels computed by the candidate builder: target 76,080.00, void 77,470.00, size up to $20.00."
+  },
+  {
+   "t": 1793417040,
+   "kind": "declined",
+   "asset": "WBTC",
+   "model": "gemini-3.5-flash",
+   "tokens": 2244,
+   "title": "Declined BTC: momentum alone is not enough at 35 bps",
+   "detail": "BTC was down 0.4% in 4 h but the HSKSwap premium was only 35 bps. I would have sworn at 0.53, and a note I barely believe costs more in calibration than it earns."
+  },
+  {
+   "t": 1793413800,
+   "kind": "tightened",
+   "asset": "WHSK",
+   "noteId": 9,
+   "tx": "0x4a3bb3fe80920feaae54b750f593987e55f5d7b48fbdc98059b1c0999fdf0bfa",
+   "title": "Tightened the void level on AVW·000009 from 0.08893 to 0.08880",
+   "detail": "HSK eased 0.5% on HashKey Global. Moving the void level toward entry shrinks the worst case. The contract only lets the agent move a stop in this direction."
+  },
+  {
+   "t": 1793412000,
+   "kind": "heartbeat",
+   "title": "Alive. 119 cycles in the last hour, 1 candidate."
+  },
+  {
+   "t": 1793409480,
+   "kind": "declined",
+   "asset": "WETH",
+   "model": "gemini-3.5-flash",
+   "tokens": 2198,
+   "title": "Declined ETH long on 4 h momentum",
+   "detail": "HashKey Global ETH was up 0.62% in 4 h, but HSKSwap already traded 44 bps above it, so a long here buys the premium. My honest confidence was about 0.52."
+  },
+  {
+   "t": 1793406240,
+   "kind": "error",
+   "title": "HashKey Global ticker timed out twice; Gate.io mids used for one cycle",
+   "detail": "No note is ever sworn on a single price source. The cycle abstained; the next one had both sources."
+  },
+  {
+   "t": 1793401200,
+   "kind": "heartbeat",
+   "title": "Alive. 117 cycles in the last hour, no candidates."
+  },
+  {
+   "t": 1793395800,
+   "kind": "sworn",
+   "asset": "WHSK",
+   "noteId": 9,
+   "tx": "0x9b73cdacef698cfb92847ebd581a62df587ddcddc5f6bdb72a5e81d3baae7ea4",
+   "model": "gemini-3.5-flash",
+   "tokens": 2433,
+   "title": "Swore AVW·000009 at 63% confidence for $19.20",
+   "detail": "Avow swears that HSK will trade below 0.08690 on HSKSwap before 03:00 IST on 1 Nov, or this note is void at 0.08893."
+  },
+  {
+   "t": 1793395680,
+   "kind": "considered",
+   "asset": "WHSK",
+   "title": "Candidate: HSK short, premium 55 bps, 4 h momentum −0.48%",
+   "detail": "Levels computed by the candidate builder: target 0.08690, void 0.08893, size up to $20.00."
+  },
+  {
+   "t": 1793390040,
+   "kind": "declined",
+   "asset": "WBTC",
+   "model": "gemini-3.5-flash",
+   "tokens": 2287,
+   "title": "Declined BTC: Chainlink BTC/USD was 9 h old",
+   "detail": "The off-chain seatbelt passed (the feed was inside 26 h and within 3% of the pool), but with a reference that stale I could not say the 49 bps premium was real. Abstained."
+  },
+  {
+   "t": 1793385000,
+   "kind": "heartbeat",
+   "title": "Alive. 120 cycles in the last hour, 4 candidates, 1 sent to the model."
+  },
+  {
+   "t": 1793377800,
+   "kind": "blocked",
+   "asset": "WETH",
+   "title": "Blocked by the slippage clause: quoted fill 64 bps from the TWAP",
+   "detail": "The quote for a $19.80 ETH sale filled at 2,251.20 against a 300 s TWAP of 2,236.90. The mandate allows 60 bps. The vault reverted in simulation; nothing was sent."
+  },
+  {
+   "t": 1793368800,
+   "kind": "declined",
+   "asset": "WHSK",
+   "model": "gemini-3.5-flash",
+   "tokens": 2140,
+   "title": "Declined HSK: premium collapsed to 12 bps after a large swap",
+   "detail": "A 240k WHSK swap moved the pool to the exchange price. No edge left."
+  },
+  {
+   "t": 1793367360,
+   "kind": "blocked",
+   "asset": "WHSK",
+   "title": "Blocked by the spike clause: live price 128 bps from the 5-minute TWAP",
+   "detail": "Right after a 240k WHSK swap the pool spot jumped away from its TWAP. The vault refuses to swear into a spike; the mandate allows 100 bps."
+  },
+  {
+   "t": 1793363400,
+   "kind": "blocked",
+   "asset": "WBTC",
+   "title": "Blocked by the denomination: asked for $26.00, Apprentice may write $20.00",
+   "detail": "The model sized the note above the tier cap. The guard caught it before the vault would have; the candidate was sent back at $20.00 and then declined on confidence."
+  },
+  {
+   "t": 1793356200,
+   "kind": "settled",
+   "asset": "WHSK",
+   "noteId": 8,
+   "tx": "0xda585044511b2e2e2377d4f225623e7f2a30a071db4fcbe2b3339848f8f51fcf",
+   "title": "AVW·000008 revoked by the owner at 0.08822, P&L −$0.10",
+   "detail": "Not graded."
+  },
+  {
+   "t": 1793355480,
+   "kind": "amended",
+   "tx": "0xa584a5247768285546470a7a50d050526879f834b673e970f2b7931c97e31a14",
+   "title": "Owner amended the mandate: horizon 36 h to 24 h, cooldown 5 min to 10 min",
+   "detail": "Signed by the owner wallet. Both changes are stricter; Avow could have applied them itself."
+  },
+  {
+   "t": 1793349000,
+   "kind": "heartbeat",
+   "title": "Alive. 120 cycles in the last hour, 2 candidates."
+  },
+  {
+   "t": 1793341800,
+   "kind": "sworn",
+   "asset": "WHSK",
+   "noteId": 8,
+   "tx": "0x34b7a89c0774d7d6a1339f74769c36545ecaa54729d1b492c234dff323d83072",
+   "model": "gemini-3.5-flash",
+   "tokens": 2396,
+   "title": "Swore AVW·000008 at 60% confidence for $18.90",
+   "detail": "Avow swears that HSK will trade below 0.08734 on HSKSwap before 12:00 IST on 31 Oct, or this note is void at 0.08920."
+  },
+  {
+   "t": 1793341680,
+   "kind": "considered",
+   "asset": "WHSK",
+   "title": "Candidate: HSK short, premium 51 bps, 4 h momentum −0.30%",
+   "detail": "Levels computed by the candidate builder: target 0.08734, void 0.08920, size up to $20.00."
+  },
+  {
+   "t": 1793334600,
+   "kind": "settled",
+   "asset": "WETH",
+   "noteId": 7,
+   "tx": "0x367d192707933b9f3e87a249f6b1b5334a5bb4fe9c58d13c24b78f3ab053d63c",
+   "title": "AVW·000007 void at 2,276.51, P&L −$0.33",
+   "detail": "Graded 0 against 0.58: squared error 0.336. Settled by the keeper. Void streak: 1 of 3."
+  },
+  {
+   "t": 1793327400,
+   "kind": "declined",
+   "asset": "WBTC",
+   "model": "gemini-3.5-flash",
+   "tokens": 2205,
+   "title": "Declined BTC: exchange and pool moved together",
+   "detail": "BTC fell 0.6% on both venues at once; the premium stayed at 18 bps. Nothing to converge."
+  },
+  {
+   "t": 1793320200,
+   "kind": "sworn",
+   "asset": "WETH",
+   "noteId": 7,
+   "tx": "0x5801e03b5de17e694304a5fbde5ba376400ac1ade3e90984b06215e9ed125bcd",
+   "model": "gemini-3.5-flash",
+   "tokens": 2359,
+   "title": "Swore AVW·000007 at 58% confidence for $19.60",
+   "detail": "Avow swears that ETH will trade below 2,230.49 on HSKSwap before 06:00 IST on 31 Oct, or this note is void at 2,275.60."
+  },
+  {
+   "t": 1793320080,
+   "kind": "considered",
+   "asset": "WETH",
+   "title": "Candidate: ETH short, premium 54 bps, 4 h momentum −0.21%",
+   "detail": "Levels computed by the candidate builder: target 2,230.49, void 2,275.60, size up to $20.00."
+  },
+  {
+   "t": 1793316600,
+   "kind": "settled",
+   "asset": "WHSK",
+   "noteId": 4,
+   "tx": "0x7e431376f912ecef08855d4671126e16d205625ea3acc67fd765ee159ed6bddf",
+   "title": "AVW·000004 lapsed at 0.08790, P&L −$0.07",
+   "detail": "Graded 0 against 0.55: squared error 0.302. Settled by the keeper."
+  },
+  {
+   "t": 1793309400,
+   "kind": "blocked",
+   "asset": "WHSK",
+   "title": "Blocked by the cooldown: 3 min 10 s left of 5 min",
+   "detail": "A second HSK candidate came 1 min 50 s after the last transaction. The vault enforces a pause between notes."
+  },
+  {
+   "t": 1793298600,
+   "kind": "settled",
+   "asset": "WBTC",
+   "noteId": 6,
+   "tx": "0xaa42ee46904acbd815df08d23566b91b3a9009c81c15c12f605d73c5436db89f",
+   "title": "AVW·000006 retracted by Avow at 76,980.00, P&L −$0.11",
+   "detail": "Graded 0 against 0.55: squared error 0.302. Settled by the keeper. Promoted to Apprentice: 5 graded notes, Brier 0.201. Denomination rises from $10 to $20."
+  },
+  {
+   "t": 1793291400,
+   "kind": "heartbeat",
+   "title": "Alive. 120 cycles in the last hour, no candidates."
+  },
+  {
+   "t": 1793284200,
+   "kind": "sworn",
+   "asset": "WBTC",
+   "noteId": 6,
+   "tx": "0xb1f45e76789d5e0e2f3435b995dc6e77a4f413fb4410fd75e94e8a3002a8d952",
+   "model": "gemini-3.5-flash",
+   "tokens": 2322,
+   "title": "Swore AVW·000006 at 55% confidence for $9.85",
+   "detail": "Avow swears that BTC will trade above 78,122.56 on HSKSwap before 20:00 IST on 30 Oct, or this note is void at 76,387.36."
+  },
+  {
+   "t": 1793284080,
+   "kind": "considered",
+   "asset": "WBTC",
+   "title": "Candidate: BTC long, premium -14 bps, 4 h momentum +0.66%",
+   "detail": "Levels computed by the candidate builder: target 78,122.56, void 76,387.36, size up to $10.00."
+  },
+  {
+   "t": 1793277000,
+   "kind": "blocked",
+   "asset": "WETH",
+   "title": "Blocked by the stop clause: void level 912 bps away, 800 bps allowed",
+   "detail": "A wide-stop ETH long proposed in a volatile hour. Too far to the void level for this mandate."
+  },
+  {
+   "t": 1793269800,
+   "kind": "settled",
+   "asset": "WETH",
+   "noteId": 5,
+   "tx": "0xe46620c759dcce8d4d3a9c197a1756b7848a039f27db04483484888db4807178",
+   "title": "AVW·000005 honoured at 2,253.42, P&L +$0.03",
+   "detail": "Graded 1 against 0.66: squared error 0.116. Settled by the keeper."
+  },
+  {
+   "t": 1793259000,
+   "kind": "error",
+   "title": "RPC refused a 12,000-block log query; retried in 5,000-block pages",
+   "detail": "HSK mainnet RPC caps eth_getLogs at 10,000 blocks. The reader now pages by 5,000."
+  },
+  {
+   "t": 1793248200,
+   "kind": "sworn",
+   "asset": "WETH",
+   "noteId": 5,
+   "tx": "0xff3fd0c11e19225fa80fc25d6dffd0837e7a9652a92a3ec6111e691bc30ee5ca",
+   "model": "gemini-3.5-flash",
+   "tokens": 2285,
+   "title": "Swore AVW·000005 at 66% confidence for $9.75",
+   "detail": "Avow swears that ETH will trade below 2,254.32 on HSKSwap before 10:00 IST on 30 Oct, or this note is void at 2,302.24."
+  },
+  {
+   "t": 1793248080,
+   "kind": "considered",
+   "asset": "WETH",
+   "title": "Candidate: ETH short, premium 63 bps, 4 h momentum −0.52%",
+   "detail": "Levels computed by the candidate builder: target 2,254.32, void 2,302.24, size up to $10.00."
+  },
+  {
+   "t": 1793244600,
+   "kind": "settled",
+   "asset": "WBTC",
+   "noteId": 3,
+   "tx": "0xfb6ecbdd05d1a701cd0c9c05665502d5ab78f8ff774debb5e25813c72ae84c89",
+   "title": "AVW·000003 honoured at 77,129.74, P&L +$0.01",
+   "detail": "Graded 1 against 0.64: squared error 0.130. Settled by an outside address; anyone may settle."
+  },
+  {
+   "t": 1793230200,
+   "kind": "sworn",
+   "asset": "WHSK",
+   "noteId": 4,
+   "tx": "0x86a7da91b96afd5121ce8df332a2c200078b3aa0a927d81886d88dd0797d2eba",
+   "model": "gemini-3.5-flash",
+   "tokens": 2248,
+   "title": "Swore AVW·000004 at 55% confidence for $9.50",
+   "detail": "Avow swears that HSK will trade above 0.08893 on HSKSwap before 05:00 IST on 30 Oct, or this note is void at 0.08678."
+  },
+  {
+   "t": 1793230080,
+   "kind": "considered",
+   "asset": "WHSK",
+   "title": "Candidate: HSK long, premium -8 bps, 4 h momentum +0.71%",
+   "detail": "Levels computed by the candidate builder: target 0.08893, void 0.08678, size up to $10.00."
+  },
+  {
+   "t": 1793219400,
+   "kind": "settled",
+   "asset": "WETH",
+   "noteId": 2,
+   "tx": "0xce72d4d4af852fcf35377309d9d7542ebe030779b7e98427240c3f33a8d3cf3b",
+   "title": "AVW·000002 void at 2,236.61, P&L −$0.20",
+   "detail": "Graded 0 against 0.56: squared error 0.314. Settled by the keeper."
+  },
+  {
+   "t": 1793212200,
+   "kind": "sworn",
+   "asset": "WBTC",
+   "noteId": 3,
+   "tx": "0x6279325a06241b52bbf6b746c7a92103e32c247d2fb59cedceb823926f7e4b70",
+   "model": "gemini-3.5-flash",
+   "tokens": 2211,
+   "title": "Swore AVW·000003 at 64% confidence for $9.90",
+   "detail": "Avow swears that BTC will trade below 77,160.60 on HSKSwap before 00:00 IST on 30 Oct, or this note is void at 78,563.52."
+  },
+  {
+   "t": 1793212080,
+   "kind": "considered",
+   "asset": "WBTC",
+   "title": "Candidate: BTC short, premium 49 bps, 4 h momentum −0.63%",
+   "detail": "Levels computed by the candidate builder: target 77,160.60, void 78,563.52, size up to $10.00."
+  },
+  {
+   "t": 1793205000,
+   "kind": "declined",
+   "asset": "WHSK",
+   "model": "gemini-3.5-flash",
+   "tokens": 2112,
+   "title": "Declined HSK: spread 33 bps, under the round trip",
+   "detail": "Round trip costs 60 bps. Waited."
+  },
+  {
+   "t": 1793197800,
+   "kind": "settled",
+   "asset": "WHSK",
+   "noteId": 1,
+   "tx": "0x08acdec0d29496605943b4a1abe919533680c0c42054216ed03dcd27e58ab48c",
+   "title": "AVW·000001 honoured at 0.08792, P&L +$0.04",
+   "detail": "Graded 1 against 0.62: squared error 0.144. Settled by the keeper."
+  },
+  {
+   "t": 1793190600,
+   "kind": "sworn",
+   "asset": "WETH",
+   "noteId": 2,
+   "tx": "0x0d7b3a493c1e07e3eabc2f2f137a875a7394ce168e3388d1a4b1287a1f1fde93",
+   "model": "gemini-3.5-flash",
+   "tokens": 2174,
+   "title": "Swore AVW·000002 at 56% confidence for $9.60",
+   "detail": "Avow swears that ETH will trade above 2,296.34 on HSKSwap before 18:00 IST on 29 Oct, or this note is void at 2,237.51."
+  },
+  {
+   "t": 1793190480,
+   "kind": "considered",
+   "asset": "WETH",
+   "title": "Candidate: ETH long, premium -22 bps, 4 h momentum +0.92%",
+   "detail": "Levels computed by the candidate builder: target 2,296.34, void 2,237.51, size up to $10.00."
+  },
+  {
+   "t": 1793176200,
+   "kind": "sworn",
+   "asset": "WHSK",
+   "noteId": 1,
+   "tx": "0x3857bb93456d63eae5662b7f19308f795e326141106539f5ed29d6a357fcce72",
+   "model": "gemini-3.5-flash",
+   "tokens": 2137,
+   "title": "Swore AVW·000001 at 62% confidence for $9.80",
+   "detail": "Avow swears that HSK will trade below 0.08796 on HSKSwap before 14:00 IST on 29 Oct, or this note is void at 0.08997."
+  },
+  {
+   "t": 1793176080,
+   "kind": "considered",
+   "asset": "WHSK",
+   "title": "Candidate: HSK short, premium 58 bps, 4 h momentum −0.44%",
+   "detail": "Levels computed by the candidate builder: target 0.08796, void 0.08997, size up to $10.00."
+  },
+  {
+   "t": 1793171160,
+   "kind": "heartbeat",
+   "title": "Agent started on the fork. First cycle read all three pools, Chainlink and both exchanges."
+  },
+  {
+   "t": 1793170080,
+   "kind": "amended",
+   "tx": "0x389b54345715d573a0cd153e54f9f4aa402c77634f49776972ea3a0399df7489",
+   "title": "Owner wrote the first mandate",
+   "detail": "Max note $50, max exposure $150, slippage 60 bps, spot deviation 100 bps, cooldown 5 min, horizon 36 h, daily loss $10, drawdown 15%, reward/risk 1.2, stop 800 bps, assets WETH, WBTC, WHSK."
+  }
+ ],
+ "costs": {
+  "modelCalls24h": 212,
+  "modelUsd24h": 0.41,
+  "gasHsk24h": 1.08,
+  "gasUsd24h": 0.094
+ }
+}

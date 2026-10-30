@@ -5,13 +5,13 @@ import {TickMath} from "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 import {FullMath} from "@uniswap/v3-core/contracts/libraries/FullMath.sol";
 import {IERC20, IUniswapV3PoolLike, ISwapRouter02} from "./Interfaces.sol";
 
-/// @title DictumVault
+/// @title AvowVault
 /// @notice A vault an AI agent may trade only by swearing falsifiable notes. The owner's mandate is enforced here,
 ///         every note is published with the swap that opens it, anyone can settle a note once the HSKSwap TWAP and the
 ///         live price have both crossed its target or void level (or it expires), and the agent's largest allowed note
 ///         (its denomination) is earned from its graded, calibrated record.
 /// @dev Prices are USDT per whole asset, scaled 1e8 ("px8"). USDT has 6 decimals.
-contract DictumVault {
+contract AvowVault {
     // ─────────────────────────────────────────────────────────────── types
 
     enum Side {
@@ -78,6 +78,7 @@ contract DictumVault {
         uint32 voided;
         uint32 lapsed;
         uint32 retracted;
+        uint32 revoked; // closed by the owner, not graded, counted in public
         uint8 voidStreak;
         uint8 windowCount; // ≤ WINDOW
         uint8 windowHead;
@@ -91,7 +92,7 @@ contract DictumVault {
     uint32 public constant TWAP_FALLBACK = 60;
     uint16 public constant MIN_STOP_BPS = 25;
     uint32 public constant MIN_HORIZON = 10 minutes;
-    uint16 public constant MIN_CONFIDENCE = 3000;
+    uint16 public constant MIN_CONFIDENCE = 5000;
     uint16 public constant MAX_CONFIDENCE = 9900;
     uint8 public constant WINDOW = 32;
     uint256 private constant SQ_ONE = 1e8; // (1.0)² in sqErr units
@@ -269,7 +270,7 @@ contract DictumVault {
 
         uint8 t = tier();
         uint256 cap = denominationOf(t);
-        if (notional > cap) revert ExceedsDenomination(notional, cap);
+        if (notional < 1e6 || notional > cap) revert ExceedsDenomination(notional, cap);
         if (exposure + notional > m.maxExposure) revert ExceedsExposure(exposure + notional, m.maxExposure);
 
         uint256 amountIn;
@@ -290,6 +291,8 @@ contract DictumVault {
             uint256 after_ = _spot(a);
             if (after_ <= targetPx) revert SelfFulfilling(after_, targetPx);
         }
+
+        if (IERC20(usdt).balanceOf(address(this)) < lockedUsdt * 6 / 5) revert InsufficientInventory(0, lockedUsdt * 6 / 5);
 
         id = _notes.length;
         _notes.push(
@@ -399,16 +402,18 @@ contract DictumVault {
 
     function deposit(address token, uint256 amount) external nonReentrant {
         uint256 value = _valueOf(token, amount);
+        uint256 v0 = nav();
         _pull(token, msg.sender, amount);
-        hwm += value;
+        hwm = v0 == 0 ? hwm + value : hwm * (v0 + value) / v0;
         emit Deposited(token, msg.sender, amount, value);
     }
 
     function withdraw(address token, uint256 amount, address to) external onlyOwner nonReentrant {
-        uint256 locked = token == usdt ? lockedUsdt : _lockedOf(token);
+        uint256 locked = token == usdt ? lockedUsdt * 6 / 5 : _lockedOf(token);
         require(IERC20(token).balanceOf(address(this)) - locked >= amount, "locked");
         uint256 value = _valueOf(token, amount);
-        hwm = hwm > value ? hwm - value : 0;
+        uint256 v0 = nav();
+        hwm = v0 > value ? hwm * (v0 - value) / v0 : 0;
         _push(token, to, amount);
         emit Withdrawn(token, to, amount, value);
     }
@@ -467,7 +472,7 @@ contract DictumVault {
     function tier() public view returns (uint8 t) {
         Ledger memory l = _ledger;
         uint256 b = brier();
-        if (l.windowCount >= 5 && b <= 25_000_000) t = 1;
+        if (l.windowCount >= 5 && l.honoured > 0 && b <= 25_000_000) t = 1;
         if (t == 1 && l.graded >= 12 && b <= 22_000_000 && l.realisedPnl >= 0) t = 2;
         if (t == 2 && l.graded >= 25 && b <= 20_000_000 && l.realisedPnl > 0) t = 3;
         if (l.voidStreak >= 3 && t > 0) t -= 1;
@@ -530,7 +535,7 @@ contract DictumVault {
     function _close(uint256 id, Note storage n, Status s) internal {
         Asset memory a = _assets[n.asset];
         Mandate memory m = _mandate;
-        uint256 exitSlip = uint256(m.maxSlippageBps) * 2 > 150 ? uint256(m.maxSlippageBps) * 2 : 150;
+        uint256 exitSlip = s == Status.Retracted ? m.maxSlippageBps : uint256(m.maxSlippageBps) * 2 > 150 ? uint256(m.maxSlippageBps) * 2 : 150;
         (bool hasTwap, uint256 px) = _tryTwap(a);
         if (!hasTwap) {
             (, int24 tick,,,,,) = IUniswapV3PoolLike(a.pool).slot0();
@@ -539,7 +544,11 @@ contract DictumVault {
 
         int256 pnl;
         uint256 exitPx;
-        if (n.side == Side.Long) {
+        if (s == Status.Revoked) {
+            // the owner's escape hatch: unlock without trading, so no note can be stuck forever
+            if (n.side == Side.Long) lockedAsset[n.asset] -= n.amountOut;
+            else lockedUsdt -= n.amountOut;
+        } else if (n.side == Side.Long) {
             uint256 qty = n.amountOut;
             uint256 expected = _assetToUsdt(qty, px, a.decimals);
             uint256 got = _swapIn(a.token, usdt, a.fee, qty, expected * (BPS - exitSlip) / BPS);
@@ -568,9 +577,10 @@ contract DictumVault {
 
         uint256 sqErr;
         if (s != Status.Revoked) sqErr = _grade(n, s, pnl);
+        else _ledger.revoked += 1;
 
         uint256 v = nav();
-        if (v > hwm) hwm = v;
+        if (pnl > 0) hwm += uint256(pnl);
         if (!frozen && v < hwm * (BPS - m.maxDrawdownBps) / BPS) {
             frozen = true;
             emit VaultFrozen(v, hwm);
@@ -607,6 +617,7 @@ contract DictumVault {
             l.lapsed += 1;
         } else {
             l.retracted += 1;
+            l.voidStreak += 1;
         }
         uint8 afterT = tier();
         if (afterT != before) emit TierChanged(before, afterT);

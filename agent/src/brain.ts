@@ -7,7 +7,7 @@ import { ASSETS } from "./config.js";
 export interface Decision {
   decision: "swear" | "abstain";
   candidate: string | null; // candidate key
-  confidence: number | null; // 0.30–0.99
+  confidence: number | null; // 0.50–0.99
   because: string; // ≤ 160 chars, goes into the on-chain statement
   rationale: string; // the full reasoning, journaled (hash on chain)
   model: string;
@@ -26,7 +26,7 @@ trades it, so a note that needs the pool to move needs other traders to arrive w
 rejects a note its own trade would fulfil. The pool fee is 0.30% each way.
 
 You receive candidates whose levels were computed by deterministic rules. You cannot change the levels or the size. Choose at most one candidate
-to swear, or abstain. For a candidate you swear, give the probability (0.30–0.99) that the target is reached before the void level and expiry.
+to swear, or abstain. For a candidate you swear, give the probability (0.50–0.99) that the target is reached before the void level and expiry.
 It must exceed the candidate's break-even probability pMin, or you must abstain. Abstaining is a normal, good outcome when the edge is thin.
 "because" is one plain sentence (max 160 characters) that will be published on chain: it may only quote numbers that appear in the facts.
 "rationale" is 2–4 short sentences (under 600 characters) for the journal. Never invent prices, times, or events.`;
