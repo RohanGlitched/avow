@@ -102,10 +102,14 @@ export default async function Home() {
           {hero ? (
             <Note note={hero} state={s} print />
           ) : (
-            <div className="empty">
-              <b>No note sworn yet</b>
-              The vault is live and the agent is watching three pools. The first note will appear here the moment a candidate clears the mandate.
-            </div>
+            <>
+              <div className="empty">
+                <b>No note sworn yet</b>
+                The vault is live and the agent is watching three pools; it swears only when a candidate clears its fees at its own odds. Until then, this is
+                what a note looks like (a specimen from sample data, not a note of this vault).
+              </div>
+              <Note note={specimenNote("outstanding")} state={s} print />
+            </>
           )}
           <div className="plate hero__plate">
             <span>
