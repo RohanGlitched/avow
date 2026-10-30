@@ -1,5 +1,5 @@
 import type { AssetSym, Mandate, State } from "./types";
-import { ASSET_LABEL, duration, num, usd } from "./format";
+import { ASSET_LABEL, duration, num, realisedDrawdown, usd } from "./format";
 
 export type NumField = Exclude<keyof Mandate, "assets" | "paused">;
 
@@ -81,8 +81,8 @@ export const CLAUSES: Clause[] = [
   {
     field: "maxDrawdownBps", title: "Drawdown", stricter: "lower", min: 200, max: 5000, step: 50, unit: "bps",
     value: (v) => pct(v),
-    sentence: (v) => `If the vault falls ${pct(v)} below its high-water mark, it freezes until the owner unfreezes it.`,
-    rosette: "waves of the inner band", guard: "settle(), swear(): NAV ≥ HWM × (1 − maxDrawdown) or freeze",
+    sentence: (v) => `If Avow's realised losses take the vault's realised equity ${pct(v)} below its high-water mark, it freezes until the owner unfreezes it. Price moves in the owner's own holdings do not count.`,
+    rosette: "waves of the inner band", guard: "settle(): realised equity ≥ HWM × (1 − maxDrawdown) or freeze",
   },
 ];
 
@@ -171,8 +171,9 @@ export function clauseUsage(field: NumField, s: State): { text: string; fill: nu
     case "dailyLossLimitUsd":
       return { text: `Realised loss today ${usd(s.record.dailyLossUsd)}.`, fill: s.record.dailyLossUsd / m.dailyLossLimitUsd };
     case "maxDrawdownBps": {
-      const dd = s.record.hwmUsd > 0 ? ((s.record.hwmUsd - s.record.navUsd) / s.record.hwmUsd) * 1e4 : 0;
-      return { text: `NAV ${usd(s.record.navUsd)} against a high-water mark of ${usd(s.record.hwmUsd)}: ${pct(dd)} down.`, fill: dd / m.maxDrawdownBps };
+      const d = realisedDrawdown(s);
+      if (d.hwm == null) return { text: "No note sworn yet: the high-water mark of realised equity is set at the first note.", fill: 0 };
+      return { text: `Realised equity ${usd(d.equity)} against its high-water mark of ${usd(d.hwm)}: ${pct(d.dd * 1e4)} down.`, fill: (d.dd * 1e4) / m.maxDrawdownBps };
     }
   }
 }

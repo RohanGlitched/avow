@@ -1,4 +1,5 @@
 import { Note } from "./Note";
+import { SpecimenFit } from "./SpecimenFit";
 import { num, pct, px, short, usd } from "@/lib/format";
 import type { Note as NoteT, State } from "@/lib/types";
 
@@ -23,15 +24,11 @@ export function Guide({ note, state }: { note: NoteT; state: State }) {
   ];
   return (
     <div className="guide">
-      {/* On a phone the specimen is printed at full size in a sideways strip, so it reads as a close-up to swipe
-          through rather than a second copy of the note above it. */}
-      <div>
-        <div className="guide__specimen" role="region" aria-label={`Annotated specimen of ${note.serial}`} tabIndex={0}>
+      {/* On a phone the specimen keeps its full layout, scaled to the column; a tap opens it at full size. */}
+      <div className="guide__specimen">
+        <SpecimenFit label={`Annotated specimen of ${note.serial}`}>
           <Note note={note} state={state} annotate defer headingLevel={3} />
-        </div>
-        <p className="guide__swipe" aria-hidden="true">
-          Specimen at full size. Swipe sideways to find marks A to H →
-        </p>
+        </SpecimenFit>
       </div>
       <ol className="guide__list">
         {items.map((i) => (

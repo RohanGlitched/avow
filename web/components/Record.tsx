@@ -35,7 +35,7 @@ export function TierLadder({ record }: { record: Rec }) {
             {state === "specimen" ? (
               <div className="progress">
                 {need > 0 ? `${need} more graded notes` : "Enough notes graded"}
-                {rule.brier != null ? `, Brier ${rule.brier.toFixed(2)} or better (now ${record.brier?.toFixed(3) ?? "none"})` : ""}
+                {rule.brier != null ? `, Brier ${t.index === 1 ? "below" : "of"} ${rule.brier.toFixed(2)}${t.index === 1 ? "" : " or better"} (now ${record.brier?.toFixed(3) ?? "none"})` : ""}
                 <div className="meter" aria-hidden="true">
                   <div className="meter__fill" style={{ width: `${Math.min(100, (record.graded / rule.graded) * 100)}%` }} />
                 </div>
@@ -159,6 +159,11 @@ export function Reliability({ notes }: { notes: Note[] }) {
         <text className="lab" x={X(lo) + 8} y={Y(0.94)}>
           underconfident
         </text>
+        {graded.length === 0 ? (
+          <text className="ghost__words" x={(X(lo) + X(1)) / 2} y={Y(0.24)} textAnchor="middle">
+            Circles appear here as notes are graded
+          </text>
+        ) : null}
         {/* rug: every graded note, honoured on top, misses below */}
         {graded.map((n) => (
           <line
@@ -200,6 +205,24 @@ export function Reliability({ notes }: { notes: Note[] }) {
         </g>
       </svg>
     </div>
+  );
+}
+
+/** An empty chart that still reads as a chart: the reference line, dashed, and what will appear on it. */
+function GhostChart({ w, h, line, words }: { w: number; h: number; line: string; words: string }) {
+  const y = Math.round(h * 0.55);
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width={w} height={h} aria-hidden="true" className="ghost">
+      <rect x="0.5" y="0.5" width={w - 1} height={h - 1} rx="4" fill="none" stroke="var(--line)" strokeDasharray="3 5" />
+      <line x1={16} x2={w - 16} y1={y} y2={y} stroke="var(--ink)" strokeOpacity="0.55" strokeDasharray="5 5" />
+      <text className="lab" x={16} y={y - 8}>
+        {line}
+      </text>
+      <circle cx={16} cy={y} r="4" fill="var(--note)" stroke="var(--ink)" strokeOpacity="0.6" strokeDasharray="2 2" />
+      <text className="ghost__words" x={w / 2} y={y + 34} textAnchor="middle">
+        {words}
+      </text>
+    </svg>
   );
 }
 
@@ -270,8 +293,12 @@ export function BrierHistory({ notes }: { notes: Note[] }) {
     return { t: n.settledAt!, v: sum / (i + 1) };
   });
   return (
-    <div ref={ref} className="chart" role="img" aria-label={`Rolling Brier score after each graded note, ending at ${pts.at(-1)?.v.toFixed(3) ?? "none"}; coin flip 0.25`}>
-      <StepChart pts={pts} label="brier" refLine={{ v: 0.25, t: "coin flip 0.25" }} fmt={(v) => v.toFixed(3)} w={w} h={220} invert zero={false} />
+    <div ref={ref} className="chart" role="img" aria-label={pts.length ? `Rolling Brier score after each graded note, ending at ${pts.at(-1)!.v.toFixed(3)}; coin flip 0.25` : "No note graded yet; the line starts at the first grade. Coin flip 0.25."}>
+      {pts.length ? (
+        <StepChart pts={pts} label="brier" refLine={{ v: 0.25, t: "coin flip 0.25" }} fmt={(v) => v.toFixed(3)} w={w} h={220} invert zero={false} />
+      ) : (
+        <GhostChart w={w} h={220} line="coin flip 0.25" words="The line starts when the first note is graded" />
+      )}
     </div>
   );
 }
@@ -286,8 +313,12 @@ export function PnlCurve({ notes }: { notes: Note[] }) {
       return { t: n.settledAt!, v: sum };
     });
   return (
-    <div ref={ref} className="chart" role="img" aria-label={`Cumulative realised P&L after each settled note, ending at ${usd(pts.at(-1)?.v ?? 0, { sign: true })}`}>
-      <StepChart pts={pts} label="pnl" fmt={(v) => usd(v, { sign: true })} w={w} h={220} />
+    <div ref={ref} className="chart" role="img" aria-label={pts.length ? `Cumulative realised P&L after each settled note, ending at ${usd(pts.at(-1)!.v, { sign: true })}` : "No note settled yet; the first point appears when the first note settles."}>
+      {pts.length ? (
+        <StepChart pts={pts} label="pnl" fmt={(v) => usd(v, { sign: true })} w={w} h={220} />
+      ) : (
+        <GhostChart w={w} h={220} line="$0.00" words="The first point appears when the first note settles" />
+      )}
     </div>
   );
 }

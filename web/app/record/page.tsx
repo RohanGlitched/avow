@@ -7,11 +7,14 @@ import { StudyTable } from "@/components/Study";
 import { BrierHistory, BrierScale, PnlCurve, Reliability, TierLadder } from "@/components/Record";
 import { TIER_RULES } from "@/lib/tiers";
 import { StatusMark } from "@/components/NoteStub";
-import { NETWORK_WORDS, rehearsalSentence } from "@/lib/chain";
-import { noteHref, pct, usd, when } from "@/lib/format";
+import { NETWORK_WORDS, rehearsalShort } from "@/lib/chain";
+import { ReplaySection } from "@/components/Replay";
+import { noteHref, pct, realisedDrawdown, usd, when } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Record", description: "Avow's calibration on chain: Brier score, reliability, the denomination it has earned and its realised P&L." };
+
+const lowerFirst = (t: string) => (t ? t.charAt(0).toLowerCase() + t.slice(1) : t).replace(/\.$/, "");
 
 export default async function RecordPage() {
   const s = await getState();
@@ -19,9 +22,11 @@ export default async function RecordPage() {
   const graded = s.notes.filter((n) => n.sqError != null).sort((a, b) => (b.settledAt ?? 0) - (a.settledAt ?? 0));
   const next = r.tiers[r.tier.index + 1];
   const nextRule = next ? TIER_RULES[next.index] : null;
-  const dd = r.hwmUsd > 0 ? (r.hwmUsd - r.navUsd) / r.hwmUsd : 0;
+  const ddr = realisedDrawdown(s);
   const settled = s.notes.filter((n) => n.settledAt != null).length;
-  const rehearsal = rehearsalSentence(s);
+  const rehearsal = rehearsalShort(s);
+  const none = r.graded === 0;
+  const missed = r.void + r.lapsed + r.retracted + (r.revoked ?? 0);
   return (
     <>
       <section className="page-head">
@@ -34,7 +39,6 @@ export default async function RecordPage() {
             Every settled note is graded on chain: 1 if honoured, 0 otherwise, against the confidence Avow stated when it swore. The squared gap is the <Term k="brier" />. A coin flip scores
             0.25; lower is better, and only a better-than-coin record earns a larger <Term k="denomination">denomination</Term>, its trade limit.
           </p>
-          {rehearsal ? <p className="rehearsal-line">{rehearsal}</p> : null}
         </div>
       </section>
 
@@ -43,7 +47,9 @@ export default async function RecordPage() {
           {rehearsal ? (
             <div className="rehearsal-label">
               <b>Rehearsal record</b>
-              <span>Private fork of HSK mainnet, outside traders simulated. Not evidence; the mainnet record starts empty.</span>
+              <span>
+                {rehearsal} The mainnet record starts empty. <Link href="/how#rehearsal">What this means</Link>
+              </span>
             </div>
           ) : null}
           <div className="counts">
@@ -60,9 +66,9 @@ export default async function RecordPage() {
               <span>honoured</span>
             </div>
             <div className="count">
-              <b>{r.void + r.lapsed + r.retracted}</b>
+              <b>{missed}</b>
               <span>
-                missed: {r.void} void, {r.lapsed} lapsed, {r.retracted} retracted
+                missed: {r.void} void, {r.lapsed} lapsed, {r.retracted} retracted{r.revoked ? `, ${r.revoked} revoked` : ""}
               </span>
             </div>
             <div className="count">
@@ -88,8 +94,8 @@ export default async function RecordPage() {
           <div className="wrap">
             <div className="empty">
               <b>No graded notes yet</b>
-              This vault is new. Avow starts on Probation and may write notes of up to {usd(r.tiers[0]?.capUsd ?? 0)}. The first note is graded the moment anyone settles it; after{" "}
-              {TIER_RULES[1].graded} graded notes with a Brier of 0.25 or better it is promoted to Apprentice. <Link href="/journal">Watch the journal</Link> for the first oath.
+              This vault is new. Avow starts on Probation and may write notes of up to {usd(r.tiers[0]?.capUsd ?? 0)}. The first note is graded the moment anyone settles it. To reach
+              Apprentice it needs {lowerFirst(r.tiers[1]?.requirement ?? `${TIER_RULES[1].graded} graded notes`)}. <Link href="/journal">Watch the journal</Link> for the first oath.
             </div>
           </div>
         </section>
@@ -111,7 +117,9 @@ export default async function RecordPage() {
           <div className="grid-2" style={{ marginTop: 48 }}>
             <figure style={{ margin: 0 }}>
               <BrierHistory notes={s.notes} />
-              <figcaption className="plate">Plate. Rolling Brier after each graded note. The shaded band is the margin by which Avow beat a coin flip.</figcaption>
+              <figcaption className="plate">
+                {none ? "Rolling Brier after each graded note, against the coin-flip line at 0.25. Nothing is graded yet." : "Plate. Rolling Brier after each graded note. The shaded band is its distance from a coin flip: below the line is better."}
+              </figcaption>
             </figure>
             <div className="prose">
               <h3 style={{ marginBottom: 12 }}>Why calibration, not win rate</h3>
@@ -133,14 +141,20 @@ export default async function RecordPage() {
           <figure style={{ margin: 0 }}>
             <Reliability notes={s.notes} />
             <figcaption className="plate">
-              Plate. Reliability. Circles are notes grouped by stated confidence, sized by count; ticks along the top are honoured notes, along the bottom misses.
+              {none
+                ? "The diagonal is perfect calibration: a trader whose 60% notes come true 60% of the time. Once notes are graded, circles land on, above or below it."
+                : "Plate. Reliability. Circles are notes grouped by stated confidence, sized by count; ticks along the top are honoured notes, along the bottom misses."}
             </figcaption>
           </figure>
           <div>
             <h2 id="reliability">Does it mean what it says?</h2>
             <p className="lede" style={{ marginTop: 14 }}>
-              A calibrated trader&apos;s 60% notes come true about 60% of the time, so its circles sit on the diagonal. Below the diagonal it was overconfident; above, too modest. With{" "}
-              {r.graded} graded notes the circles are still wide of the line; the window keeps the last 32.
+              A calibrated trader&apos;s 60% notes come true about 60% of the time, so its circles sit on the diagonal. Below the diagonal it was overconfident; above, too modest.{" "}
+              {none
+                ? "No note is graded yet, so the chart shows only the line the circles will be measured against."
+                : r.graded < 20
+                  ? `With ${r.graded} graded notes the circles are still wide of the line; the window keeps the last 32.`
+                  : "The window keeps the last 32 graded notes."}
             </p>
           </div>
         </div>
@@ -151,8 +165,8 @@ export default async function RecordPage() {
           <SecHead id="ladder" title="The denomination ladder.">
             {next && nextRule ? (
               <>
-                Next is <strong>{next.name}</strong>: notes up to {usd(next.capUsd, { dp: 0 })} after {nextRule.graded} graded notes ({Math.max(0, nextRule.graded - r.graded)} to go) with a
-                Brier of {nextRule.brier?.toFixed(2)} or better. Three voids in a row drop one tier; the streak now is {r.voidStreak}.
+                Next is <strong>{next.name}</strong>: notes up to {usd(next.capUsd, { dp: 0 })}. It needs {lowerFirst(next.requirement)} ({Math.max(0, nextRule.graded - r.graded)} more graded
+                notes to go). Three voids in a row drop one tier; the streak now is {r.voidStreak}.
               </>
             ) : (
               "Avow holds the top denomination. Three voids in a row would drop it a tier."
@@ -168,7 +182,11 @@ export default async function RecordPage() {
         <div className="wrap grid-2">
           <figure style={{ margin: 0 }}>
             <PnlCurve notes={s.notes} />
-            <figcaption className="plate">Plate. Cumulative realised P&amp;L on chain after each settled note, after pool fees. Gas and model spend are not in this line.</figcaption>
+            <figcaption className="plate">
+              {settled
+                ? "Plate. Cumulative realised P&L on chain after each settled note, after pool fees. Gas and model spend are not in this line."
+                : "Cumulative realised P&L on chain, after pool fees, starting from zero. Nothing has settled yet."}
+            </figcaption>
           </figure>
           <div>
             <h2 id="pnl">Money, small on purpose.</h2>
@@ -179,11 +197,11 @@ export default async function RecordPage() {
             <dl className="kv" style={{ marginTop: 24 }}>
               <dt>Vault value</dt>
               <dd>{usd(r.navUsd)}</dd>
-              <dt>High-water mark</dt>
-              <dd>{usd(r.hwmUsd)}</dd>
-              <dt>Drawdown</dt>
+              <dt>High-water mark, realised equity</dt>
+              <dd>{ddr.hwm != null ? usd(ddr.hwm) : <span className="muted">set when the first note is sworn</span>}</dd>
+              <dt>Drawdown, realised losses only</dt>
               <dd>
-                {pct(dd, 2)} of {pct(s.mandate.maxDrawdownBps / 1e4)} allowed {r.frozen ? <span className="neg">, frozen</span> : null}
+                {pct(ddr.dd, 2)} of {pct(s.mandate.maxDrawdownBps / 1e4)} allowed{r.frozen ? <span className="neg">, frozen</span> : null}
               </dd>
               <dt>Realised loss today</dt>
               <dd>
@@ -197,7 +215,7 @@ export default async function RecordPage() {
       <section className="sec sec--tint" aria-labelledby="graded">
         <div className="wrap">
           <SecHead id="graded" title="Every grade, worked out.">
-            The arithmetic behind the score, one row per graded note. Revoked notes are left out because the owner, not Avow, closed them.
+            The arithmetic behind the score, one row per graded note. Retracted and revoked notes count as misses, so neither Avow nor the owner can close a loser to protect the record.
           </SecHead>
           {graded.length ? (
             <div className="table-wrap">
@@ -257,12 +275,22 @@ export default async function RecordPage() {
             </div>
           )}
           <p className="plate">
-            {NETWORK_WORDS[s.network.mode].long} {s.network.mode === "fork-rehearsal" ? "Every grade above was computed by the vault contract on that fork." : ""}
+            {NETWORK_WORDS[s.network.mode].long} {s.network.mode === "fork-rehearsal" && graded.length ? "Every grade above was computed by the vault contract on that fork." : ""}
           </p>
         </div>
       </section>
+      {s.replay ? (
+        <section className="sec" id="replay" aria-labelledby="replay-h">
+          <div className="wrap">
+            <SecHead id="replay-h" title="Replay on real HSKSwap history.">
+              Avow&apos;s exact rules, and a family of alternatives, replayed over real HSKSwap swaps on mainnet, not the rehearsal. This is why it trades so rarely.
+            </SecHead>
+            <ReplaySection replay={s.replay} />
+          </div>
+        </section>
+      ) : null}
       {s.study && s.study.rows.length ? (
-        <section className="sec" aria-labelledby="odds">
+        <section className={`sec${s.replay ? " sec--tint" : ""}`} aria-labelledby="odds">
           <div className="wrap">
             <SecHead id="odds" title="Measured odds: do HSKSwap gaps really close?">
               The question every catch-up note bets on, answered from {s.study.windowDays} days of real HSKSwap swap logs on mainnet, not from the rehearsal.

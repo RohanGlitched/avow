@@ -61,7 +61,7 @@ export function NoteStub({ note }: { note: Note }) {
       <MiniTrack note={note} />
       <div className="stub__pnl">
         {pnl != null ? <b className={pnl >= 0 ? "pos" : "neg"}>{usd(pnl, { sign: true })}</b> : <b className="muted">open</b>}
-        <span>{note.sqError != null ? `squared error ${note.sqError.toFixed(3)}` : note.status === "revoked" ? "not graded" : "not yet graded"}</span>
+        <span>{note.sqError != null ? `squared error ${note.sqError.toFixed(3)}` : note.status === "revoked" ? "graded a miss" : "not yet graded"}</span>
       </div>
     </Link>
   );

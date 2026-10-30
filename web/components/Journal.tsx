@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { Hex } from "./Ovi";
 import { ownLink } from "@/lib/chain";
 import { ASSET_LABEL, noteHref, num, serialFor, time, weekday, dayKey } from "@/lib/format";
+import { DECISION_KINDS } from "@/lib/decisions";
 import type { JournalEntry, JournalKind, Note, State } from "@/lib/types";
 
 /** What a journal row needs from the state: the network (for explorer links) and the note serials. */
@@ -63,7 +64,7 @@ export function JournalRow({ e, state }: { e: JournalEntry; state: JournalCtx })
 
 const FILTERS: { key: string; label: string; kinds: JournalKind[] | null }[] = [
   { key: "all", label: "Everything", kinds: null },
-  { key: "decisions", label: "Decisions", kinds: ["sworn", "declined", "blocked", "reviewed"] },
+  { key: "decisions", label: "Decisions", kinds: DECISION_KINDS },
   { key: "sworn", label: "Sworn", kinds: ["sworn"] },
   { key: "declined", label: "Declined", kinds: ["declined"] },
   { key: "blocked", label: "Blocked by a clause", kinds: ["blocked"] },

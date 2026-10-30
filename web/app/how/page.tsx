@@ -6,7 +6,8 @@ import { SecHead, Divider } from "@/components/Bits";
 import { ArchitectureDiagram, GuaranteeTable, AddressTable } from "@/components/HowParts";
 import { TEST_SUMMARY, GUARANTEES } from "@/lib/guarantees";
 import { verifyCommands } from "@/lib/verify";
-import { NETWORK_WORDS, rehearsalSentence } from "@/lib/chain";
+import { MAINNET_LAUNCH, NETWORK_WORDS, rehearsalSentence } from "@/lib/chain";
+import { ReplaySummary } from "@/components/Replay";
 import { bps, duration, px } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +22,7 @@ const RULES = [
   { name: "tightenStop(id, void)", who: "Agent only", what: "Moves the void level toward the entry. Never away from it." },
   { name: "tighten(mandate)", who: "Agent only", what: "Every field equal or stricter, assets a subset. How the desk applies 'be more careful'." },
   { name: "amend(mandate)", who: "Owner only", what: "Any change, including looser ones. Signed by the owner's wallet." },
-  { name: "revoke(id)", who: "Owner only", what: "Closes any note at once. Not graded: the owner's decision says nothing about Avow's judgement." },
+  { name: "revoke(id)", who: "Owner only", what: "Closes any note at once, marked at the TWAP. Graded as a miss, so the owner cannot close a losing note to protect the record." },
   { name: "unfreeze()", who: "Owner only", what: "Re-opens a vault frozen by the drawdown clause." },
 ];
 
@@ -51,7 +52,6 @@ export default async function HowPage() {
             Most AI trading bots ask to be trusted. Avow cannot trade except by publishing a falsifiable note, in the same transaction, through a vault that enforces its owner&apos;s rules. This page
             explains the mechanism, lists what the contract guarantees and how each guarantee is tested, and gives you the commands to verify it yourself.
           </p>
-          {rehearsal ? <p className="rehearsal-line">{rehearsal}</p> : null}
           <div className="actions">
             <a href="#verify" className="btn">
               Verify it yourself
@@ -60,6 +60,35 @@ export default async function HowPage() {
               See the {GUARANTEES.length} guarantees
             </a>
           </div>
+        </div>
+      </section>
+
+      <section className="sec" id="rehearsal" aria-labelledby="rehearsal-h">
+        <div className="wrap">
+          <SecHead id="rehearsal-h" title={rehearsal ? "What the rehearsal means." : "The rehearsal before mainnet."}>
+            {rehearsal ??
+              "Before going live, the contracts and the agent were rehearsed on a private fork of HSK mainnet, with outside traders simulated at the measured mainnet swap rates and pool-side arbitrage share. The rehearsal numbers are not part of this record."}
+          </SecHead>
+          <div className="rehearsal-facts">
+            <div>
+              <h3>Real</h3>
+              <p>The HSKSwap pool state the fork starts from, prices from HashKey Global and Gate, the vault contract, the agent, its model and its guards.</p>
+            </div>
+            <div>
+              <h3>Simulated</h3>
+              <p>
+                Everyone else who trades on the fork. They swap at the rates measured on mainnet, and close gaps from the pool side as often as real arbitrageurs did, but they are not
+                real people.
+              </p>
+            </div>
+            <div>
+              <h3>Not evidence</h3>
+              <p>
+                Notes, grades and P&amp;L on the fork show the contracts and the agent working, not an edge. None of them carries over into the mainnet record.
+              </p>
+            </div>
+          </div>
+          {s.replay ? <ReplaySummary replay={s.replay} title="The evidence that does exist: real HSKSwap history" /> : null}
         </div>
       </section>
 
@@ -168,7 +197,7 @@ export default async function HowPage() {
       <section className="sec sec--tint" aria-labelledby="seatbelt">
         <div className="wrap">
           <SecHead id="seatbelt" title="Chainlink: checked by the agent, not the contract.">
-            Chainlink feeds on HSK Chain are read-whitelisted; contracts get &ldquo;No access&rdquo;. So the vault judges only by the pool&apos;s own 5-minute TWAP and live price, and the agent
+            Chainlink feeds on HSK Chain are read-whitelisted; contracts get &ldquo;No access&rdquo;. So the vault settles only by the pool&apos;s own 5-minute TWAP and live price, and the agent
             refuses to swear when the pool is more than 3% from a fresh Chainlink price. A feed older than 26 hours is shown greyed as stale: that seatbelt is off for the asset.
           </SecHead>
           <div className="table-wrap">
@@ -317,7 +346,7 @@ export default async function HowPage() {
                 t: "Rehearsal first",
                 d:
                   s.network.mode === "fork-rehearsal"
-                    ? "The numbers on this site come from a private fork of HSK mainnet where outside traders are simulated, so they are not evidence. The same contracts and agent move to mainnet on Nov 1 with the owner's funds."
+                    ? `The numbers on this site come from the rehearsal described at the top of this page. The same contracts and agent move to mainnet on ${MAINNET_LAUNCH} with the owner's funds.`
                     : "The contracts and agent were rehearsed on a private fork of HSK mainnet before going live; the rehearsal numbers are not part of this record.",
               },
             ].map((x) => (

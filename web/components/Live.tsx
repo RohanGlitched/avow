@@ -1,5 +1,6 @@
 "use client";
 // Small live readouts that follow the polled state and the UI clock.
+import { useEffect, useState } from "react";
 import { useLiveState, useNow } from "@/lib/live";
 import { ago, duration, px, scalePos, usd } from "@/lib/format";
 import type { Note } from "@/lib/types";
@@ -44,7 +45,7 @@ function settlement(note: Note): { at: "target" | "void" | null; words: string }
     case "retracted":
       return { at: null, words: `Retracted. Avow closed the note early, which is graded as a miss.${fill ? ` The closing swap filled at ${fill}.` : ""}` };
     case "revoked":
-      return { at: null, words: `Revoked. The owner closed the note, so it is not graded.${fill ? ` The closing swap filled at ${fill}.` : ""}` };
+      return { at: null, words: `Revoked. The owner closed the note; it is graded as a miss.${fill ? ` The closing swap filled at ${fill}.` : ""}` };
     default:
       return { at: null, words: "" };
   }
@@ -130,4 +131,27 @@ export function Freshness() {
   if (state.source === "fixture") return <span suppressHydrationWarning>Sample snapshot taken {new Date(state.asOf * 1000).toLocaleString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", hour12: false })} IST</span>;
   if (status === "error") return <span className="neg">Live reads failing; showing the last good numbers</span>;
   return <span suppressHydrationWarning>Read {ago(now - updatedAt / 1000)}{status === "stale" ? ", retrying" : ""}</span>;
+}
+
+/** "last cycle 12 s ago", from the agent's heartbeat, ticking every second (frozen on the sample snapshot). */
+export function LastCycle({ prefix = "last cycle " }: { prefix?: string }) {
+  const { state } = useLiveState();
+  const base = useNow();
+  const frozen = state.source === "fixture";
+  const [now, setNow] = useState(base);
+  useEffect(() => {
+    setNow(frozen ? base : Math.max(base, Date.now() / 1000));
+    if (frozen) return;
+    const id = setInterval(() => setNow(Date.now() / 1000), 1000);
+    return () => clearInterval(id);
+  }, [base, frozen]);
+  const hb = state.lastHeartbeat;
+  if (hb == null) return <span>no cycle reported yet</span>;
+  const s = Math.max(0, Math.round(now - hb));
+  return (
+    <time dateTime={new Date(hb * 1000).toISOString()} suppressHydrationWarning>
+      {prefix}
+      {s < 120 ? `${s} s ago` : `${duration(s)} ago`}
+    </time>
+  );
 }

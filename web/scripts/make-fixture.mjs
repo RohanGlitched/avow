@@ -76,7 +76,7 @@ const SPEC = [
     rationale: "A 54 bps premium on ETH. Momentum is flat, so this is a pure convergence note; the risk is that the exchange catches up to the pool rather than the other way round." },
   { id: 8, asset: "WHSK", side: "short", open: 24, entry: 0.0884, tgt: 0.012, vd: 0.009, conf: 0.6, notional: 18.9, outcome: "revoked", settle: 20, settler: "owner", exit: 0.08822,
     signals: { spreadBps: 51, momentum1h: -0.09, momentum4h: -0.3, volatility: 2.3 },
-    rationale: "HSKSwap HSK 51 bps above the exchange, exchange drifting lower. Revoked by the owner before a mandate amendment; revoked notes are not graded." },
+    rationale: "HSKSwap HSK 51 bps above the exchange, exchange drifting lower. Revoked by the owner before a mandate amendment; a revoked note is graded as a miss." },
   { id: 9, asset: "WHSK", side: "short", open: 9, entry: 0.08802, tgtPx: 0.0869, vdPx: 0.08893, tightenedTo: 0.0888, conf: 0.63, notional: 19.2, outcome: "outstanding",
     signals: { spreadBps: 55, momentum1h: -0.15, momentum4h: -0.48, volatility: 2.5 },
     rationale: "HSK trades 55 bps rich on HSKSwap and the exchange keeps leaking lower. Target is the exchange level; the void level sits beyond the last 12 h high on the pool. Stop tightened once since." },
@@ -133,7 +133,7 @@ const notes = SPEC.map((s) => {
     else exitPx = s.exit;
     const move = s.side === "long" ? exitPx / s.entry - 1 : s.entry / exitPx - 1;
     const pnl = s.notional * (move - 2 * FEE) - 0.03; // two pool fees + two transactions of gas
-    const graded = s.outcome !== "revoked";
+    const graded = true; // revoked notes are graded as misses too
     const o = s.outcome === "honoured" ? 1 : 0;
     Object.assign(note, {
       exitPx,
@@ -142,6 +142,8 @@ const notes = SPEC.map((s) => {
       settler: ADDR[s.settler],
       pnlUsd: Number(pnl.toFixed(4)),
       ...(graded ? { sqError: Number(((s.conf - o) ** 2).toFixed(4)) } : {}),
+      spotDevBps: 100,
+      exitSlipBps: 60,
     });
   }
   return note;
@@ -235,10 +237,10 @@ const brier = graded.reduce((a, n) => a + n.sqError, 0) / graded.length;
 const pnlUsd = notes.reduce((a, n) => a + (n.status !== "revoked" ? n.pnlUsd ?? 0 : 0), 0);
 const MAX_NOTIONAL = 50;
 const tiers = [
-  { index: 0, name: "Probation", share: 0.2, requirement: "Every new vault starts here. Fewer than 5 graded notes." },
-  { index: 1, name: "Apprentice", share: 0.4, requirement: "5 graded notes, Brier 0.25 or better" },
-  { index: 2, name: "Journeyman", share: 0.7, requirement: "12 graded notes, Brier 0.22 or better, P&L at least zero" },
-  { index: 3, name: "Fiduciary", share: 1.0, requirement: "25 graded notes, Brier 0.20 or better, P&L above zero" },
+  { index: 0, name: "Probation", share: 0.2, requirement: "Every new agent starts here, until its record shows calibration" },
+  { index: 1, name: "Apprentice", share: 0.4, requirement: "5 graded notes, a Brier score better than a coin flip (below 0.25), and honoured notes at least 80% of the hits its stated odds claimed" },
+  { index: 2, name: "Journeyman", share: 0.7, requirement: "12 graded notes, Brier 0.22 or better, realised P&L not negative" },
+  { index: 3, name: "Fiduciary", share: 1.0, requirement: "25 graded notes, Brier 0.20 or better, realised P&L positive" },
 ].map((t) => ({ ...t, capUsd: Number((t.share * MAX_NOTIONAL).toFixed(2)) }));
 
 const revokedPnl = notes.find((n) => n.status === "revoked").pnlUsd;
@@ -252,9 +254,10 @@ const record = {
   void: notes.filter((n) => n.status === "void").length,
   lapsed: notes.filter((n) => n.status === "lapsed").length,
   retracted: notes.filter((n) => n.status === "retracted").length,
+  revoked: notes.filter((n) => n.status === "revoked").length,
   brier: Number(brier.toFixed(4)),
   pnlUsd: Number((pnlUsd + revokedPnl).toFixed(4)),
-  tier: tiers[1],
+  tier: tiers[0], // the revoked miss leaves the rolling Brier just above 0.25
   tiers,
   voidStreak: 1,
   navUsd: 203.18,
@@ -355,6 +358,24 @@ const state = {
   market,
   journal,
   costs: { modelCalls24h: 212, modelUsd24h: 0.41, gasHsk24h: 1.08, gasUsd24h: 0.094 },
+  replay: {
+    generatedAt: AS_OF - 3 * H,
+    window: { from: AS_OF - 30 * 24 * H, to: AS_OF - 3 * H, splitAt: AS_OF - 10 * 24 * H },
+    costModel: "two 0.30% pool fees, price impact from each pool's liquidity at the swap size, and gas at 500 gwei with HSK at $0.087, on a $50 note",
+    current: [
+      { asset: "WBTC", kind: "catch-up", notes: 9, honoured: 3, void: 4, lapsed: 2, hitRate: 0.333, meanPMin: 0.71, pnlUsd: -2.61, pnlPerNoteUsd: -0.29, inSample: { notes: 6, hitRate: 0.333, pnlPerNoteUsd: -0.27 }, outOfSample: { notes: 3, hitRate: 0.333, pnlPerNoteUsd: -0.33 } },
+      { asset: "WHSK", kind: "catch-up", notes: 4, honoured: 2, void: 1, lapsed: 1, hitRate: 0.5, meanPMin: 0.66, pnlUsd: -0.42, pnlPerNoteUsd: -0.105, inSample: { notes: 3, hitRate: 0.667, pnlPerNoteUsd: 0.04 }, outOfSample: { notes: 1, hitRate: 0, pnlPerNoteUsd: -0.55 } },
+      { asset: "WETH", kind: "catch-up", notes: 0, honoured: 0, void: 0, lapsed: 0, hitRate: null, meanPMin: null, pnlUsd: 0, pnlPerNoteUsd: null, inSample: { notes: 0 }, outOfSample: { notes: 0 } },
+    ],
+    candidates: [
+      { name: "Wider gap", description: "Swear only when the gap is at least 1.0%, twice the usual threshold.", params: { minGapBps: 100 }, inSample: { notes: 4, hitRate: 0.5, pnlPerNoteUsd: 0.06 }, outOfSample: { notes: 2, hitRate: 0, pnlPerNoteUsd: -0.61 } },
+      { name: "Longer horizon", description: "Give each note 36 hours instead of 24 to let the pool catch up.", params: { horizonH: 36 }, inSample: { notes: 9, hitRate: 0.444, pnlPerNoteUsd: -0.08 }, outOfSample: { notes: 4, hitRate: 0.25, pnlPerNoteUsd: -0.31 } },
+      { name: "Fade with momentum", description: "Require the exchange price to be moving toward the pool before swearing.", params: { minMomentum1hPct: 0.2 }, inSample: { notes: 3, hitRate: 0.667, pnlPerNoteUsd: 0.11 }, outOfSample: { notes: 1, hitRate: 0, pnlPerNoteUsd: -0.52 } },
+    ],
+    chosen: null,
+    configsTried: 12,
+    notes: "Sample data for development. Swaps are read from HSKSwap's Swap events on mainnet; the agent's candidate builder and guards run unchanged on each 30-second step, and a note is settled by the same rules the vault uses.\n\nThe family of alternatives was written down before the last 10 days were looked at. Twelve configurations is a small family, but even so the best in-sample result is expected to look better than it is; that is why each was run only once on the held-out days.",
+  },
 };
 
 writeFileSync(OUT, JSON.stringify(state, null, 1));

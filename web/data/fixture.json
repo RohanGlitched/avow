@@ -37,47 +37,47 @@
   "paused": false
  },
  "record": {
-  "graded": 7,
+  "graded": 8,
   "honoured": 3,
   "void": 2,
   "lapsed": 1,
   "retracted": 1,
-  "brier": 0.2349,
+  "brier": 0.2506,
   "pnlUsd": -0.7108,
   "tier": {
-   "index": 1,
-   "name": "Apprentice",
-   "share": 0.4,
-   "requirement": "5 graded notes, Brier 0.25 or better",
-   "capUsd": 20
+   "index": 0,
+   "name": "Probation",
+   "share": 0.2,
+   "requirement": "Every new agent starts here, until its record shows calibration",
+   "capUsd": 10
   },
   "tiers": [
    {
     "index": 0,
     "name": "Probation",
     "share": 0.2,
-    "requirement": "Every new vault starts here. Fewer than 5 graded notes.",
+    "requirement": "Every new agent starts here, until its record shows calibration",
     "capUsd": 10
    },
    {
     "index": 1,
     "name": "Apprentice",
     "share": 0.4,
-    "requirement": "5 graded notes, Brier 0.25 or better",
+    "requirement": "5 graded notes, a Brier score better than a coin flip (below 0.25), and honoured notes at least 80% of the hits its stated odds claimed",
     "capUsd": 20
    },
    {
     "index": 2,
     "name": "Journeyman",
     "share": 0.7,
-    "requirement": "12 graded notes, Brier 0.22 or better, P&L at least zero",
+    "requirement": "12 graded notes, Brier 0.22 or better, realised P&L not negative",
     "capUsd": 35
    },
    {
     "index": 3,
     "name": "Fiduciary",
     "share": 1,
-    "requirement": "25 graded notes, Brier 0.20 or better, P&L above zero",
+    "requirement": "25 graded notes, Brier 0.20 or better, realised P&L positive",
     "capUsd": 50
    }
   ],
@@ -85,7 +85,8 @@
   "navUsd": 203.18,
   "hwmUsd": 206.4,
   "frozen": false,
-  "dailyLossUsd": 0.1048
+  "dailyLossUsd": 0.1048,
+  "revoked": 1
  },
  "holdings": [
   {
@@ -142,7 +143,9 @@
    "openBlock": 23180240,
    "tierAtOpen": 1,
    "status": "outstanding",
-   "livePx": 76827
+   "livePx": 76827,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 9,
@@ -173,7 +176,9 @@
    "openBlock": 23168360,
    "tierAtOpen": 1,
    "status": "outstanding",
-   "livePx": 0.08735873
+   "livePx": 0.08735873,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 8,
@@ -190,7 +195,7 @@
    "amountIn": 213.801,
    "amountOut": 18.8433,
    "statement": "Avow swears that HSK will trade below 0.08734 on HSKSwap before 12:00 IST on 31 Oct, or this note is void at 0.08920.",
-   "rationale": "HSKSwap HSK 51 bps above the exchange, exchange drifting lower. Revoked by the owner before a mandate amendment; revoked notes are not graded.",
+   "rationale": "HSKSwap HSK 51 bps above the exchange, exchange drifting lower. Revoked by the owner before a mandate amendment; a revoked note is graded as a miss.",
    "signals": {
     "spreadBps": 51,
     "momentum1h": -0.09,
@@ -207,7 +212,10 @@
    "settledAt": 1793356200,
    "settleTx": "0xda585044511b2e2e2377d4f225623e7f2a30a071db4fcbe2b3339848f8f51fcf",
    "settler": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-   "pnlUsd": -0.1048
+   "pnlUsd": -0.1048,
+   "spotDevBps": 100,
+   "exitSlipBps": 60,
+   "sqError": 0.36
   },
   {
    "id": 7,
@@ -242,7 +250,9 @@
    "settleTx": "0x367d192707933b9f3e87a249f6b1b5334a5bb4fe9c58d13c24b78f3ab053d63c",
    "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
    "pnlUsd": -0.3302,
-   "sqError": 0.3364
+   "sqError": 0.3364,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 6,
@@ -277,7 +287,9 @@
    "settleTx": "0xaa42ee46904acbd815df08d23566b91b3a9009c81c15c12f605d73c5436db89f",
    "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
    "pnlUsd": -0.107,
-   "sqError": 0.3025
+   "sqError": 0.3025,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 5,
@@ -312,7 +324,9 @@
    "settleTx": "0xe46620c759dcce8d4d3a9c197a1756b7848a039f27db04483484888db4807178",
    "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
    "pnlUsd": 0.0339,
-   "sqError": 0.1156
+   "sqError": 0.1156,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 4,
@@ -347,7 +361,9 @@
    "settleTx": "0x7e431376f912ecef08855d4671126e16d205625ea3acc67fd765ee159ed6bddf",
    "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
    "pnlUsd": -0.0653,
-   "sqError": 0.3025
+   "sqError": 0.3025,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 3,
@@ -382,7 +398,9 @@
    "settleTx": "0xfb6ecbdd05d1a701cd0c9c05665502d5ab78f8ff774debb5e25813c72ae84c89",
    "settler": "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
    "pnlUsd": 0.0146,
-   "sqError": 0.1296
+   "sqError": 0.1296,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 2,
@@ -417,7 +435,9 @@
    "settleTx": "0xce72d4d4af852fcf35377309d9d7542ebe030779b7e98427240c3f33a8d3cf3b",
    "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
    "pnlUsd": -0.197,
-   "sqError": 0.3136
+   "sqError": 0.3136,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   },
   {
    "id": 1,
@@ -452,7 +472,9 @@
    "settleTx": "0x08acdec0d29496605943b4a1abe919533680c0c42054216ed03dcd27e58ab48c",
    "settler": "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
    "pnlUsd": 0.045,
-   "sqError": 0.1444
+   "sqError": 0.1444,
+   "spotDevBps": 100,
+   "exitSlipBps": 60
   }
  ],
  "market": [
@@ -4206,5 +4228,134 @@
   "modelUsd24h": 0.41,
   "gasHsk24h": 1.08,
   "gasUsd24h": 0.094
+ },
+ "replay": {
+  "generatedAt": 1793417400,
+  "window": {
+   "from": 1790836200,
+   "to": 1793417400,
+   "splitAt": 1792564200
+  },
+  "costModel": "two 0.30% pool fees, price impact from each pool's liquidity at the swap size, and gas at 500 gwei with HSK at $0.087, on a $50 note",
+  "current": [
+   {
+    "asset": "WBTC",
+    "kind": "catch-up",
+    "notes": 9,
+    "honoured": 3,
+    "void": 4,
+    "lapsed": 2,
+    "hitRate": 0.333,
+    "meanPMin": 0.71,
+    "pnlUsd": -2.61,
+    "pnlPerNoteUsd": -0.29,
+    "inSample": {
+     "notes": 6,
+     "hitRate": 0.333,
+     "pnlPerNoteUsd": -0.27
+    },
+    "outOfSample": {
+     "notes": 3,
+     "hitRate": 0.333,
+     "pnlPerNoteUsd": -0.33
+    }
+   },
+   {
+    "asset": "WHSK",
+    "kind": "catch-up",
+    "notes": 4,
+    "honoured": 2,
+    "void": 1,
+    "lapsed": 1,
+    "hitRate": 0.5,
+    "meanPMin": 0.66,
+    "pnlUsd": -0.42,
+    "pnlPerNoteUsd": -0.105,
+    "inSample": {
+     "notes": 3,
+     "hitRate": 0.667,
+     "pnlPerNoteUsd": 0.04
+    },
+    "outOfSample": {
+     "notes": 1,
+     "hitRate": 0,
+     "pnlPerNoteUsd": -0.55
+    }
+   },
+   {
+    "asset": "WETH",
+    "kind": "catch-up",
+    "notes": 0,
+    "honoured": 0,
+    "void": 0,
+    "lapsed": 0,
+    "hitRate": null,
+    "meanPMin": null,
+    "pnlUsd": 0,
+    "pnlPerNoteUsd": null,
+    "inSample": {
+     "notes": 0
+    },
+    "outOfSample": {
+     "notes": 0
+    }
+   }
+  ],
+  "candidates": [
+   {
+    "name": "Wider gap",
+    "description": "Swear only when the gap is at least 1.0%, twice the usual threshold.",
+    "params": {
+     "minGapBps": 100
+    },
+    "inSample": {
+     "notes": 4,
+     "hitRate": 0.5,
+     "pnlPerNoteUsd": 0.06
+    },
+    "outOfSample": {
+     "notes": 2,
+     "hitRate": 0,
+     "pnlPerNoteUsd": -0.61
+    }
+   },
+   {
+    "name": "Longer horizon",
+    "description": "Give each note 36 hours instead of 24 to let the pool catch up.",
+    "params": {
+     "horizonH": 36
+    },
+    "inSample": {
+     "notes": 9,
+     "hitRate": 0.444,
+     "pnlPerNoteUsd": -0.08
+    },
+    "outOfSample": {
+     "notes": 4,
+     "hitRate": 0.25,
+     "pnlPerNoteUsd": -0.31
+    }
+   },
+   {
+    "name": "Fade with momentum",
+    "description": "Require the exchange price to be moving toward the pool before swearing.",
+    "params": {
+     "minMomentum1hPct": 0.2
+    },
+    "inSample": {
+     "notes": 3,
+     "hitRate": 0.667,
+     "pnlPerNoteUsd": 0.11
+    },
+    "outOfSample": {
+     "notes": 1,
+     "hitRate": 0,
+     "pnlPerNoteUsd": -0.52
+    }
+   }
+  ],
+  "chosen": null,
+  "configsTried": 12,
+  "notes": "Sample data for development. Swaps are read from HSKSwap's Swap events on mainnet; the agent's candidate builder and guards run unchanged on each 30-second step, and a note is settled by the same rules the vault uses.\n\nThe family of alternatives was written down before the last 10 days were looked at. Twelve configurations is a small family, but even so the best in-sample result is expected to look better than it is; that is why each was run only once on the held-out days."
  }
 }

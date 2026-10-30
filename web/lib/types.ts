@@ -37,6 +37,10 @@ export interface Note {
   sqError?: number; // (confidence - outcome)^2 once graded
   livePx?: number; // current TWAP for outstanding notes
   unrealisedPnlUsd?: number; // outstanding notes: marked at the live pool price minus the exit fee
+  /** Settlement terms frozen when the note was sworn: the live price must be within this many bps of the TWAP to settle a target or expiry. */
+  spotDevBps?: number;
+  /** Settlement terms frozen when the note was sworn: the closing swap's slippage bound, in bps. */
+  exitSlipBps?: number;
 }
 
 export interface Mandate {
@@ -78,7 +82,8 @@ export interface Record {
   tiers: Tier[]; // the ladder
   voidStreak: number;
   navUsd: number;
-  hwmUsd: number;
+  hwmUsd: number; // high-water mark of realised equity (0 until the first note is sworn)
+  equityUsd?: number; // realised equity: what the drawdown clause measures
   frozen: boolean;
   dailyLossUsd: number;
 }
@@ -88,7 +93,9 @@ export interface MarketRow {
   label: string; // "ETH"
   dexPx: number | null; // HSKSwap spot
   twapPx: number | null; // HSKSwap 300 s TWAP
-  cexPx: number | null; // HashKey Global mid
+  cexPx: number | null; // the exchanges' mid (HashKey Global and Gate)
+  hashkeyPx?: number | null; // HashKey Global mid
+  gatePx?: number | null; // Gate mid
   chainlinkPx: number | null;
   chainlinkAgeSec: number | null;
   spreadBps: number | null; // (dex - cex) / cex * 1e4
@@ -140,6 +147,47 @@ export interface State {
   simulatedOutsideTraders?: boolean;
   /** An empirical study of how often real HSKSwap gaps against the exchanges closed, from mainnet swap logs. */
   study?: Study;
+  /** The agent's exact rules, and a small pre-declared family of alternatives, replayed over 30 days of real HSKSwap swaps (research/REPLAY.md). */
+  replay?: Replay;
+}
+
+/** A metric bag from the replay: keys such as notes, hitRate, meanPMin, pnlUsd, pnlPerNoteUsd. */
+export type ReplayStats = { [k: string]: number | null | object };
+export interface ReplayCurrent {
+  asset: string;
+  kind: string;
+  notes: number;
+  honoured: number;
+  void: number;
+  lapsed: number;
+  hitRate: number | null;
+  meanPMin: number | null; // mean break-even probability of the notes it would have sworn
+  pnlUsd: number;
+  pnlPerNoteUsd: number | null; // per $50 note, after fees, price impact and gas
+  grossPnlPerNoteUsd?: number | null; // before fees, impact and gas
+  feeUsdPerNote?: number | null;
+  impactUsdPerNote?: number | null;
+  gasUsdPerNote?: number | null;
+  inSample?: ReplayStats;
+  outOfSample?: ReplayStats;
+}
+export interface ReplayCandidate {
+  name: string;
+  family?: string;
+  description: string;
+  params: { [k: string]: unknown };
+  inSample: ReplayStats;
+  outOfSample: ReplayStats;
+}
+export interface Replay {
+  generatedAt: number;
+  window: { from: number; to: number; splitAt: number };
+  costModel: string;
+  current: ReplayCurrent[];
+  candidates: ReplayCandidate[];
+  chosen: { name: string; params: { [k: string]: unknown }; why: string; outOfSample: ReplayStats; suggestedOdds: number } | null;
+  configsTried: number;
+  notes: string;
 }
 
 export interface StudyRow {

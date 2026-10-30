@@ -20,10 +20,12 @@ export const GUARANTEES: Guarantee[] = [
   { promise: "A level the price has already left again does not count.", enforced: "settle(): reads the current TWAP and spot, not a past touch", test: "test_aLevelThePriceLeftAgainDoesNotCount" },
   { promise: "Every note ends: at expiry anyone may settle it, and it is graded a miss.", enforced: "settle(): now ≥ expiry → Lapsed, outcome 0", test: "test_lapsedNoteSettlesByAnyoneAndIsGradedAMiss", home: true },
   { promise: "An honoured short buys back the asset and books its gain in USDT.", enforced: "settle(): closing swap with an exit slippage bound", test: "test_honouredShortEarnsUsdt" },
-  { promise: "Retreating never improves the record; the owner's own closes are not graded.", enforced: "retract() grades 0; revoke() is ungraded", test: "test_retractIsGradedAMissAndRevokeIsNotGraded" },
+  { promise: "Retreating never improves the record: a retracted note is a miss and counts toward the void streak.", enforced: "retract() grades 0 and extends the streak", test: "test_fixed_L1_retractCountsTowardTheStreak" },
   { promise: "A stop can only move toward the entry, never away from it.", enforced: "tightenStop(): new void between old void and entry", test: "test_tightenStopOnlyTowardEntry" },
-  { promise: "Autonomy is earned: five calibrated notes lift Avow from Probation to Apprentice.", enforced: "grading: rolling Brier over the last 32 graded notes", test: "test_fiveCalibratedMissesEarnApprentice", home: true },
-  { promise: "Overconfidence is punished: a poorly calibrated record stays on Probation.", enforced: "tier rule: Brier ≤ 0.25 to leave Probation", test: "test_overconfidenceKeepsTheAgentOnProbation" },
+  { promise: "Autonomy is earned: five calibrated notes lift Avow from Probation to Apprentice.", enforced: "tier rule: Brier below 0.25 and honoured notes ≥ 80% of the hits its odds claimed", test: "test_aCalibratedRecordEarnsApprentice", home: true },
+  { promise: "Overconfidence is punished: a poorly calibrated record stays on Probation.", enforced: "tier rule: Brier below 0.25 to leave Probation", test: "test_overconfidenceKeepsTheAgentOnProbation" },
+  { promise: "Coin-flip odds earn nothing: stating 50% and hitting less than claimed keeps Avow on Probation.", enforced: "tier rule: Brier strictly below 0.25, hits ≥ 80% of those claimed", test: "test_coinFlipsWithOneHitStayOnProbation" },
+  { promise: "A note's settlement terms are fixed when it is sworn; a later amendment cannot change them.", enforced: "swear() stores spot-deviation and exit-slippage bounds in the note", test: "test_amendHasBoundsAndSwornNotesKeepTheirTerms" },
   { promise: "Avow can tighten its own mandate but never loosen it.", enforced: "tighten(): every field equal or stricter, assets a subset", test: "test_agentCanOnlyTighten", home: true },
   { promise: "A paused vault swears nothing; a removed asset cannot be traded.", enforced: "swear(): not paused, asset allowed", test: "test_pausedAndDisallowedAssets" },
   { promise: "A drawdown past the limit freezes the vault until the owner unfreezes it.", enforced: "NAV < HWM × (1 − maxDrawdown) → frozen", test: "test_drawdownFreezesTheVault" },
@@ -35,8 +37,8 @@ export const GUARANTEES: Guarantee[] = [
   { promise: "Only the agent's realised losses count toward the drawdown freeze, not the owner's inventory price moves.", enforced: "_close(): realised equity vs its high-water mark", test: "test_inventoryPriceMovesDoNotFreezeTheAgent" },
 ];
 
-export const FORK_TESTS_PASSING = 31;
+export const FORK_TESTS_PASSING = 33;
 export const AUDIT_REGRESSION_TESTS = 13;
 export const INVARIANTS = 4;
-/** "31 fork tests, 13 audit regression tests and 4 invariants" */
+/** "33 fork tests, 13 audit regression tests and 4 invariants" (contracts/test, VERIFY.md) */
 export const TEST_SUMMARY = `${FORK_TESTS_PASSING} fork tests, ${AUDIT_REGRESSION_TESTS} audit regression tests and ${INVARIANTS} invariants`;

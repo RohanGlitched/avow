@@ -130,6 +130,9 @@ export function SiteFooter({ state }: { state: State }) {
           </span>
           <span>Every note is falsifiable. Every rule is in the contract.</span>
         </div>
+        <p className="foot__disclaimer">
+          Notes are records of the vault owner&apos;s own trades, published as they happen. They are not investment advice or a recommendation to anyone.
+        </p>
         <p className="foot__micro" aria-hidden="true">
           {micro}
         </p>

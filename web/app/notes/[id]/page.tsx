@@ -9,7 +9,7 @@ import { JournalRow } from "@/components/Journal";
 import { SecHead, Divider } from "@/components/Bits";
 import { Hex } from "@/components/Ovi";
 import { Term } from "@/components/Term";
-import { rehearsalSentence } from "@/lib/chain";
+import { rehearsalShort } from "@/lib/chain";
 import { StatusMark } from "@/components/NoteStub";
 import { ownLink } from "@/lib/chain";
 import { noteRosette, hashBytes } from "@/lib/rosette";
@@ -75,7 +75,11 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
           <p className="terms-row">
             <span>The words on this note:</span> <Term k="twap" /> <Term k="void" /> <Term k="brier" /> <Term k="denomination" />
           </p>
-          {rehearsalSentence(s) ? <p className="rehearsal-line">{rehearsalSentence(s)}</p> : null}
+          {rehearsalShort(s) ? (
+            <p className="rehearsal-line">
+              {rehearsalShort(s)} <Link href="/how#rehearsal">What this means</Link>
+            </p>
+          ) : null}
         </div>
       </section>
 
@@ -88,7 +92,7 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
       <section className="sec" aria-labelledby="corridor">
         <div className="wrap">
           <SecHead id="corridor" title="The corridor it promised.">
-            From the moment it was sworn until it settles or expires, the note lives between two lines: the target and the void level. The engraved line is the HSKSwap price it was judged
+            From the moment it was sworn until it settles or expires, the note lives between two lines: the target and the void level. The engraved line is the HSKSwap price it settles
             on.
           </SecHead>
           {m ? (
@@ -161,6 +165,16 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
               <dd className="tnum">
                 {signed((ev / n.entryPx) * 100, 3, "%")} of entry <span className="muted">(p·reward − (1 − p)·risk must be positive)</span>
               </dd>
+              {n.spotDevBps != null || n.exitSlipBps != null ? (
+                <>
+                  <dt>Settlement terms, fixed when sworn</dt>
+                  <dd>
+                    {n.spotDevBps != null ? `a target or expiry settles only while the live price is within ${(n.spotDevBps / 100).toFixed(2)}% of the TWAP` : null}
+                    {n.spotDevBps != null && n.exitSlipBps != null ? "; " : null}
+                    {n.exitSlipBps != null ? `the closing swap may slip at most ${(n.exitSlipBps / 100).toFixed(2)}%` : null}. A later amendment cannot change them.
+                  </dd>
+                </>
+              ) : null}
               <dt>Horizon</dt>
               <dd>
                 {duration(n.expiry - n.openedAt)}, expires {when(n.expiry)}

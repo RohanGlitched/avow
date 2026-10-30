@@ -10,7 +10,7 @@ export const TIER_NAMES = ["Probation", "Apprentice", "Journeyman", "Fiduciary"]
 export const TIER_SHARE = [0.2, 0.4, 0.7, 1.0];
 export const TIER_RULE = [
   "Every new agent starts here, until its record shows calibration",
-  "5 graded notes, a Brier score better than a coin flip (below 0.25), and honoured notes at least 80% of the hits its odds claimed",
+  "5 graded notes, a Brier score better than a coin flip (below 0.25), and honoured notes at least 80% of the hits its stated odds claimed",
   "12 graded notes, Brier 0.22 or better, realised P&L not negative",
   "25 graded notes, Brier 0.20 or better, realised P&L positive",
 ];
@@ -71,6 +71,7 @@ export interface VaultView {
   denomination: number;
   nav: number;
   hwm: number;
+  equity: number;
   frozen: boolean;
   dailyLoss: number;
   lossDay: number;
@@ -141,19 +142,20 @@ export async function readVault(): Promise<VaultView> {
       { address: VAULT, abi: vaultAbi, functionName: "owner" },
       { address: VAULT, abi: vaultAbi, functionName: "agent" },
       { address: VAULT, abi: vaultAbi, functionName: "lockedUsdt" },
+      { address: VAULT, abi: vaultAbi, functionName: "equity" },
       { address: USDT, abi: erc20, functionName: "balanceOf", args: [VAULT] },
       ...ASSETS.map((a) => ({ address: a.token, abi: erc20, functionName: "balanceOf", args: [VAULT] }) as const),
       ...ASSETS.map((a) => ({ address: VAULT, abi: vaultAbi, functionName: "lockedAsset", args: [a.id] }) as const),
     ] as never,
   })) as unknown[];
-  const [m, l, br, tier, denom, nav, hwm, frozen, dailyLoss, lossDay, exposure, lastSwearAt, noteCount, owner, agent, lockedUsdt, usdtBal] = base as unknown as [
+  const [m, l, br, tier, denom, nav, hwm, frozen, dailyLoss, lossDay, exposure, lastSwearAt, noteCount, owner, agent, lockedUsdt, equity, usdtBal] = base as unknown as [
     RawMandate,
     { graded: number; honoured: number; voided: number; lapsed: number; retracted: number; revoked: number; voidStreak: number; windowCount: number; realisedPnl: bigint },
-    bigint, number, bigint, bigint, bigint, boolean, bigint, bigint, bigint, bigint, bigint, Hex, Hex, bigint, bigint,
+    bigint, number, bigint, bigint, bigint, boolean, bigint, bigint, bigint, bigint, bigint, Hex, Hex, bigint, bigint, bigint,
   ];
   const n = ASSETS.length;
-  const assetBals = base.slice(17, 17 + n) as bigint[];
-  const locks = base.slice(17 + n, 17 + 2 * n) as bigint[];
+  const assetBals = base.slice(18, 18 + n) as bigint[];
+  const locks = base.slice(18 + n, 18 + 2 * n) as bigint[];
 
   const count = Number(noteCount);
   const want: number[] = [];
@@ -212,6 +214,7 @@ export async function readVault(): Promise<VaultView> {
     denomination: Number(denom) / 1e6,
     nav: Number(nav) / 1e6,
     hwm: Number(hwm) / 1e6,
+    equity: Number(equity) / 1e6,
     frozen,
     dailyLoss: Number(dailyLoss) / 1e6,
     lossDay: Number(lossDay),

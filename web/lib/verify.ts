@@ -39,7 +39,7 @@ export function verifyCommands(sample: { id: number; statement: string } | null)
       cmd: `cast call $VAULT "denomination()(uint256)" --rpc-url $RPC\ncast call $VAULT "record()" --rpc-url $RPC`,
     },
     {
-      q: "Read the HSKSwap price a note is judged on",
+      q: "Read the HSKSwap price a note settles on",
       why: "The 5-minute TWAP from the pool's own oracle (ETH pool shown)",
       cmd: `cast call ${POOLS.WETH.address} "observe(uint32[])(int56[],uint160[])" "[300,0]" --rpc-url $RPC\ncast call ${POOLS.WETH.address} "slot0()(uint160,int24,uint16,uint16,uint16,uint8,bool)" --rpc-url $RPC`,
     },

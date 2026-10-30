@@ -6,6 +6,8 @@ import { MandateRosette, Rosette } from "@/components/Rosette";
 import { Crossing } from "@/components/Stamps";
 import { seedHash } from "@/lib/rosette";
 import { day, usd } from "@/lib/format";
+import { GUARANTEES, TEST_SUMMARY } from "@/lib/guarantees";
+import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -37,27 +39,27 @@ const SELLS = [
 const CUSTOMERS = [
   {
     n: "I",
-    who: "People who want an AI trader with hard, visible limits",
-    get: "A vault they own, a mandate they wrote, every decision in the open, and a stop anyone can trigger.",
-    pay: "A performance fee only on realised profit above the high-water mark. Planned at 10%.",
+    who: "Agent builders and quant teams raising capital",
+    get: "A track record nobody can fake: notes sworn before the outcome, graded by the contract. They open their own Avow vault with the open SDK.",
+    pay: "A verification fee on every note their vault swears. It does not depend on whether the agent makes money.",
   },
   {
     n: "II",
-    who: "Agent builders and quant teams raising capital",
-    get: "A track record nobody can fake: notes sworn before the outcome, graded by the contract. They open their own Avow vault with the open SDK.",
-    pay: "A listing and verification fee for each agent vault.",
-  },
-  {
-    n: "III",
     who: "Funds, family offices and institutions in the HashKey ecosystem",
     get: "Mandate compliance and an audit trail for AI-run strategies: which clause was checked, which attempt was refused, when, and by which rule.",
     pay: "A compliance and reporting subscription.",
+  },
+  {
+    n: "III",
+    who: "People who want an AI trader with hard, visible limits",
+    get: "A vault they own, a mandate they wrote, every decision in the open, and a stop anyone can trigger.",
+    pay: "Through a licensed partner: 25 bps a year on mandated capital, or a 10% performance fee on realised profit above the high-water mark.",
   },
 ];
 
 const HSK = [
   { t: "Compliance first", d: "HSK Chain comes from a licensed financial group. The customers who most need an audited AI trader are already in its ecosystem." },
-  { t: "HSKSwap liquidity", d: "Real pools for ETH, BTC and HSK against USDT, with a TWAP oracle the vault can judge notes by." },
+  { t: "HSKSwap liquidity", d: "Real pools for ETH, BTC and HSK against USDT, with a TWAP oracle the vault settles notes by." },
   { t: "Better prices for everyone", d: "Avow's catch-up trades pull HSKSwap prices toward HashKey Global's. Every convergence note makes the DEX a little more accurate." },
   { t: "HSP for the next step", d: "HashKey's agent payment rail lets agents pay each other for sealed notes: agent-to-agent settlement of verified calls." },
 ];
@@ -65,36 +67,59 @@ const HSK = [
 
 // ---- Regulation, pricing, team and market (HashKey Capital is the reader; nothing here is an invented statistic)
 
-const REGULATION = [
-  { t: "Non-custodial", d: "The owner holds the keys. They can withdraw anything not locked in an open note, at any time; Avow never holds customer funds." },
-  { t: "Infrastructure, not a manager", d: "Avow is mandate-enforcement and audit infrastructure. It does not decide who invests or how much; the owner writes the mandate and supplies the capital." },
-  { t: "Third-party capital through licensed partners", d: "Performance-fee vaults for other people's money launch only through licensed partners, for example SFC-licensed managers in the HashKey ecosystem." },
-  { t: "The record is the compliance artefact", d: "Every decision, refusal and amendment is public: notes and amendments on chain, reasons and refusals in the published journal, all timestamped." },
+const REG_MAP = [
+  {
+    act: "Published notes",
+    treat: "Records of the vault owner's own trades, published as they happen. Not recommendations to anyone else.",
+    how: "Nothing is tailored to a reader, and every page carries the disclaimer that notes are records, not advice.",
+  },
+  {
+    act: "The Avow Index",
+    treat: "Data about agents' graded records. Using it to advise clients is advising on securities (Type 4) or asset management (Type 9).",
+    how: "Licensed as data to SFC Type 4 and Type 9 holders for their own advisory use. Avow itself advises no one.",
+  },
+  {
+    act: "Performance-fee vaults for third parties",
+    treat: "Managing other people's money: asset management (Type 9).",
+    how: "Offered only through licensed partners. Avow supplies the vault, the mandate and the record; the partner holds the licence and the client.",
+  },
+  {
+    act: "Avow software",
+    treat: "Non-custodial infrastructure: the owner holds the keys and writes the mandate.",
+    how: "Avow never holds customer funds. The owner can withdraw anything not locked in an open note, at any time.",
+  },
 ];
 
 // planned prices
 const NOTE_FEE = 0.05;
 const PERF_FEE = 0.1;
+const AUM_FEE = 0.0025;
 const ANNUAL_RETURN = 0.1;
 const SUB_MONTH = 500;
-const NOTES_PER_DAY = 20;
+const NOTES_PER_DAY = 10;
 
 const PRICING = [
-  { stream: "Verification fee", who: "Agent builders running their own Avow vaults", price: `${"$"}${NOTE_FEE.toFixed(2)} per sworn note`, how: "Taken by the vault when a note is sworn and routed to a treasury." },
-  { stream: "Performance fee", who: "Third-party capital, only through licensed partners", price: `${PERF_FEE * 100}% above the high-water mark`, how: "Charged by the partner's vault on realised profit only; nothing on losses or on recovering them." },
+  { stream: "Verification fee", who: "Agent builders running their own Avow vaults", price: `${"$"}${NOTE_FEE.toFixed(2)} per sworn note`, how: "Taken by the vault when a note is sworn and routed to a treasury. Paid whether the agent wins or loses." },
   { stream: "Compliance and reporting", who: "Funds, family offices and institutions", price: `from ${"$"}${SUB_MONTH}/month`, how: "Mandate-compliance reports and an audit trail read from the vaults they use." },
+  {
+    stream: "Mandated capital",
+    who: "Third-party capital, only through licensed partners",
+    price: `${AUM_FEE * 1e4} bps a year, or ${PERF_FEE * 100}% above the high-water mark`,
+    how: "Charged by the partner's vault: a small fee on capital under mandate, or a performance fee on realised profit only, never on losses or on recovering them.",
+  },
 ];
 
 const SCALES = [
-  { name: "Pilot", agents: 10, aum: 1_000_000, inst: 2 },
+  { name: "Pilot", agents: 20, aum: 1_000_000, inst: 2 },
   { name: "Growing", agents: 100, aum: 10_000_000, inst: 10 },
   { name: "Established", agents: 500, aum: 50_000_000, inst: 30 },
 ];
 const earn = (sc: (typeof SCALES)[number]) => {
   const notes = sc.agents * NOTES_PER_DAY * 365 * NOTE_FEE;
-  const perf = sc.aum * ANNUAL_RETURN * PERF_FEE;
   const subs = sc.inst * SUB_MONTH * 12;
-  return { notes, perf, subs, total: notes + perf + subs };
+  const aum = sc.aum * AUM_FEE;
+  const perf = sc.aum * ANNUAL_RETURN * PERF_FEE;
+  return { notes, subs, aum, perf, steady: notes + subs, total: notes + subs + aum };
 };
 const money = (v: number) => (v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(v % 1_000_000 ? 2 : 0)}M` : `$${Math.round(v).toLocaleString("en-US")}`);
 
@@ -107,13 +132,27 @@ const ALTERNATIVES = [
 ];
 
 const BUILT = [
-  "A vault contract with 21 enforced rules",
-  "31 fork tests, 13 audit regression tests and 4 invariants, run on a fork of HSK mainnet",
+  `A vault contract with ${GUARANTEES.length} guarantees, each with the test that proves it`,
+  `${TEST_SUMMARY}, run on a fork of HSK mainnet`,
   "An autonomous agent running on Google Cloud, with a public journal, a desk and an MCP server",
   "Built Oct 31 to Nov 1, 2026",
 ];
 
 const REPO = "https://github.com/RohanGlitched/avow";
+const APPLY = `${REPO}/issues/new?title=${encodeURIComponent("Apply for an Avow vault")}`;
+
+const USE_OF_FUNDS = [
+  "An external audit of the vault contract before third-party capital",
+  "One quant and DeFi engineer",
+  "Partnerships with HashKey-licensed managers",
+  "The open SDK and the Avow Index",
+];
+
+const TARGETS = [
+  { n: "20", what: "external agent vaults on Avow", note: "agents built by other teams, each with its own mandate" },
+  { n: "$1M", what: "mandated capital", note: "under mandate in Avow vaults, through licensed partners" },
+  { n: "5,000", what: "graded mainnet notes", note: "settled and graded on HSK Chain mainnet, across all vaults" },
+];
 
 const ROADMAP = [
   { when: "Nov 2026", what: "Mainnet vault live on HSK Chain", detail: "The agent you see on this site trades real funds under its mandate. HSK Chain Horizon Hackathon." },
@@ -241,38 +280,44 @@ export default async function BusinessPage() {
       </section>
 
       <section className="sec sec--tint" aria-labelledby="regulation">
-        <div className="wrap grid-2" style={{ alignItems: "start" }}>
-          <div>
-            <h2 id="regulation">Where Avow sits under regulation.</h2>
-            <p className="lede" style={{ marginTop: 14 }}>
-              Avow enforces a mandate and keeps the record. It does not take custody and it does not manage anyone&apos;s money, which is what lets it plug into licensed firms rather than
-              compete with them.
-            </p>
+        <div className="wrap">
+          <SecHead id="regulation" title="Regulatory map.">
+            Avow enforces a mandate; the vault itself keeps the record. Avow does not take custody and it does not manage anyone&apos;s money, which is what lets it plug into licensed firms rather than
+            compete with them. How each activity is likely to be treated under Hong Kong SFC rules, and what Avow does about it:
+          </SecHead>
+          <div className="table-wrap">
+            <table className="tbl tbl--stack">
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Likely treatment under Hong Kong SFC rules</th>
+                  <th>How Avow handles it</th>
+                </tr>
+              </thead>
+              <tbody>
+                {REG_MAP.map((x) => (
+                  <tr key={x.act}>
+                    <td data-h="Activity" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
+                      {x.act}
+                    </td>
+                    <td data-h="Likely treatment">{x.treat}</td>
+                    <td data-h="How Avow handles it" className="muted">
+                      {x.how}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          <ol className="clauses" style={{ marginTop: 0 }}>
-            {REGULATION.map((x, i) => (
-              <li key={x.t} className="clause" style={{ gridTemplateColumns: "44px minmax(0,1fr)", padding: "16px 0" }}>
-                <span className="clause__n" style={{ fontSize: 22 }}>
-                  {["I", "II", "III", "IV"][i]}
-                </span>
-                <div>
-                  <span className="clause__text" style={{ fontSize: 20, display: "block" }}>
-                    {x.t}
-                  </span>
-                  <p className="muted" style={{ fontSize: 15.5, marginTop: 4 }}>
-                    {x.d}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <p className="plate">Not legal advice: a working map to take to counsel and to licensed partners, not a legal opinion.</p>
         </div>
       </section>
 
       <section className="sec" aria-labelledby="pricing">
         <div className="wrap">
           <SecHead id="pricing" title="Pricing, planned.">
-            Three ways Avow is paid, none of them live yet. The second table is arithmetic on those prices at three sizes, not a forecast.
+            Three ways Avow is paid, none of them live yet. The first two do not depend on Avow&apos;s own trading returns. The second table is arithmetic on those prices at three sizes, not a
+            forecast.
           </SecHead>
           <div className="table-wrap">
             <table className="tbl tbl--stack">
@@ -302,7 +347,10 @@ export default async function BusinessPage() {
               </tbody>
             </table>
           </div>
-          <h3 style={{ marginTop: 48, marginBottom: 14 }}>What each would earn in a year, at three sizes</h3>
+          <p className="illus">
+            <span>Illustrative arithmetic:</span> at 20 vaults × {NOTES_PER_DAY} notes a day × ${NOTE_FEE.toFixed(2)}, the verification fee is $3,650 a year; at 500 vaults it is $91,250 a year.
+          </p>
+          <h3 style={{ marginTop: 40, marginBottom: 14 }}>What each would earn in a year, at three sizes</h3>
           <div className="table-wrap">
             <table className="tbl tbl--stack earn">
               <thead>
@@ -322,18 +370,7 @@ export default async function BusinessPage() {
                     <td key={sc.name} data-h={sc.name} className="r">
                       <b>{money(earn(sc).notes)}</b>
                       <span className="sub">
-                        {sc.agents.toLocaleString("en-US")} agents × {NOTES_PER_DAY} notes a day × 365 × ${NOTE_FEE.toFixed(2)}
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td data-h="Stream">Performance fee, via partners</td>
-                  {SCALES.map((sc) => (
-                    <td key={sc.name} data-h={sc.name} className="r">
-                      <b>{money(earn(sc).perf)}</b>
-                      <span className="sub">
-                        {money(sc.aum)} at {ANNUAL_RETURN * 100}% a year × {PERF_FEE * 100}%
+                        {sc.agents.toLocaleString("en-US")} vaults × {NOTES_PER_DAY} notes a day × 365 × ${NOTE_FEE.toFixed(2)}
                       </span>
                     </td>
                   ))}
@@ -350,7 +387,26 @@ export default async function BusinessPage() {
                   ))}
                 </tr>
                 <tr className="earn__total">
-                  <td data-h="Stream">In all, per year</td>
+                  <td data-h="Stream">Independent of trading returns</td>
+                  {SCALES.map((sc) => (
+                    <td key={sc.name} data-h={sc.name} className="r">
+                      <b>{money(earn(sc).steady)}</b>
+                    </td>
+                  ))}
+                </tr>
+                <tr>
+                  <td data-h="Stream">Mandated capital, via partners</td>
+                  {SCALES.map((sc) => (
+                    <td key={sc.name} data-h={sc.name} className="r">
+                      <b>{money(earn(sc).aum)}</b>
+                      <span className="sub">
+                        {money(sc.aum)} × {AUM_FEE * 1e4} bps; or {money(earn(sc).perf)} as a {PERF_FEE * 100}% performance fee on a {ANNUAL_RETURN * 100}% year
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+                <tr className="earn__total">
+                  <td data-h="Stream">In all, per year, at 25 bps</td>
                   {SCALES.map((sc) => (
                     <td key={sc.name} data-h={sc.name} className="r">
                       <b>{money(earn(sc).total)}</b>
@@ -361,8 +417,8 @@ export default async function BusinessPage() {
             </table>
           </div>
           <p className="plate">
-            Plate. Illustrative arithmetic only: the prices are planned, the sizes are chosen to show scale, and the performance fee is gross, before any licensed partner&apos;s share. None of it
-            is revenue today.
+            Illustrative arithmetic only: the prices are planned, the sizes are chosen to show scale, and fees on mandated capital are gross, before any licensed partner&apos;s share. None of it is
+            revenue today.
           </p>
         </div>
       </section>
@@ -407,7 +463,7 @@ export default async function BusinessPage() {
                   </tr>
                   <tr className="index-open">
                     <td data-h="Agent" colSpan={6}>
-                      <a href={`${REPO}/issues/new?title=${encodeURIComponent("Apply for an Avow vault")}`} target="_blank" rel="noreferrer">
+                      <a href={APPLY} target="_blank" rel="noreferrer">
                         Apply for a vault
                       </a>{" "}
                       <span className="muted">for your agent: it starts on Probation, like every agent, and earns its row here.</span>
@@ -483,43 +539,80 @@ export default async function BusinessPage() {
       </section>
 
       <section className="sec" aria-labelledby="moat">
-        <div className="wrap grid-2" style={{ alignItems: "center" }}>
+        <div className="wrap grid-2" style={{ alignItems: "start" }}>
           <div>
-            <h2 id="moat">The moat is time on chain.</h2>
+            <h2 id="moat">The moat is the format, and where the record lives.</h2>
             <p className="lede" style={{ marginTop: 14 }}>
-              A graded record cannot be transferred, bought or backfilled. A competitor can copy the contracts in a day; it cannot copy a year of notes sworn before their outcomes. Every graded
-              agent makes the index more valuable to the allocators who read it.
+              A competitor can copy the contracts in a day. What is hard to copy is being the format everyone already reads, inside the reports they already send, with records that cannot
+              be moved.
             </p>
           </div>
-          <figure style={{ margin: 0 }}>
-            <svg viewBox="0 0 600 150" className="moat" role="img" aria-label={`${graded.length} graded notes on a timeline since ${day(t0)}; each is fixed at the time it was settled`}>
-              <line x1="10" x2="590" y1="96" y2="96" stroke="var(--ink)" />
-              {Array.from({ length: 31 }, (_, i) => (
-                <line key={i} x1={10 + i * (580 / 30)} x2={10 + i * (580 / 30)} y1={i % 5 === 0 ? 86 : 91} y2="96" stroke="var(--ink)" strokeWidth="0.8" />
-              ))}
-              {graded.map((n) => {
-                const x = 10 + (((n.settledAt ?? s.asOf) - t0) / span) * 580;
-                const hit = n.status === "honoured";
-                return (
-                  <g key={n.id}>
-                    <line x1={x} x2={x} y1={hit ? 46 : 60} y2="96" stroke={hit ? "var(--gilt)" : "var(--void)"} strokeWidth="2" />
-                    <circle cx={x} cy={hit ? 46 : 60} r="4.5" fill={hit ? "var(--gilt)" : "var(--note)"} stroke={hit ? "var(--gilt)" : "var(--void)"} strokeWidth="1.5" />
-                  </g>
-                );
-              })}
-              <text x="10" y="122" className="moat__lab">
-                {day(t0)}
-              </text>
-              <text x="590" y="122" textAnchor="end" className="moat__lab">
-                {day(s.asOf)}
-              </text>
-              <text x="590" y="24" textAnchor="end" className="moat__lab">
-                now: no gaps to fill, nothing to rewrite
-              </text>
-            </svg>
-            <figcaption className="plate">Plate. This vault&apos;s {graded.length} graded notes, each pinned to the block it was settled in. Gilt: honoured. Red: missed.</figcaption>
-          </figure>
+          <ol className="clauses" style={{ marginTop: 0 }}>
+            {[
+              {
+                t: "The standard mandate and grading format on HSK Chain",
+                d: "One way to write a mandate and one way to grade an agent, so allocators compare every agent on the same terms.",
+              },
+              {
+                t: "Inside licensed managers' reporting",
+                d: "Mandate compliance and graded records flow into the reports HashKey-licensed managers already produce for their clients and regulators.",
+              },
+              {
+                t: "Switching costs",
+                d: "A graded record lives only in its vault, sworn before each outcome. An agent that leaves Avow starts again at Probation.",
+              },
+            ].map((x, i) => (
+              <li key={x.t} className="clause" style={{ gridTemplateColumns: "44px minmax(0,1fr)", padding: "16px 0" }}>
+                <span className="clause__n" style={{ fontSize: 22 }}>
+                  {["I", "II", "III"][i]}
+                </span>
+                <div>
+                  <span className="clause__text" style={{ fontSize: 20, display: "block" }}>
+                    {x.t}
+                  </span>
+                  <p className="muted" style={{ fontSize: 15.5, marginTop: 4 }}>
+                    {x.d}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
+        {graded.length ? (
+          <div className="wrap">
+            <figure className="moat-fig" style={{ margin: "40px 0 0" }}>
+              <svg viewBox="0 0 600 150" className="moat" role="img" aria-label={`${graded.length} graded notes on a timeline since ${day(t0)}; each is fixed at the time it was settled`}>
+                <line x1="10" x2="590" y1="96" y2="96" stroke="var(--ink)" />
+                {Array.from({ length: 31 }, (_, i) => (
+                  <line key={i} x1={10 + i * (580 / 30)} x2={10 + i * (580 / 30)} y1={i % 5 === 0 ? 86 : 91} y2="96" stroke="var(--ink)" strokeWidth="0.8" />
+                ))}
+                {graded.map((n) => {
+                  const x = 10 + (((n.settledAt ?? s.asOf) - t0) / span) * 580;
+                  const hit = n.status === "honoured";
+                  return (
+                    <g key={n.id}>
+                      <line x1={x} x2={x} y1={hit ? 46 : 60} y2="96" stroke={hit ? "var(--gilt)" : "var(--void)"} strokeWidth="2" />
+                      <circle cx={x} cy={hit ? 46 : 60} r="4.5" fill={hit ? "var(--gilt)" : "var(--note)"} stroke={hit ? "var(--gilt)" : "var(--void)"} strokeWidth="1.5" />
+                    </g>
+                  );
+                })}
+                <text x="10" y="122" className="moat__lab">
+                  {day(t0)}
+                </text>
+                <text x="590" y="122" textAnchor="end" className="moat__lab">
+                  {day(s.asOf)}
+                </text>
+                <text x="590" y="24" textAnchor="end" className="moat__lab">
+                  now: no gaps to fill, nothing to rewrite
+                </text>
+              </svg>
+              <figcaption className="plate">
+                Plate. This vault&apos;s {graded.length} graded {graded.length === 1 ? "note" : "notes"}, each pinned to the block it was settled in. Gilt: honoured. Red: missed. None can be moved
+                to another vault.
+              </figcaption>
+            </figure>
+          </div>
+        ) : null}
       </section>
 
       <section className="sec sec--tint" aria-labelledby="roadmap">
@@ -602,31 +695,27 @@ export default async function BusinessPage() {
       <section className="sec" aria-labelledby="ask">
         <div className="wrap">
           <div className="charter" style={{ padding: "56px clamp(20px, 5vw, 64px) 52px" }}>
-            <div className="grid-2" style={{ alignItems: "center" }}>
+            <div className="grid-2" style={{ alignItems: "start" }}>
               <div>
                 <h2 id="ask">The ask.</h2>
-                <ol className="clauses" style={{ marginTop: 18 }}>
-                  {[
-                    "Incubation with HashKey: HSK Chain engineering and HashKey Capital.",
-                    "A seed round to ship the open SDK and the Avow Index.",
-                    "First agent partners: teams who want a record nobody can fake.",
-                  ].map((t, i) => (
-                    <li key={t} className="clause" style={{ gridTemplateColumns: "40px minmax(0,1fr)", padding: "14px 0" }}>
-                      <span className="clause__n" style={{ fontSize: 22 }}>
-                        {["I", "II", "III"][i]}
-                      </span>
-                      <span className="clause__text" style={{ fontSize: 19.5 }}>
-                        {t}
-                      </span>
-                    </li>
+                <p className="lede" style={{ marginTop: 14 }}>
+                  A <strong>pre-seed round</strong>, its size to be agreed with HashKey Capital, for an <strong>18‑month plan</strong>, and incubation with HSK Chain engineering.
+                </p>
+                <h3 style={{ marginTop: 26, fontSize: 20 }}>Use of funds</h3>
+                <ul className="uses">
+                  {USE_OF_FUNDS.map((u) => (
+                    <li key={u}>{u}</li>
                   ))}
-                </ol>
+                </ul>
               </div>
               <div style={{ textAlign: "center" }}>
-                <div style={{ maxWidth: 220, margin: "0 auto 18px" }}>
+                <div style={{ maxWidth: 200, margin: "0 auto 16px" }}>
                   <Rosette hash={seedHash("avow.world")} defer />
                 </div>
                 <p style={{ fontFamily: "var(--serif)", fontSize: 30 }}>avow.world</p>
+                <p style={{ fontSize: 14.5 }}>
+                  <a href={SITE.url}>{SITE.url.replace("https://", "")}</a>
+                </p>
                 <div className="actions" style={{ justifyContent: "center", marginTop: 18 }}>
                   <Link href="/" className="btn">
                     See the live vault
@@ -636,6 +725,24 @@ export default async function BusinessPage() {
                   </Link>
                 </div>
               </div>
+            </div>
+            <h3 style={{ marginTop: 36, fontSize: 20 }}>Milestones at 12 months, as targets</h3>
+            <div className="targets">
+              {TARGETS.map((t) => (
+                <div className="target" key={t.what}>
+                  <span className="target__cap">Target</span>
+                  <b>{t.n}</b>
+                  <span style={{ color: "var(--ink)", fontWeight: 600 }}>{t.what}</span>
+                  <span>{t.note}</span>
+                </div>
+              ))}
+            </div>
+            <p className="plate">Targets, not traction: today there is one vault, this one, and its mainnet record starts on Nov 1.</p>
+            <div className="partners">
+              <h3>Design partners: open</h3>
+              <p>
+                We are speaking with HSK Chain agent teams at the Horizon hackathon. If you build an agent and want a record nobody can fake, <a href={APPLY} target="_blank" rel="noreferrer">apply for a vault</a>; it starts on Probation, like every agent.
+              </p>
             </div>
           </div>
         </div>

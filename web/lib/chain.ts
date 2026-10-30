@@ -1,5 +1,5 @@
 // Addresses measured on HSK Chain mainnet (chain 177), DESIGN.md §2.
-import type { AssetSym, State } from "./types";
+import type { AssetSym, MarketRow, State } from "./types";
 
 export const EXPLORER = "https://hsk.blockscout.com";
 
@@ -56,11 +56,38 @@ export const NETWORK_WORDS: Record<State["network"]["mode"], { short: string; lo
 /** The day the mainnet vault launches. */
 export const MAINNET_LAUNCH = "Nov 1";
 
+/** The short chip the status strip carries in a rehearsal. Null on mainnet (and testnet). */
+export function rehearsalChip(s: Pick<State, "network">): string | null {
+  if (s.network.mode !== "fork-rehearsal") return null;
+  return `Rehearsal on an HSK mainnet fork · mainnet vault launches ${MAINNET_LAUNCH}`;
+}
+
+/** One short line where rehearsal outcomes are shown (the record, a note). */
+export function rehearsalShort(s: Pick<State, "network">): string | null {
+  if (s.network.mode !== "fork-rehearsal") return null;
+  return "Rehearsal on an HSK mainnet fork: outcomes are not evidence.";
+}
+
 /**
- * The one plain sentence every rehearsal page carries. Null on mainnet (and testnet), where the sentence disappears.
+ * The full sentence, said once, at /how#rehearsal. Null on mainnet (and testnet).
  */
 export function rehearsalSentence(s: Pick<State, "network" | "simulatedOutsideTraders">): string | null {
   if (s.network.mode !== "fork-rehearsal") return null;
-  const traders = s.simulatedOutsideTraders === false ? "no outside traders take part" : "outside traders are simulated";
-  return `This is a rehearsal on a private fork of HSK mainnet where ${traders}, so its outcomes are not evidence; the mainnet vault launches on ${MAINNET_LAUNCH}.`;
+  const traders =
+    s.simulatedOutsideTraders === false
+      ? "no outside traders take part on the fork"
+      : "outside traders on the fork are simulated at the measured mainnet swap rates and pool-side arbitrage share";
+  return `This is a rehearsal on a private fork of HSK mainnet: ${traders}, so its outcomes are not evidence. The mainnet vault launches on ${MAINNET_LAUNCH}, and its record starts empty.`;
+}
+
+/** The break-even a premium must clear: two 0.30% pool fees plus gas on a $50 note, in basis points. */
+export const ROUND_TRIP_BPS = 68;
+
+/**
+ * The gap the agent would trade on: the pool its vault swaps in (the fork during a rehearsal) against the exchanges'
+ * mid, in basis points. Every page that quotes "the gap" uses this one figure.
+ */
+export function tradeGapBps(r: Pick<MarketRow, "spreadBps" | "dexPx" | "cexPx">): number | null {
+  if (r.spreadBps != null) return r.spreadBps;
+  return r.dexPx != null && r.cexPx != null ? ((r.dexPx - r.cexPx) / r.cexPx) * 1e4 : null;
 }

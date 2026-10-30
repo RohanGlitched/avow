@@ -22,7 +22,7 @@ export function StudyTable({ study }: { study: Study }) {
         {hasPool ? (
           <>
             , but the pool itself moved half the gap in only <b>{pctTxt(rate(pool, total))}</b>: most gaps closed because the exchange price moved, not the pool. A catch-up note needs the
-            pool to move, so that second figure, not the first, is what its odds should be judged against.
+            pool to move, so that second figure, not the first, is what its odds should be measured against.
           </>
         ) : (
           "."

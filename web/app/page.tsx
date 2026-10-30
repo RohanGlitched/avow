@@ -9,11 +9,13 @@ import { MandateRosette } from "@/components/Rosette";
 import { TierLadder, BrierScale } from "@/components/Record";
 import { ArchitectureDiagram, GuaranteeTable, AddressTable } from "@/components/HowParts";
 import { Divider, NetPnl, SecHead, Slip } from "@/components/Bits";
-import { Freshness } from "@/components/Live";
+import { Freshness, LastCycle } from "@/components/Live";
 import { Hex } from "@/components/Ovi";
 import { CLAUSES } from "@/lib/mandate";
 import { Term } from "@/components/Term";
-import { rehearsalSentence } from "@/lib/chain";
+import { ROUND_TRIP_BPS, tradeGapBps } from "@/lib/chain";
+import { decisionCounts, LOGGED_WHEN } from "@/lib/decisions";
+import { ReplaySummary } from "@/components/Replay";
 import { deskPrompts } from "@/lib/prompts";
 import { TEST_SUMMARY, GUARANTEES } from "@/lib/guarantees";
 import { ASSET_LABEL, duration, noteHref, num, pct, px, short, time, usd, when } from "@/lib/format";
@@ -35,29 +37,19 @@ export default async function Home() {
   // reasons), reviews of open notes, and attempts a clause refused.
   const REFUSAL_KINDS = new Set(["declined", "considered", "reviewed", "blocked"]);
   const refusals = s.journal.filter((j) => REFUSAL_KINDS.has(j.kind));
-  const count = (k: string) => s.journal.filter((j) => j.kind === k).length;
-  const sworn = count("sworn");
-  const blocked = count("blocked");
-  const declined = count("declined");
-  const passes = count("considered");
-  const reviewed = count("reviewed");
+  const dc = decisionCounts(s.journal);
+  const { sworn, blocked, declined, passes, reviewed } = dc;
   // the time window comes from the journal itself, never a fixed number of hours
   const oldest = s.journal.at(-1);
   const launched = oldest && oldest.kind === "heartbeat" && /began watching/i.test(oldest.title);
   const windowWords = oldest ? (launched ? `Since launch ${duration(s.asOf - oldest.t)} ago` : `In the last ${duration(s.asOf - oldest.t)} of the journal`) : "So far";
-  const rehearsal = rehearsalSentence(s);
   const nextTier = r.tiers[r.tier.index + 1];
   const eth = s.market.find((m) => m.asset === "WETH") ?? s.market[0];
   const ethSpan = (eth?.history.length ?? 0) > 1 ? duration(eth.history.at(-1)!.t - eth.history[0].t) : null;
-  // in a rehearsal, quote the real mainnet pool rather than the fork's
   const useMain = s.network.mode === "fork-rehearsal";
-  const gapOf = (m: (typeof s.market)[number]) => {
-    const p = useMain ? (m.mainnet?.spotPx ?? m.mainnet?.twapPx) : null;
-    return p != null && m.cexPx != null ? ((p - m.cexPx) / m.cexPx) * 1e4 : m.spreadBps;
-  };
-  const widest = [...s.market].sort((a, b) => Math.abs(gapOf(b) ?? 0) - Math.abs(gapOf(a) ?? 0))[0];
-  const widestGap = widest ? gapOf(widest) : null;
-  const widestMain = useMain && widest?.mainnet != null;
+  // the same gap the market cards lead with: the pool the vault swaps in, against the exchanges
+  const widest = [...s.market].sort((a, b) => Math.abs(tradeGapBps(b) ?? 0) - Math.abs(tradeGapBps(a) ?? 0))[0];
+  const widestGap = widest ? tradeGapBps(widest) : null;
 
   return (
     <>
@@ -69,7 +61,7 @@ export default async function Home() {
             <div>
               <p className="hero__lede">
                 Avow trades on HSKSwap only through a vault on HSK Chain. Before every swap it publishes a note: what will happen, by when, and the price at which it admits it was wrong,
-                its <Term k="void">void level</Term>. Anyone can settle the note. Its record decides how much it may risk next.
+                its <span className="nowrap">stop-loss (<Term k="void">void level</Term>)</span>. Anyone can settle the note. Its record decides how much it may risk next.
               </p>
               <div className="actions">
                 {hero ? (
@@ -96,6 +88,7 @@ export default async function Home() {
                   <span aria-hidden="true">III</span>Good forecasters earn bigger limits.
                 </li>
               </ol>
+              <p className="plainly__benefit">You don&apos;t have to trust the bot — the contract won&apos;t let it break its word.</p>
             </div>
           </div>
 
@@ -116,15 +109,14 @@ export default async function Home() {
               {hero ? (
                 <>
                   Plate. <b>{hero.serial}</b>,{" "}
-                  {hero.status === "outstanding" ? "outstanding: the needle is the HSKSwap 5-minute " : `${hero.status}: the marker shows where the closing swap filled, judged by the HSKSwap 5-minute `}
+                  {hero.status === "outstanding" ? "outstanding: the needle is the HSKSwap 5-minute " : `${hero.status}: the marker shows where the closing swap filled; settlement reads the HSKSwap 5-minute `}
                   <Term k="twap" /> for {ASSET_LABEL[hero.asset]}.
                 </>
               ) : (
                 <>
-                  No note yet: notes are judged by the HSKSwap 5-minute <Term k="twap" />.
+                  Specimen. Notes settle on the HSKSwap 5-minute <Term k="twap" />.
                 </>
               )}
-              {rehearsal ? <span className="rehearsal-line rehearsal-line--plate"> {rehearsal}</span> : null}
             </span>
             <Freshness />
           </div>
@@ -171,7 +163,8 @@ export default async function Home() {
                 <small>on {settled.length} settled notes, after pool fees</small>
               </div>
               <p className="figure__note">
-                <NetPnl r={r} /> Vault value <b>{usd(r.navUsd)}</b>, high-water mark {usd(r.hwmUsd)}.
+                <NetPnl r={r} /> Vault value <b>{usd(r.navUsd)}</b>
+                {r.hwmUsd > 0 ? `, realised-equity high-water mark ${usd(r.hwmUsd)}` : ""}.
               </p>
             </div>
           </div>
@@ -291,25 +284,17 @@ export default async function Home() {
       <section className="sec sec--tint" aria-labelledby="declined">
         <div className="wrap">
           <SecHead id="declined" title="What Avow declined to swear.">
-            {windowWords} it swore <strong>{sworn}</strong> {sworn === 1 ? "note" : "notes"} and decided <strong>{passes + declined}</strong> {passes + declined === 1 ? "time" : "times"} that nothing was worth swearing
-            {declined ? (
-              <>
-                {" "}
-                (<strong>{declined}</strong> of them a candidate it declined)
-              </>
-            ) : null}
+            {windowWords}, Avow made <strong>{dc.total}</strong> {dc.total === 1 ? "decision" : "decisions"}: <strong>{sworn}</strong> sworn, <strong>{declined}</strong> declined,{" "}
+            <strong>{passes}</strong> {passes === 1 ? "pass" : "passes"} with nothing worth swearing
             {reviewed ? (
               <>
-                , re-examined open notes <strong>{reviewed}</strong> {reviewed === 1 ? "time" : "times"}
+                , <strong>{reviewed}</strong> {reviewed === 1 ? "review" : "reviews"} of open notes
               </>
-            ) : null}
-            {blocked ? (
-              <>
-                {" "}
-                and was refused <strong>{blocked}</strong> {blocked === 1 ? "time" : "times"} by a clause
-              </>
-            ) : null}
-            . Abstaining is free; a note it barely believes costs it calibration.
+            ) : null}{" "}
+            and <strong>{blocked}</strong> blocked by a clause. Abstaining is free; a note it barely believes costs it calibration.
+            <span className="logged">
+              It checks the pools every 30 seconds; decisions are {LOGGED_WHEN}. <LastCycle prefix="Last cycle " />.
+            </span>
           </SecHead>
           {refusals.length ? (
             <div className="slips">
@@ -323,9 +308,10 @@ export default async function Home() {
               Every pass, decline and refusal will appear here with its reasons.
             </div>
           )}
+          {s.replay ? <ReplaySummary replay={s.replay} /> : null}
           <div className="actions">
             <Link href="/journal" className="btn btn--ghost">
-              Read the full journal
+              Read all {dc.total} decisions in the journal
             </Link>
           </div>
         </div>
@@ -372,9 +358,9 @@ export default async function Home() {
       <section className="sec sec--tint" aria-labelledby="market">
         <div className="wrap">
           <SecHead id="market" title="The market it watches.">
-            HSKSwap pools are thin and trade every few hours, so their prices drift from the exchange. Right now {widest?.label} on HSKSwap{widestMain ? " (mainnet)" : ""} is{" "}
-            <strong>{num(Math.abs(widestGap ?? 0), 1)} bps</strong> {(widestGap ?? 0) >= 0 ? "above" : "below"} HashKey Global. A round trip on a $50 note costs about 68 bps (two pool fees plus gas), so most
-            premiums are not worth a note.
+            HSKSwap pools are thin and trade every few hours, so their prices drift from the exchanges. Right now the widest gap is {widest?.label} on HSKSwap{useMain ? " (rehearsal fork)" : ""}, at{" "}
+            <strong>{(Math.abs(widestGap ?? 0) / 100).toFixed(2)}%</strong> {(widestGap ?? 0) >= 0 ? "above" : "below"} the exchanges. A round trip on a $50 note costs about {(ROUND_TRIP_BPS / 100).toFixed(2)}%
+            (two pool fees plus gas), so most gaps are not worth a note.
           </SecHead>
           <figure style={{ margin: "0 0 32px" }}>
             <IntaglioChart series={eth.history} asset={eth.asset} label={`ETH on HSKSwap against HashKey Global${ethSpan ? `, last ${ethSpan}` : ""}`} />
@@ -407,7 +393,9 @@ export default async function Home() {
           <div style={{ marginTop: 48 }}>
             <BrierScale brier={r.brier} />
             <p className="plate">
-              Plate. Rolling Brier over the last {Math.min(32, r.graded)} graded notes. The hatched band is better than a coin flip.{" "}
+              {r.graded
+                ? `Plate. Rolling Brier over the last ${Math.min(32, r.graded)} graded notes. The hatched band is better than a coin flip. `
+                : "No note graded yet: Avow's marker lands on this scale with the first grade. The hatched band is better than a coin flip. "}
               <Link href="/record">Open the full record</Link>.
             </p>
           </div>
@@ -421,7 +409,7 @@ export default async function Home() {
         <div className="wrap">
           <SecHead id="arch" title="Where each number comes from.">
             Prices from the exchanges and the pools, a decision from the model, a check from deterministic guards, and the final word from the vault. Chainlink feeds on HSK are
-            read-whitelisted, so the agent checks them; the contract judges only by the pool&apos;s own TWAP.
+            read-whitelisted, so the agent checks them; the contract settles only by the pool&apos;s own TWAP.
           </SecHead>
           <ArchitectureDiagram />
         </div>

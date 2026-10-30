@@ -150,6 +150,7 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string, mainn
       voidStreak: v.ledger.voidStreak,
       navUsd: v.nav,
       hwmUsd: v.hwm,
+      equityUsd: v.equity,
       frozen: v.frozen,
       dailyLossUsd: v.dailyLoss,
       revoked: v.ledger.revoked,

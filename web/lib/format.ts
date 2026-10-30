@@ -120,7 +120,7 @@ export const STATUS_EXPLAIN: Record<NoteStatus, string> = {
   void: "Both the 5-minute TWAP and the live price crossed the void level first. The stop closed the position. Graded 0.",
   lapsed: "Neither level was reached before the expiry. Closed at the expiry price. Graded 0.",
   retracted: "Avow closed the note early. Retreating is graded as a miss, so it never improves the record.",
-  revoked: "The owner closed the note. Owner actions are not graded.",
+  revoked: "The owner closed the note. A revoked note is graded as a miss, so the owner cannot launder a loss.",
 };
 
 /** Position of a price on the void → target scale, 0 = void, 1 = target (unclamped). */
@@ -137,7 +137,7 @@ export function stopBps(n: Pick<Note, "entryPx" | "voidPx">): number {
 }
 
 export const outcomeOf = (n: Note): 0 | 1 | null =>
-  n.status === "honoured" ? 1 : n.status === "void" || n.status === "lapsed" || n.status === "retracted" ? 0 : null;
+  n.status === "honoured" ? 1 : n.status === "void" || n.status === "lapsed" || n.status === "retracted" || n.status === "revoked" ? 0 : null;
 
 /** Split a USD amount for a banknote denomination: { whole: "19", cents: "40" } */
 export function denom(v: number) {
@@ -160,4 +160,25 @@ export function idFromSerialParam(p: string): number | null {
 /** The printed serial for an on-chain id, preferring the serial the agent sent with the note. */
 export function serialFor(id: number, notes?: Pick<Note, "id" | "serial">[]): string {
   return notes?.find((n) => n.id === id)?.serial ?? `AVW·${String(id + 1).padStart(6, "0")}`;
+}
+
+/**
+ * The drawdown clause measures realised equity (set at the first note, moved only by settled notes) against its
+ * high-water mark, not NAV. Uses the agent's equity figure when it sends one, else rebuilds it from settled notes.
+ */
+export function realisedDrawdown(s: { record: { hwmUsd: number; equityUsd?: number }; notes: Pick<Note, "settledAt" | "pnlUsd">[] }) {
+  const hwm = s.record.hwmUsd;
+  if (!(hwm > 0)) return { hwm: null, equity: null, dd: 0 };
+  let equity = s.record.equityUsd ?? null;
+  if (equity == null) {
+    let c = 0;
+    let peak = 0;
+    const done = s.notes.filter((n) => n.settledAt != null && n.pnlUsd != null).sort((a, b) => a.settledAt! - b.settledAt!);
+    for (const n of done) {
+      c += n.pnlUsd!;
+      peak = Math.max(peak, c);
+    }
+    equity = hwm - (peak - c);
+  }
+  return { hwm, equity, dd: Math.max(0, (hwm - equity) / hwm) };
 }

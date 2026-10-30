@@ -3,7 +3,8 @@ import Link from "next/link";
 import { getState } from "@/lib/data";
 import { JournalList } from "@/components/Journal";
 import { SecHead } from "@/components/Bits";
-import { Ago } from "@/components/Live";
+import { Ago, LastCycle } from "@/components/Live";
+import { decisionCounts, LOGGED_WHEN } from "@/lib/decisions";
 import { num, usd } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +14,7 @@ export default async function JournalPage() {
   const s = await getState();
   const j = s.journal;
   const c = (k: string) => j.filter((e) => e.kind === k).length;
+  const dc = decisionCounts(j);
   const tokens = j.reduce((a, e) => a + (e.tokens ?? 0), 0);
   return (
     <>
@@ -23,8 +25,8 @@ export default async function JournalPage() {
           </div>
           <h1>The journal: every decision, including the ones not taken.</h1>
           <p className="lede">
-            The agent writes here every time it swears, passes, declines, re-examines an open note, is refused by a clause, settles or changes the mandate. Declines carry the model&apos;s own reasons. The latest entry is{" "}
-            {j[0] ? <Ago t={j[0].t} /> : "not written yet"}.
+            The agent checks the pools every 30 seconds and writes here when something changes: it swears, passes, declines, re-examines an open note, is refused by a clause, settles or changes
+            the mandate. Declines carry the model&apos;s own reasons. The latest entry is {j[0] ? <Ago t={j[0].t} /> : "not written yet"}; <LastCycle />.
           </p>
         </div>
       </section>
@@ -32,6 +34,10 @@ export default async function JournalPage() {
       <section className="sec" style={{ paddingTop: 8 }} aria-label="Summary">
         <div className="wrap">
           <div className="counts">
+            <div className="count">
+              <b>{dc.total}</b>
+              <span>decisions, {LOGGED_WHEN}</span>
+            </div>
             <div className="count">
               <b>{c("sworn")}</b>
               <span>sworn</span>

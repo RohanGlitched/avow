@@ -2,7 +2,7 @@
 export const GLOSSARY = {
   twap: {
     word: "TWAP",
-    plain: "Time-weighted average price: the pool's average price over the last 5 minutes. One large swap cannot move it far, so it is fair to judge a note by.",
+    plain: "Time-weighted average price: the pool's average price over the last 5 minutes. One large swap cannot move it far, so it is a fair price to settle a note by.",
   },
   void: {
     word: "Void level",

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: { default: "Avow: an AI trader whose word is its bond", template: "%s · Avow" },
   description: SITE.tagline,
-  openGraph: { title: "Avow", description: SITE.tagline, type: "website", siteName: "Avow" },
+  openGraph: { title: "Avow", description: SITE.tagline, type: "website", siteName: "Avow", url: SITE.url },
   twitter: { card: "summary_large_image", title: "Avow", description: SITE.tagline },
 };
 

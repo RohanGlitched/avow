@@ -208,7 +208,7 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
         </div>
 
         {note.status === "retracted" ? <Crossing text="Retracted by Avow, graded as a miss" /> : null}
-        {note.status === "revoked" ? <Crossing text="Revoked by the owner, not graded" /> : null}
+        {note.status === "revoked" ? <Crossing text="Revoked by the owner, graded a miss" /> : null}
         <Callout k="H" on={annotate} />
       </div>
     </Tag>
