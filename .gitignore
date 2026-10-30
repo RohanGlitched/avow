@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+cache/
+broadcast/
+.env
+.env.*
+!.env.example
+.keys/
+*.log
+.shots/
+contracts/lib/
+.vercel
