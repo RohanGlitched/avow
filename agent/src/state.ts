@@ -1,0 +1,120 @@
+import { ASSETS, DEPLOY_BLOCK, MODE, VAULT } from "./config.js";
+import type { Snap } from "./market.js";
+import { TIER_NAMES, TIER_RULE, TIER_SHARE, mandateWords, type VaultView } from "./vault.js";
+import { journal } from "./journal.js";
+import { history } from "./history.js";
+import { spend24h } from "./llm.js";
+import { gasLog, serial } from "./agent.js";
+
+let hskUsd = 0.087;
+
+/** The State the web app renders (web/lib/types.ts). */
+export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
+  const hskSnap = snaps.find((s) => s.sym === "WHSK");
+  if (hskSnap?.fairPx) hskUsd = hskSnap.fairPx;
+  const maxNotional = Number(v.mandate.maxNotional) / 1e6;
+  const tiers = TIER_NAMES.map((name, i) => ({ index: i, name, capUsd: maxNotional * TIER_SHARE[i], share: TIER_SHARE[i], requirement: TIER_RULE[i] }));
+  const now = Math.floor(Date.now() / 1000);
+  const since = now - 86_400;
+  const gas24 = gasLog.filter((g) => g.t >= since).reduce((s, g) => s + g.hsk, 0);
+  const spend = spend24h();
+  const pxOf = (sym: string) => snaps.find((s) => s.sym === sym);
+
+  const notes = v.notes.map((n) => {
+    const a = ASSETS[n.asset];
+    const r = journal.rationaleOf(n.id) as { rationale?: string; snaps?: Snap; candidate?: { kind?: string } } | undefined;
+    const s = r?.snaps;
+    return {
+      id: n.id,
+      serial: serial(n.id),
+      asset: a.sym,
+      side: n.side === 0 ? "long" : "short",
+      entryPx: n.entryPx,
+      targetPx: n.targetPx,
+      voidPx: n.voidPx,
+      openedAt: n.openedAt,
+      expiry: n.expiry,
+      confidence: n.confidenceBps / 1e4,
+      notionalUsd: n.notional,
+      amountIn: n.side === 0 ? Number(n.amountIn) / 1e6 : Number(n.amountIn) / 10 ** a.decimals,
+      amountOut: n.side === 0 ? Number(n.amountOut) / 10 ** a.decimals : Number(n.amountOut) / 1e6,
+      statement: n.statement ?? "",
+      rationale: r?.rationale ?? "",
+      signals: s ? { spreadBps: s.gapBps ?? undefined, momentum1h: s.r1h ?? undefined, momentum4h: s.r4h ?? undefined, volatility: s.vol1h ?? undefined, fairPx: s.fairPx ?? undefined, kind: r?.candidate?.kind } : {},
+      hash: n.statementHash,
+      openTx: n.openTx ?? null,
+      openBlock: n.openBlock ?? null,
+      tierAtOpen: n.tierAtOpen,
+      status: n.status,
+      exitPx: n.status === "outstanding" ? undefined : n.exitPx,
+      settledAt: n.settledAt || undefined,
+      settleTx: n.settleTx,
+      settler: n.settler,
+      pnlUsd: n.status === "outstanding" ? undefined : n.pnl,
+      sqError: n.sqErr,
+      livePx: n.status === "outstanding" ? pxOf(a.sym)?.twapPx ?? undefined : undefined,
+    };
+  });
+
+  const holdings = v.balances.map((b) => {
+    const px = b.sym === "USDT" ? 1 : pxOf(b.sym)?.twapPx ?? 0;
+    return { sym: b.sym, amount: b.amount, usd: b.amount * px, locked: b.locked };
+  });
+
+  const market = snaps.map((s) => ({
+    asset: s.sym,
+    label: s.label,
+    dexPx: s.spotPx,
+    twapPx: s.twapPx,
+    cexPx: s.fairPx,
+    hashkeyPx: s.hashkeyPx,
+    gatePx: s.gatePx,
+    chainlinkPx: s.chainlinkPx,
+    chainlinkAgeSec: s.chainlinkAgeSec,
+    spreadBps: s.twapPx && s.fairPx ? ((s.twapPx - s.fairPx) / s.fairPx) * 1e4 : null,
+    poolUsdt: s.poolUsdt,
+    poolAsset: s.poolAsset,
+    lastSwapAgoSec: s.lastSwapAgoSec,
+    r1h: s.r1h,
+    r4h: s.r4h,
+    vol1h: s.vol1h,
+    history: history.of(s.sym).map((h) => ({ t: h.t, dex: h.dex, cex: h.cex })),
+  }));
+
+  const beat = journal.lastBeat();
+  return {
+    network: {
+      chainId: 177,
+      name: MODE === "mainnet" ? "HSK Chain mainnet" : "Rehearsal on a fork of HSK Chain mainnet",
+      explorer: "https://hsk.blockscout.com",
+      rpc: "https://mainnet.hsk.xyz",
+      mode: MODE,
+    },
+    contracts: { vault: VAULT, factory: null, agent: agentAddr, owner: v.owner, deployBlock: DEPLOY_BLOCK ? Number(DEPLOY_BLOCK) : null },
+    asOf: now,
+    agentAlive: beat > 0 && now - beat < 180,
+    lastHeartbeat: beat || null,
+    mandate: mandateWords(v.mandate),
+    record: {
+      graded: v.ledger.graded,
+      honoured: v.ledger.honoured,
+      void: v.ledger.voided,
+      lapsed: v.ledger.lapsed,
+      retracted: v.ledger.retracted,
+      brier: v.brier,
+      pnlUsd: v.ledger.realisedPnl,
+      tier: tiers[v.tier],
+      tiers,
+      voidStreak: v.ledger.voidStreak,
+      navUsd: v.nav,
+      hwmUsd: v.hwm,
+      frozen: v.frozen,
+      dailyLossUsd: v.dailyLoss,
+    },
+    holdings,
+    notes,
+    market,
+    journal: journal.recent(200),
+    costs: { modelCalls24h: spend.calls, modelUsd24h: Number(spend.usd.toFixed(4)), gasHsk24h: Number(gas24.toFixed(5)), gasUsd24h: Number((gas24 * hskUsd).toFixed(4)) },
+  };
+}

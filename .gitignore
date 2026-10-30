@@ -11,3 +11,5 @@ broadcast/
 .shots/
 contracts/lib/
 .vercel
+agent/dist/
+agent/data*/

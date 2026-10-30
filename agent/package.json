@@ -1,0 +1,11 @@
+{
+  "name": "dictum-agent",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.ts src/deploy.ts src/keygen.ts --bundle --platform=node --format=esm --target=node22 --outdir=dist --banner:js=\"import{createRequire}from'module';const require=createRequire(import.meta.url);\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": { "viem": "2.38.4" },
+  "devDependencies": { "esbuild": "0.25.10", "typescript": "5.9.3", "@types/node": "22.18.6" }
+}

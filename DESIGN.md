@@ -44,7 +44,7 @@ loosens it becomes an **amendment** the owner signs with their wallet.
 ```
 HashKey Global + Gate (fair value) ─┐
 HSKSwap pools (slot0, TWAP, swaps) ─┼─> agent/ (GCE VM asia-south1, static IP 35.200.225.158)
-Chainlink feeds ────────────────────┘     signals → Gemini 3.5 Flash (Vertex AI) chooses + swears → deterministic guards
+Chainlink (off-chain seatbelt) ─────┘     signals → Gemini 3.5 Flash (Vertex AI) chooses + swears → deterministic guards
                                            → DictumVault.swear() on HSK Chain → keeper settles notes → journal → web
 web/ (Next.js on Vercel): reads the vault directly over RPC + the agent's journal; chat (/desk) on Gemini with read tools;
     amendments are signed by the owner's wallet in the browser.
@@ -59,15 +59,21 @@ Note (thesis) fields: id, asset, side (Long = buy asset with USDT; Short = sell 
 entryPx, targetPx, voidPx (all USD per whole asset ×1e8, from the pool TWAP), openedAt, expiry, confidenceBps (5000–9900),
 amountIn, amountOut, statementHash, status (Outstanding, Honoured, Void, Lapsed, Retracted, Revoked), exitPx, pnlUsd6, settledAt.
 
-Rules enforced by `swear()`: not paused/frozen; asset allowed; cooldown elapsed; one outstanding note per asset; horizon ≤ max;
-long: target > entry > void (short mirrored); stop distance ≤ maxStopBps; reward/risk ≥ minRewardRisk; notional ≤ denomination
-(tier cap) and ≤ maxNotional; open exposure ≤ maxExposure; daily realised loss < limit; swap price within maxSlippage of TWAP
-and within maxOracleDev of Chainlink (Chainlink not stale). The full statement text is emitted in `NoteSworn`.
+Rules enforced by `swear()`: not paused/frozen; asset allowed; cooldown elapsed; one outstanding note per asset; horizon 10 min – max;
+odds 30–99%; long: target > entry > void (short mirrored); stop distance 0.25% – maxStopBps; reward/risk ≥ minRewardRisk; **positive
+expectancy at the agent's own odds** (p·reward > (1−p)·risk); notional ≤ denomination (tier cap) and open exposure ≤ maxExposure; daily
+realised loss < limit; live price within maxSpotDevBps of the 5-minute TWAP (no swearing into a spike); swap within maxSlippage of the TWAP;
+**not fulfilled by its own trade** (after the opening swap the live price must still be short of the target). The full statement is emitted
+in `NoteSworn`.
 
-`settle(id)` (anyone): Honoured if TWAP ≥ target (long), Void if TWAP ≤ void, Lapsed if now ≥ expiry. Closing swap with
-exit slippage bound. Grades the note: outcome 1 if Honoured else 0; squared error (p−o)² added to a rolling window of the
-last 32 graded notes. Denomination tiers from the window: Probation (<5 graded) 20% of maxNotional; Apprentice (≥5, Brier ≤ .25) 40%;
-Journeyman (≥12, Brier ≤ .22, PnL ≥ 0) 70%; Fiduciary (≥25, Brier ≤ .20, PnL > 0) 100%. Three consecutive Voids drop one tier.
+Chainlink on HSK is read-whitelisted (contracts get "No access"; checked Oct 31), so the vault cannot use it. The agent reads it off-chain
+as a seatbelt (refuses when pool vs Chainlink > 3% or the feed is older than 26 h) and the UI shows it as "checked by the agent".
+
+`settle(id)` (anyone): Honoured if both the 5-minute TWAP and the live price are at/over the target (long), Void if both are at/under the
+void level, Lapsed if now ≥ expiry. Closing swap with an exit slippage bound. Grades the note: outcome 1 if Honoured else 0; squared error
+(p−o)² added to a rolling window of the last 32 graded notes. Denomination tiers from the window: Probation (<5 graded) 20% of maxNotional;
+Apprentice (≥5, Brier ≤ .25) 40%; Journeyman (≥12, Brier ≤ .22, PnL ≥ 0) 70%; Fiduciary (≥25, Brier ≤ .20, PnL > 0) 100%.
+Three consecutive Voids drop one tier.
 
 `retract(id)` (agent): close early; graded as a miss (o = 0) so retreating never improves the record.
 `tightenStop(id, newVoid)` (agent): only toward entry.
