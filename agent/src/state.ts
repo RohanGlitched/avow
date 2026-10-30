@@ -12,11 +12,16 @@ import { gasLog, serial } from "./agent.js";
 let hskUsd = 0.087;
 
 /** The State the web app renders (web/lib/types.ts). */
-let study: unknown = null;
-try {
-  const f = join(DATA_DIR, "study.json");
-  if (existsSync(f)) study = JSON.parse(readFileSync(f, "utf8"));
-} catch {}
+const readJson = (name: string): unknown => {
+  try {
+    const f = join(DATA_DIR, name);
+    return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : null;
+  } catch {
+    return null;
+  }
+};
+const study = readJson("study.json");
+const replay = readJson("replay.json");
 
 export function buildState(snaps: Snap[], v: VaultView, agentAddr: string, mainnetPools: Record<string, MainnetPool> = {}) {
   const hskSnap = snaps.find((s) => s.sym === "WHSK");
@@ -66,6 +71,8 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string, mainn
       openTx: n.openTx ?? null,
       openBlock: n.openBlock ?? null,
       tierAtOpen: n.tierAtOpen,
+      spotDevBps: n.spotDevBps,
+      exitSlipBps: n.exitSlipBps,
       status: n.status,
       exitPx: n.status === "outstanding" ? undefined : n.exitPx,
       settledAt: n.settledAt || undefined,
@@ -152,6 +159,7 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string, mainn
     },
     simulatedOutsideTraders: MODE === "fork-rehearsal",
     study,
+    replay,
     holdings,
     notes,
     market,

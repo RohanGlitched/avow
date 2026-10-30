@@ -9,8 +9,8 @@ export type StatusName = (typeof STATUS)[number];
 export const TIER_NAMES = ["Probation", "Apprentice", "Journeyman", "Fiduciary"] as const;
 export const TIER_SHARE = [0.2, 0.4, 0.7, 1.0];
 export const TIER_RULE = [
-  "Every new agent starts here: fewer than 5 graded notes, or a Brier score worse than a coin flip",
-  "5 graded notes with a Brier score of 0.25 or better",
+  "Every new agent starts here, until its record shows calibration",
+  "5 graded notes, a Brier score better than a coin flip (below 0.25), and honoured notes at least 80% of the hits its odds claimed",
   "12 graded notes, Brier 0.22 or better, realised P&L not negative",
   "25 graded notes, Brier 0.20 or better, realised P&L positive",
 ];
@@ -37,6 +37,8 @@ export interface ChainNote {
   status: StatusName;
   tierAtOpen: number;
   confidenceBps: number;
+  spotDevBps: number;
+  exitSlipBps: number;
   openedAt: number;
   expiry: number;
   settledAt: number;
@@ -162,7 +164,7 @@ export async function readVault(): Promise<VaultView> {
     const rows = await chain.multicall({ allowFailure: false, contracts: want.map((id) => ({ address: VAULT, abi: vaultAbi, functionName: "getNote", args: [BigInt(id)] }) as const) });
     rows.forEach((r, i) => {
       const x = r as unknown as {
-        asset: number; side: number; status: number; tierAtOpen: number; confidenceBps: number; openedAt: number; expiry: number; settledAt: number;
+        asset: number; side: number; status: number; tierAtOpen: number; confidenceBps: number; spotDevBps: number; exitSlipBps: number; openedAt: number; expiry: number; settledAt: number;
         entryPx: bigint; targetPx: bigint; voidPx: bigint; exitPx: bigint; notional: bigint; pnl: bigint; amountIn: bigint; amountOut: bigint; statementHash: Hex;
       };
       const id = want[i];
@@ -173,6 +175,8 @@ export async function readVault(): Promise<VaultView> {
         status: STATUS[x.status],
         tierAtOpen: x.tierAtOpen,
         confidenceBps: x.confidenceBps,
+        spotDevBps: x.spotDevBps,
+        exitSlipBps: x.exitSlipBps,
         openedAt: Number(x.openedAt),
         expiry: Number(x.expiry),
         settledAt: Number(x.settledAt),
