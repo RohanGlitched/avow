@@ -15,8 +15,8 @@ export interface Decision {
   usd: number;
 }
 
-const SYSTEM = `You are Dictum, an autonomous trader on HSKSwap (HSK Chain mainnet). You may only trade by swearing a note on chain:
-"Dictum swears that <asset> will trade above/below <target> on HSKSwap before <time>, or this note is void at <level>."
+const SYSTEM = `You are Avow, an autonomous trader on HSKSwap (HSK Chain mainnet). You may only trade by swearing a note on chain:
+"Avow swears that <asset> will trade above/below <target> on HSKSwap before <time>, or this note is void at <level>."
 Every note is graded: it is honoured only if the pool's 5-minute TWAP and live price reach the target before the void level and expiry.
 Your stated probability is scored with a Brier score; the size you are allowed to trade (your denomination) grows only if you are calibrated
 and profitable, and shrinks if you are overconfident. Honesty about uncertainty is rewarded; bravado is punished.
@@ -53,7 +53,7 @@ export async function decide(cands: Candidate[], passes: Pass[], snaps: Snap[], 
     `Recent outcomes: ${recent.length ? recent.join("; ") : "none"}`,
     "",
     "Market:",
-    ...snaps.map((s) => `- ${s.label}: TWAP ${s.twapPx?.toPrecision(7)}, exchanges ${s.fairPx?.toPrecision(7)}, gap ${s.gapBps?.toFixed(0)} bps, last pool swap ${s.lastSwapAgoSec !== null ? Math.round(s.lastSwapAgoSec / 60) + " min" : "?"} ago, 4 h ${s.r4h !== null ? (s.r4h * 100).toFixed(2) + "%" : "?"}`),
+    ...snaps.map((s) => `- ${s.label}: TWAP ${s.twapPx?.toPrecision(7)}, exchanges ${s.fairPx?.toPrecision(7)}, gap ${s.gapBps?.toFixed(0)} bps, last pool swap ${s.lastSwapAgoSec !== null ? Math.round(s.lastSwapAgoSec / 60) + " min" : "?"} ago, ${s.swaps3h ?? "?"} swaps in ~3 h (net $${s.netFlowUsd3h?.toFixed(0) ?? "?"}), 4 h ${s.r4h !== null ? (s.r4h * 100).toFixed(2) + "%" : "?"}`),
     "",
     "Candidates:",
     ...cands.map((c) =>
@@ -108,6 +108,6 @@ export function statement(c: Candidate, expiry: number, confidence: number, beca
   const a = ASSETS.find((z) => z.sym === c.sym)!;
   const dir = c.side === "long" ? "above" : "below";
   const t = IST(expiry).replace(",", "");
-  const core = `Dictum swears that ${a.label} will trade ${dir} ${fmtPx(c.sym, c.target)} on HSKSwap before ${t} IST, or this note is void at ${fmtPx(c.sym, c.void)}. Odds ${Math.round(confidence * 100)}%.`;
+  const core = `Avow swears that ${a.label} will trade ${dir} ${fmtPx(c.sym, c.target)} on HSKSwap before ${t} IST, or this note is void at ${fmtPx(c.sym, c.void)}. Odds ${Math.round(confidence * 100)}%.`;
   return because ? `${core} ${because}` : core;
 }

@@ -41,10 +41,10 @@ const tools = [
   },
 ];
 
-const SYSTEM = `You are Dictum's desk: the plain-language interface to an autonomous trading agent on HSKSwap (HSK Chain). Answer the person's question
+const SYSTEM = `You are Avow's desk: the plain-language interface to an autonomous trading agent on HSKSwap (HSK Chain). Answer the person's question
 using only tool results; call tools before answering anything about positions, P&L, notes, decisions or the mandate. Be brief (2–5 sentences),
-concrete, numbers with units ("$4.20", "0.48%"), name notes by serial (DCT·000004). Strategy changes (size, frequency, risk appetite, assets)
-are mandate changes: call propose_change and say plainly which parts are stricter (Dictum applies them itself as soon as the vault owner
+concrete, numbers with units ("$4.20", "0.48%"), name notes by serial (AVW·000004). Strategy changes (size, frequency, risk appetite, assets)
+are mandate changes: call propose_change and say plainly which parts are stricter (Avow applies them itself as soon as the vault owner
 confirms with a wallet signature) and which are looser (the owner must sign an on-chain amendment). Never claim a change was applied. Never give personal investment advice; you describe what this agent does and why.
 Times are IST. If something is unknown, say so.`;
 
@@ -119,12 +119,12 @@ export function fallback(q: string, s: State, why: string): DeskReply {
   const r = s.record;
   if (/(careful|safer|conservative|smaller|less risk)/.test(t)) {
     const ch = [classify(s.mandate, "maxNotionalUsd", Math.max(1, s.mandate.maxNotionalUsd / 2)), classify(s.mandate, "maxStopBps", Math.max(50, Math.round(s.mandate.maxStopBps * 0.75)))].filter((x): x is Change => !!x);
-    return { reply: "A more careful mandate: half the largest note and a 25% tighter stop. Both are stricter, so Dictum can apply them itself once the owner confirms.", citations: [], proposal: ch, engine: `rules (model unavailable: ${why})` };
+    return { reply: "A more careful mandate: half the largest note and a 25% tighter stop. Both are stricter, so Avow can apply them itself once the owner confirms.", citations: [], proposal: ch, engine: `rules (model unavailable: ${why})` };
   }
   if (/(only)\s+(trade\s+)?(eth|btc|hsk)/.test(t)) {
     const m = t.match(/(eth|btc|hsk)/)![1];
     const ch = classify(s.mandate, "assets", m);
-    return { reply: `Restricting the mandate to ${m.toUpperCase()} is stricter, so Dictum can apply it itself.`, citations: [], proposal: ch ? [ch] : [], engine: `rules (model unavailable: ${why})` };
+    return { reply: `Restricting the mandate to ${m.toUpperCase()} is stricter, so Avow can apply it itself.`, citations: [], proposal: ch ? [ch] : [], engine: `rules (model unavailable: ${why})` };
   }
   if (/(bigger|larger|more size|aggressive)/.test(t)) {
     const ch = classify(s.mandate, "maxNotionalUsd", s.mandate.maxNotionalUsd * 2);

@@ -87,14 +87,14 @@ export async function keep(v: VaultView) {
   }
 }
 
-export const serial = (id: number) => `DCT·${String(id).padStart(6, "0")}`;
+export const serial = (id: number) => `AVW·${String(id).padStart(6, "0")}`;
 
 const declined = new Map<string, number>(); // candidate key → last time the model declined it
 let lastThink = 0;
 let lastPassSig = "";
 
 export async function think(snaps: Snap[], v: VaultView) {
-  if (v.mandate.paused) return note("paused", "The mandate is paused. Dictum is watching, not trading.");
+  if (v.mandate.paused) return note("paused", "The mandate is paused. Avow is watching, not trading.");
   if (v.frozen) return note("frozen", "The vault is frozen after a drawdown. Waiting for the owner.");
   const cooldownLeft = v.lastSwearAt + v.mandate.cooldown - v.blockTime;
   if (v.lastSwearAt && cooldownLeft > 0) return;

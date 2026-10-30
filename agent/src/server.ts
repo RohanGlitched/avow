@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { verifyMessage, type Hex } from "viem";
 import { DESK_SECRET, MODE, PORT, VAULT } from "./config.js";
 import { desk, classify, type Msg } from "./desk.js";
+import { mcp } from "./mcp.js";
 import { journal } from "./journal.js";
 import { chain } from "./market.js";
 import { account, tightenMandate, words } from "./agent.js";
@@ -55,15 +56,25 @@ export function serve() {
         if (!msgs.length || !live.state) return send(res, 400, { error: "no question" });
         return send(res, 200, await desk(msgs, live.state));
       }
+      if (url.pathname === "/mcp") {
+        if (req.method === "GET") { res.writeHead(405, { allow: "POST" }); return res.end(); }
+        if (req.method !== "POST") return send(res, 405, { error: "POST only" });
+        const ip = String(req.headers["x-visitor-ip"] ?? req.socket.remoteAddress ?? "?");
+        if (!allow("mcp:" + ip, 300)) return send(res, 429, { error: "rate limited" });
+        const b = await body(req);
+        const out = Array.isArray(b) ? b.map((x) => mcp(x, live.state)).filter(Boolean) : mcp(b, live.state);
+        if (out === null || (Array.isArray(out) && !out.length)) { res.writeHead(202); return res.end(); }
+        return send(res, 200, out);
+      }
       if (req.method === "POST" && url.pathname === "/tighten") {
-        // the owner signs "Dictum: tighten\n<json changes>\nuntil <unix>" with their wallet; the agent then applies only stricter changes
+        // the owner signs "Avow: tighten\n<json changes>\nuntil <unix>" with their wallet; the agent then applies only stricter changes
         const b = (await body(req)) as { message: string; signature: Hex };
         if (!live.state || !live.vault) return send(res, 503, { error: "warming up" });
         const owner = live.vault.owner;
         const ok = await verifyMessage({ address: owner, message: b.message, signature: b.signature }).catch(() => false);
         if (!ok) return send(res, 403, { error: "Only the vault owner's signature can ask the agent to change the mandate." });
         const [head, json, until] = b.message.split("\n");
-        if (head !== "Dictum: tighten" || Number(until?.replace("until ", "")) < Date.now() / 1000) return send(res, 400, { error: "expired or malformed request" });
+        if (head !== "Avow: tighten" || Number(until?.replace("until ", "")) < Date.now() / 1000) return send(res, 400, { error: "expired or malformed request" });
         const changes = JSON.parse(json) as { field: string; to: unknown }[];
         const cls = changes.map((c) => classify(live.state!.mandate, c.field, c.to));
         if (cls.some((c) => !c || !c.stricter)) return send(res, 400, { error: "Only stricter changes can be applied by the agent; sign looser ones as an owner amendment." });

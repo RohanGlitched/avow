@@ -1,4 +1,4 @@
-// Deploys a DictumVault and prepares the HSKSwap pools (5-minute TWAP needs observation slots).
+// Deploys an Avow vault (DictumVault.sol until the rename) and prepares the HSKSwap pools (5-minute TWAP needs observation slots).
 // Fork rehearsal: also funds the vault and the keys with anvil cheat calls. Mainnet: spends real HSK on gas only.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { createWalletClient, encodeAbiParameters, http, keccak256, parseAbi, toHex, type Address, type Hex } from "viem";
@@ -33,7 +33,7 @@ async function main() {
   const bal = await chain.getBalance({ address: deployer.address });
   console.log("deployer HSK", Number(bal) / 1e18);
   const assets = ASSETS.map((a) => ({ token: a.token, pool: a.pool, fee: 3000, decimals: 0, assetIsToken0: false }));
-  const hash = await w.deployContract({ abi: vaultAbi, bytecode: vaultBytecode as Hex, args: ["Dictum", owner, agent.address, USDT, ROUTER, assets, mandate] });
+  const hash = await w.deployContract({ abi: vaultAbi, bytecode: vaultBytecode as Hex, args: ["Avow", owner, agent.address, USDT, ROUTER, assets, mandate] });
   const rc = await chain.waitForTransactionReceipt({ hash, timeout: 180_000 });
   const vault = rc.contractAddress!;
   console.log("vault", vault, "block", rc.blockNumber, "gas", rc.gasUsed);

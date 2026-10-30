@@ -6,7 +6,7 @@ import { journal } from "./journal.js";
 import { simulateOutsideTraders } from "./sim.js";
 
 serve();
-journal.add({ kind: "heartbeat", title: `Dictum started (${MODE === "mainnet" ? "HSK Chain mainnet" : "rehearsal on a fork of HSK mainnet"})` });
+journal.add({ kind: "heartbeat", title: `Avow started (${MODE === "mainnet" ? "HSK Chain mainnet" : "rehearsal on a fork of HSK mainnet"})` });
 
 let running = false;
 async function loop() {

@@ -55,6 +55,7 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
       `gap ${r(gap / 100, 2)}% (positive means HSKSwap is cheaper)`,
       `Chainlink ${r(s.chainlinkPx, a.pricePlaces + 2)}, ${Math.round((s.chainlinkAgeSec ?? 0) / 60)} min old`,
       `last swap in the pool ${s.lastSwapAgoSec !== null ? Math.round(s.lastSwapAgoSec / 60) + " min ago" : "unknown"}`,
+      `${s.swaps3h ?? "unknown"} swaps in the pool in the last ~3 hours, net ${s.netFlowUsd3h !== null ? (s.netFlowUsd3h >= 0 ? "buying" : "selling") + " of $" + Math.abs(s.netFlowUsd3h).toFixed(0) : "unknown"}, largest $${s.maxSwapUsd3h !== null ? s.maxSwapUsd3h.toFixed(0) : "?"}`,
       `pool depth ${s.poolUsdt !== null ? "$" + Math.round(s.poolUsdt).toLocaleString("en-US") : "n/a"} USDT side`,
       `exchange returns 1 h ${s.r1h !== null ? r(s.r1h * 100) : "n/a"}%, 4 h ${s.r4h !== null ? r(s.r4h * 100) : "n/a"}%, 24 h ${s.r24h !== null ? r(s.r24h * 100) : "n/a"}%`,
       `1 h volatility ${s.vol1h !== null ? r(s.vol1h * 100) : "n/a"}%`,

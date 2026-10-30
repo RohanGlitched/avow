@@ -78,6 +78,9 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
     r1h: s.r1h,
     r4h: s.r4h,
     vol1h: s.vol1h,
+    swaps3h: s.swaps3h,
+    netFlowUsd3h: s.netFlowUsd3h,
+    maxSwapUsd3h: s.maxSwapUsd3h,
     history: history.of(s.sym).map((h) => ({ t: h.t, dex: h.dex, cex: h.cex })),
   }));
 

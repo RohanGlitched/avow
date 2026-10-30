@@ -1,4 +1,4 @@
-import { createPublicClient, http, parseAbi, type Address } from "viem";
+import { createPublicClient, http, parseAbi, parseAbiItem, type Address } from "viem";
 import { ASSETS, MAINNET_RPC, RPC, USDT, VAULT, FEED_USDT, hsk, hskMainnet, type AssetCfg, type Sym } from "./config.js";
 import { vaultAbi } from "./abi.js";
 
@@ -33,6 +33,29 @@ export interface Snap {
   r4h: number | null;
   r24h: number | null;
   vol1h: number | null; // stdev of 1 h log returns over 48 h
+  swaps3h: number | null; // swaps in the pool over the last 5,000 blocks (~2.8 h)
+  netFlowUsd3h: number | null; // USDT paid into the pool minus USDT taken out (positive = people bought the asset)
+  maxSwapUsd3h: number | null;
+}
+
+const swapEv = parseAbiItem("event Swap(address indexed sender, address indexed recipient, int256 amount0, int256 amount1, uint160 sqrtPriceX96, uint128 liquidity, int24 tick)");
+const flowCache = new Map<string, { t: number; v: { swaps3h: number; netFlowUsd3h: number; maxSwapUsd3h: number } }>();
+/** On-chain flow: who has traded this pool lately, and which way. */
+async function flow(a: AssetCfg) {
+  const c = flowCache.get(a.sym);
+  if (c && Date.now() - c.t < 5 * 60_000) return c.v;
+  const head = await chain.getBlockNumber();
+  const logs = await chain.getLogs({ address: a.pool, event: swapEv, fromBlock: head - 4_999n, toBlock: head });
+  const usdtIs0 = USDT.toLowerCase() < a.token.toLowerCase();
+  let net = 0, max = 0;
+  for (const l of logs) {
+    const u = Number((usdtIs0 ? l.args.amount0 : l.args.amount1) ?? 0n) / 1e6; // + = USDT into the pool
+    net += u;
+    max = Math.max(max, Math.abs(u));
+  }
+  const v = { swaps3h: logs.length, netFlowUsd3h: net, maxSwapUsd3h: max };
+  flowCache.set(a.sym, { t: Date.now(), v });
+  return v;
 }
 
 async function getJson(url: string, ms = 8000): Promise<unknown> {
@@ -140,12 +163,13 @@ export async function snapshot(): Promise<Snap[]> {
   const t = Math.floor(Date.now() / 1000);
   return Promise.all(
     ASSETS.map(async (a) => {
-      const [p, hk, gt, cl, kl] = await Promise.all([
+      const [p, hk, gt, cl, kl, fl] = await Promise.all([
         pool(a).catch(() => ({ twap8: null, spot8: null, pu: null, pa: null, lastSwapAgoSec: null })),
         hashkeyMid(a),
         gateMid(a),
         chainlink(a),
         closes(a),
+        flow(a).catch(() => ({ swaps3h: null, netFlowUsd3h: null, maxSwapUsd3h: null })),
       ]);
       const mids = [hk, gt].filter((x): x is number => x !== null);
       const fair = mids.length ? mids.reduce((s, x) => s + x, 0) / mids.length : null;
@@ -170,6 +194,7 @@ export async function snapshot(): Promise<Snap[]> {
         gapBps: fair && twap ? ((fair - twap) / twap) * 1e4 : null,
         chainlinkDevBps: cl.px && twap ? (Math.abs(twap - cl.px) / cl.px) * 1e4 : null,
         ...st,
+        ...fl,
       } satisfies Snap;
     }),
   );
