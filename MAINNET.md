@@ -24,7 +24,7 @@ HSK reaches HSK Chain by withdrawing from HashKey Global or Gate on the "HSK Cha
 
 | Step | Command (on the VM, in ~/dictum/mainnet) | Gas | HSK |
 |---|---|---|---|
-| 1. Deploy AvowVault (owner = the setup key until step 6) | `DICTUM_MODE=mainnet DICTUM_RPC=https://mainnet.hsk.xyz DICTUM_DEPLOYER_KEY_FILE=.keys/setup.key DICTUM_AGENT_KEY_FILE=.keys/agent.key DICTUM_DATA_DIR=./data node ../bin/deploy.js` | 5.76M | 2.88 |
+| 1. Deploy AvowVault (owner = the setup key until step 6) | `DICTUM_MODE=mainnet DICTUM_RPC=https://mainnet.hsk.xyz DICTUM_DEPLOYER_KEY_FILE=.keys/setup.key DICTUM_AGENT_KEY_FILE=.keys/agent.key DICTUM_DATA_DIR=./data node ../bin/deploy.js` (then copy research/study.json and replay.json into ./data` | 5.80M | 2.90 |
 | 2. Raise the observation buffer of the three HSKSwap pools to 240 (a 5-minute TWAP that a flood of tiny swaps cannot shorten; a public good for HSKSwap) | inside deploy.js | WETH 5.05M, WBTC 5.39M, WHSK 5.05M = 15.49M | 7.74 |
 | 3. Verify the source on Blockscout | `forge verify-contract <vault> src/AvowVault.sol:AvowVault --chain-id 177 --verifier blockscout --verifier-url https://hsk.blockscout.com/api/ --compiler-version 0.8.26 --num-of-optimizations 1 --via-ir --evm-version paris --constructor-args <abi-encoded>` | — | — |
 | 4. Gas to the agent (3 HSK), wrap HSK, swap WHSK → USDT, buy a little WETH and WBTC, deposit everything into the vault | `DICTUM_SETUP_KEY_FILE=.keys/setup.key DICTUM_AGENT_ADDRESS=0xCa3b…92Fd DICTUM_VAULT=<vault> DICTUM_FUND_USDT=60 DICTUM_FUND_ETH_USD=7 DICTUM_FUND_BTC_USD=7 DICTUM_FUND_HSK_USD=7 node ../bin/fund.js` | ≈ 1.1M | 0.55 |

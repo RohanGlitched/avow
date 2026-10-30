@@ -33,14 +33,15 @@ Model access (Gemini on Vertex AI) uses the VM's service account through the met
 | Owner cannot pull funds locked in a note | `locked` | `test_ownerCannotWithdrawLockedFunds` |
 
 Settlement: honoured/void need **both** the 5-minute TWAP and the live price past the level (`test_aSpikeDoesNotTriggerTheStop`,
-`test_aLevelThePriceLeftAgainDoesNotCount`); expiry always settles (`test_lapsedNoteSettlesByAnyoneAndIsGradedAMiss`).
+`test_aLevelThePriceLeftAgainDoesNotCount`); expiry settles once the pool is calm (`test_lapsedNoteSettlesByAnyoneAndIsGradedAMiss`, `test_aLapsedNoteWaitsForACalmPool`).
 Grading: retreating and the owner's revoke are both misses (`test_retractAndRevokeAreBothGradedAsMisses`); confident misses never earn a
-larger note (`test_overconfidenceKeepsTheAgentOnProbation`); calibrated coin flips with a hit on record do
-(`test_fiveCalibratedNotesWithAHitEarnApprentice`); a tier needs at least one honoured note (`test_fixed_H1_noLongShotNotesAndNoTierWithoutAHit`).
+larger note (`test_overconfidenceKeepsTheAgentOnProbation`); a coin flip that hits 1 in 5 earns nothing (`test_coinFlipsWithOneHitStayOnProbation`) while a calibrated record does
+(`test_aCalibratedRecordEarnsApprentice`); settlement terms are fixed when a note is sworn and `amend` has bounds
+(`test_amendHasBoundsAndSwornNotesKeepTheirTerms`); a tier needs at least one honoured note (`test_fixed_H1_noLongShotNotesAndNoTierWithoutAHit`).
 Targets and expiries settle only in a calm pool (`test_aLapsedNoteWaitsForACalmPool`); the drawdown freeze counts the agent's realised
 losses, not inventory price moves (`test_inventoryPriceMovesDoNotFreezeTheAgent`).
 
-All tests run on a fork of HSK Chain mainnet against the real HSKSwap pools and tokens (`cd contracts && forge test`): 31 behaviour tests,
+All tests run on a fork of HSK Chain mainnet against the real HSKSwap pools and tokens (`cd contracts && forge test`): 33 behaviour tests,
 13 audit regression tests, a price-math fuzz test and a stateful invariant suite (bookkeeping, locked funds backed, grading replay).
 
 ## Attacks and what stops them
@@ -64,7 +65,7 @@ All tests run on a fork of HSK Chain mainnet against the real HSKSwap pools and 
 - **Thin pools.** HSKSwap pools see a swap every few hours. Prices only move when someone trades, so many notes will lapse; the record says so.
 - **Exit slippage.** A closing swap is bounded at the mandate slippage plus the two pool fees (1.2 % by default; a retract uses the slippage alone). In a crash faster than the TWAP, a stop can be delayed
   until the TWAP catches up; it is never skipped.
-- **Expired note with no TWAP** settles at the live price; with the observation buffer raised to 64 at deploy this does not happen in practice.
+- **Expired note with no TWAP** settles at the live price; with the observation buffer raised to 240 at deploy this does not happen in practice.
 - **Independent review, not an external audit.** A dedicated audit pass found 1 high, 3 medium and 4 low issues; all are fixed with regression
   tests. A judge panel found more (revoke laundering, fee-blind expectancy, settlement sandwiches); fixed with tests. No paid external audit.
 - **The record can be bought on a thin pool.** Someone willing to hold a pool past a target for 5 minutes, paying fees both ways, can honour a

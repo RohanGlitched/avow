@@ -1,0 +1,6551 @@
+{
+  "generatedAt": 1793396808,
+  "window": {
+    "from": 1790800800,
+    "to": 1793392800,
+    "splitAt": 1792528800
+  },
+  "costModel": "$50 notes; each leg swaps through the pool's own liquidity (dy = L*dsqrtP, per-swap L from the Swap events) with the 0.30% fee and the vault's slippage guards; gas 920k units at 500 gwei priced in HSK (~$0.040); impact model \"reset\" (our price move lasts until the next external swap, which lands where it did historically).",
+  "impactModel": "reset",
+  "current": [
+    {
+      "asset": "WETH",
+      "kind": "catch-up",
+      "notes": 39,
+      "honoured": 6,
+      "void": 0,
+      "lapsed": 33,
+      "hitRate": 0.1538,
+      "meanPMin": 0.7419,
+      "meanPMinContract": 0.7046,
+      "pnlUsd": -3.647,
+      "pnlPerNoteUsd": -0.0935,
+      "seUsd": 0.0708,
+      "grossPnlPerNoteUsd": -0.0522,
+      "feeUsdPerNote": 0.2996,
+      "impactUsdPerNote": 0.0962,
+      "gasUsdPerNote": 0.0414,
+      "meanRewardBps": 141.1105,
+      "meanRiskBps": 108.5465,
+      "meanHoursOpen": 10.9447,
+      "calibratedForecaster": {
+        "trueHitRate": 0.1538,
+        "notesPassingContractCheck": 0,
+        "shareOfNotes": 0,
+        "beatsMeanPMin": false,
+        "rule": "contract: conf >= 0.50 and conf*(reward+risk) > risk + 60 bps, with conf = true hit rate of this asset and kind over the window"
+      },
+      "inSample": {
+        "notes": 19,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 17,
+        "hitRate": 0.1053,
+        "meanPMin": 0.7376,
+        "meanPMinContract": 0.7,
+        "pnlUsd": -2.8205,
+        "pnlPerNoteUsd": -0.1484,
+        "seUsd": 0.0958,
+        "grossPnlPerNoteUsd": -0.1061,
+        "feeUsdPerNote": 0.2996,
+        "impactUsdPerNote": 0.0916,
+        "gasUsdPerNote": 0.0424,
+        "meanRewardBps": 150.7121,
+        "meanRiskBps": 115.9324,
+        "meanHoursOpen": 11.4645
+      },
+      "outOfSample": {
+        "notes": 19,
+        "honoured": 4,
+        "void": 0,
+        "lapsed": 15,
+        "hitRate": 0.2105,
+        "meanPMin": 0.7506,
+        "meanPMinContract": 0.7131,
+        "pnlUsd": -1.0866,
+        "pnlPerNoteUsd": -0.0572,
+        "seUsd": 0.1093,
+        "grossPnlPerNoteUsd": -0.0168,
+        "feeUsdPerNote": 0.2996,
+        "impactUsdPerNote": 0.1006,
+        "gasUsdPerNote": 0.0404,
+        "meanRewardBps": 129.883,
+        "meanRiskBps": 99.91,
+        "meanHoursOpen": 10.3693
+      }
+    },
+    {
+      "asset": "WBTC",
+      "kind": "catch-up",
+      "notes": 37,
+      "honoured": 5,
+      "void": 1,
+      "lapsed": 31,
+      "hitRate": 0.1351,
+      "meanPMin": 0.7975,
+      "meanPMinContract": 0.7535,
+      "pnlUsd": -8.5014,
+      "pnlPerNoteUsd": -0.2298,
+      "seUsd": 0.0408,
+      "grossPnlPerNoteUsd": -0.1884,
+      "feeUsdPerNote": 0.2999,
+      "impactUsdPerNote": 0.0931,
+      "gasUsdPerNote": 0.0414,
+      "meanRewardBps": 110.189,
+      "meanRiskBps": 84.7608,
+      "meanHoursOpen": 11.0838,
+      "calibratedForecaster": {
+        "trueHitRate": 0.1351,
+        "notesPassingContractCheck": 0,
+        "shareOfNotes": 0,
+        "beatsMeanPMin": false,
+        "rule": "contract: conf >= 0.50 and conf*(reward+risk) > risk + 60 bps, with conf = true hit rate of this asset and kind over the window"
+      },
+      "inSample": {
+        "notes": 18,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 16,
+        "hitRate": 0.1111,
+        "meanPMin": 0.7913,
+        "meanPMinContract": 0.7471,
+        "pnlUsd": -4.3391,
+        "pnlPerNoteUsd": -0.2411,
+        "seUsd": 0.0499,
+        "grossPnlPerNoteUsd": -0.1986,
+        "feeUsdPerNote": 0.3,
+        "impactUsdPerNote": 0.0905,
+        "gasUsdPerNote": 0.0424,
+        "meanRewardBps": 111.2533,
+        "meanRiskBps": 85.5794,
+        "meanHoursOpen": 11.3167
+      },
+      "outOfSample": {
+        "notes": 18,
+        "honoured": 3,
+        "void": 1,
+        "lapsed": 14,
+        "hitRate": 0.1667,
+        "meanPMin": 0.8062,
+        "meanPMinContract": 0.762,
+        "pnlUsd": -3.8228,
+        "pnlPerNoteUsd": -0.2124,
+        "seUsd": 0.0683,
+        "grossPnlPerNoteUsd": -0.1719,
+        "feeUsdPerNote": 0.2998,
+        "impactUsdPerNote": 0.0956,
+        "gasUsdPerNote": 0.0405,
+        "meanRewardBps": 108.5648,
+        "meanRiskBps": 83.5114,
+        "meanHoursOpen": 10.8
+      }
+    },
+    {
+      "asset": "WHSK",
+      "kind": "catch-up",
+      "notes": 35,
+      "honoured": 7,
+      "void": 0,
+      "lapsed": 28,
+      "hitRate": 0.2,
+      "meanPMin": 0.7879,
+      "meanPMinContract": 0.7438,
+      "pnlUsd": -5.7465,
+      "pnlPerNoteUsd": -0.1642,
+      "seUsd": 0.0434,
+      "grossPnlPerNoteUsd": -0.1214,
+      "feeUsdPerNote": 0.2997,
+      "impactUsdPerNote": 0.0156,
+      "gasUsdPerNote": 0.0428,
+      "meanRewardBps": 118.1973,
+      "meanRiskBps": 90.921,
+      "meanHoursOpen": 11.176,
+      "calibratedForecaster": {
+        "trueHitRate": 0.2,
+        "notesPassingContractCheck": 0,
+        "shareOfNotes": 0,
+        "beatsMeanPMin": false,
+        "rule": "contract: conf >= 0.50 and conf*(reward+risk) > risk + 60 bps, with conf = true hit rate of this asset and kind over the window"
+      },
+      "inSample": {
+        "notes": 26,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 20,
+        "hitRate": 0.2308,
+        "meanPMin": 0.7749,
+        "meanPMinContract": 0.7315,
+        "pnlUsd": -3.4034,
+        "pnlPerNoteUsd": -0.1309,
+        "seUsd": 0.0513,
+        "grossPnlPerNoteUsd": -0.0872,
+        "feeUsdPerNote": 0.2997,
+        "impactUsdPerNote": 0.0132,
+        "gasUsdPerNote": 0.0437,
+        "meanRewardBps": 123.3688,
+        "meanRiskBps": 94.899,
+        "meanHoursOpen": 11.2769
+      },
+      "outOfSample": {
+        "notes": 9,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 8,
+        "hitRate": 0.1111,
+        "meanPMin": 0.8256,
+        "meanPMinContract": 0.7795,
+        "pnlUsd": -2.3432,
+        "pnlPerNoteUsd": -0.2604,
+        "seUsd": 0.0761,
+        "grossPnlPerNoteUsd": -0.2202,
+        "feeUsdPerNote": 0.3,
+        "impactUsdPerNote": 0.0225,
+        "gasUsdPerNote": 0.0401,
+        "meanRewardBps": 103.2575,
+        "meanRiskBps": 79.4288,
+        "meanHoursOpen": 10.8843
+      }
+    },
+    {
+      "asset": "WETH",
+      "kind": "momentum",
+      "notes": 36,
+      "honoured": 4,
+      "void": 2,
+      "lapsed": 30,
+      "hitRate": 0.1111,
+      "meanPMin": 0.566,
+      "meanPMinContract": 0.5394,
+      "pnlUsd": -6.161,
+      "pnlPerNoteUsd": -0.1711,
+      "seUsd": 0.0895,
+      "grossPnlPerNoteUsd": -0.1292,
+      "feeUsdPerNote": 0.2995,
+      "impactUsdPerNote": 0.0937,
+      "gasUsdPerNote": 0.0419,
+      "meanRewardBps": 212.6489,
+      "meanRiskBps": 115.4805,
+      "meanHoursOpen": 7.4921,
+      "calibratedForecaster": {
+        "trueHitRate": 0.1111,
+        "notesPassingContractCheck": 0,
+        "shareOfNotes": 0,
+        "beatsMeanPMin": false,
+        "rule": "contract: conf >= 0.50 and conf*(reward+risk) > risk + 60 bps, with conf = true hit rate of this asset and kind over the window"
+      },
+      "inSample": {
+        "notes": 19,
+        "honoured": 3,
+        "void": 2,
+        "lapsed": 14,
+        "hitRate": 0.1579,
+        "meanPMin": 0.5651,
+        "meanPMinContract": 0.5371,
+        "pnlUsd": -4.7455,
+        "pnlPerNoteUsd": -0.2498,
+        "seUsd": 0.1266,
+        "grossPnlPerNoteUsd": -0.2064,
+        "feeUsdPerNote": 0.2997,
+        "impactUsdPerNote": 0.0877,
+        "gasUsdPerNote": 0.0433,
+        "meanRewardBps": 210.0284,
+        "meanRiskBps": 112.0712,
+        "meanHoursOpen": 7.3443
+      },
+      "outOfSample": {
+        "notes": 16,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 15,
+        "hitRate": 0.0625,
+        "meanPMin": 0.5698,
+        "meanPMinContract": 0.5444,
+        "pnlUsd": -1.076,
+        "pnlPerNoteUsd": -0.0672,
+        "seUsd": 0.1337,
+        "grossPnlPerNoteUsd": -0.0269,
+        "feeUsdPerNote": 0.2993,
+        "impactUsdPerNote": 0.1004,
+        "gasUsdPerNote": 0.0403,
+        "meanRewardBps": 212.6212,
+        "meanRiskBps": 117.6187,
+        "meanHoursOpen": 7.6359
+      }
+    },
+    {
+      "asset": "WBTC",
+      "kind": "momentum",
+      "notes": 29,
+      "honoured": 2,
+      "void": 1,
+      "lapsed": 26,
+      "hitRate": 0.069,
+      "meanPMin": 0.578,
+      "meanPMinContract": 0.5458,
+      "pnlUsd": -7.6993,
+      "pnlPerNoteUsd": -0.2655,
+      "seUsd": 0.0557,
+      "grossPnlPerNoteUsd": -0.2231,
+      "feeUsdPerNote": 0.2997,
+      "impactUsdPerNote": 0.0919,
+      "gasUsdPerNote": 0.0424,
+      "meanRewardBps": 182.5849,
+      "meanRiskBps": 87.2622,
+      "meanHoursOpen": 7.6445,
+      "calibratedForecaster": {
+        "trueHitRate": 0.069,
+        "notesPassingContractCheck": 0,
+        "shareOfNotes": 0,
+        "beatsMeanPMin": false,
+        "rule": "contract: conf >= 0.50 and conf*(reward+risk) > risk + 60 bps, with conf = true hit rate of this asset and kind over the window"
+      },
+      "inSample": {
+        "notes": 17,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 15,
+        "hitRate": 0.1176,
+        "meanPMin": 0.5759,
+        "meanPMinContract": 0.5425,
+        "pnlUsd": -4.2346,
+        "pnlPerNoteUsd": -0.2491,
+        "seUsd": 0.0705,
+        "grossPnlPerNoteUsd": -0.2052,
+        "feeUsdPerNote": 0.2997,
+        "impactUsdPerNote": 0.0893,
+        "gasUsdPerNote": 0.0439,
+        "meanRewardBps": 182.1948,
+        "meanRiskBps": 85.933,
+        "meanHoursOpen": 7.5034
+      },
+      "outOfSample": {
+        "notes": 11,
+        "honoured": 0,
+        "void": 1,
+        "lapsed": 10,
+        "hitRate": 0,
+        "meanPMin": 0.5808,
+        "meanPMinContract": 0.5505,
+        "pnlUsd": -3.1249,
+        "pnlPerNoteUsd": -0.2841,
+        "seUsd": 0.1025,
+        "grossPnlPerNoteUsd": -0.2437,
+        "feeUsdPerNote": 0.2996,
+        "impactUsdPerNote": 0.0956,
+        "gasUsdPerNote": 0.0403,
+        "meanRewardBps": 184.3216,
+        "meanRiskBps": 90.5004,
+        "meanHoursOpen": 7.8303
+      }
+    },
+    {
+      "asset": "WHSK",
+      "kind": "momentum",
+      "notes": 25,
+      "honoured": 0,
+      "void": 2,
+      "lapsed": 23,
+      "hitRate": 0,
+      "meanPMin": 0.5673,
+      "meanPMinContract": 0.5383,
+      "pnlUsd": -7.5718,
+      "pnlPerNoteUsd": -0.3029,
+      "seUsd": 0.0477,
+      "grossPnlPerNoteUsd": -0.2607,
+      "feeUsdPerNote": 0.3,
+      "impactUsdPerNote": 0.017,
+      "gasUsdPerNote": 0.0422,
+      "meanRewardBps": 201.4627,
+      "meanRiskBps": 102.5897,
+      "meanHoursOpen": 7.5157,
+      "calibratedForecaster": {
+        "trueHitRate": 0,
+        "notesPassingContractCheck": 0,
+        "shareOfNotes": 0,
+        "beatsMeanPMin": false,
+        "rule": "contract: conf >= 0.50 and conf*(reward+risk) > risk + 60 bps, with conf = true hit rate of this asset and kind over the window"
+      },
+      "inSample": {
+        "notes": 14,
+        "honoured": 0,
+        "void": 2,
+        "lapsed": 12,
+        "hitRate": 0,
+        "meanPMin": 0.5559,
+        "meanPMinContract": 0.5273,
+        "pnlUsd": -4.111,
+        "pnlPerNoteUsd": -0.2936,
+        "seUsd": 0.0766,
+        "grossPnlPerNoteUsd": -0.2499,
+        "feeUsdPerNote": 0.3,
+        "impactUsdPerNote": 0.013,
+        "gasUsdPerNote": 0.0437,
+        "meanRewardBps": 214.5743,
+        "meanRiskBps": 109.8297,
+        "meanHoursOpen": 7.1351
+      },
+      "outOfSample": {
+        "notes": 11,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 11,
+        "hitRate": 0,
+        "meanPMin": 0.5817,
+        "meanPMinContract": 0.5523,
+        "pnlUsd": -3.4608,
+        "pnlPerNoteUsd": -0.3146,
+        "seUsd": 0.0519,
+        "grossPnlPerNoteUsd": -0.2744,
+        "feeUsdPerNote": 0.2999,
+        "impactUsdPerNote": 0.0219,
+        "gasUsdPerNote": 0.0402,
+        "meanRewardBps": 184.7752,
+        "meanRiskBps": 93.3752,
+        "meanHoursOpen": 8
+      }
+    }
+  ],
+  "currentPooled": {
+    "catch-up": {
+      "all": {
+        "notes": 111,
+        "hitRate": 0.1622,
+        "pnlPerNoteUsd": -0.1612,
+        "pnlUsd": -17.8949,
+        "seUsd": 0.0317,
+        "honoured": 18,
+        "void": 1,
+        "lapsed": 92
+      },
+      "inSample": {
+        "notes": 63,
+        "hitRate": 0.1587,
+        "pnlPerNoteUsd": -0.1677,
+        "pnlUsd": -10.563,
+        "seUsd": 0.0384,
+        "honoured": 10,
+        "void": 0,
+        "lapsed": 53
+      },
+      "outOfSample": {
+        "notes": 46,
+        "hitRate": 0.1739,
+        "pnlPerNoteUsd": -0.1577,
+        "pnlUsd": -7.2525,
+        "seUsd": 0.0551,
+        "honoured": 8,
+        "void": 1,
+        "lapsed": 37
+      },
+      "lapsedShare": 0.8214,
+      "meanPMin": 0.775
+    },
+    "momentum": {
+      "all": {
+        "notes": 90,
+        "hitRate": 0.0667,
+        "pnlPerNoteUsd": -0.2381,
+        "pnlUsd": -21.4321,
+        "seUsd": 0.0422,
+        "honoured": 6,
+        "void": 5,
+        "lapsed": 79
+      },
+      "inSample": {
+        "notes": 50,
+        "hitRate": 0.1,
+        "pnlPerNoteUsd": -0.2618,
+        "pnlUsd": -13.091,
+        "seUsd": 0.0569,
+        "honoured": 5,
+        "void": 4,
+        "lapsed": 41
+      },
+      "outOfSample": {
+        "notes": 38,
+        "hitRate": 0.0263,
+        "pnlPerNoteUsd": -0.2016,
+        "pnlUsd": -7.6617,
+        "seUsd": 0.0667,
+        "honoured": 1,
+        "void": 1,
+        "lapsed": 36
+      },
+      "lapsedShare": 0.8778,
+      "meanPMin": 0.5702
+    }
+  },
+  "candidates": [
+    {
+      "name": "catchup-k0.3-act1h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.3 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.3,
+        "activeH": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3406,
+        "pnlUsd": -0.6812,
+        "seUsd": 0.0002,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act1h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.3 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.3,
+        "activeH": 1,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": 0.6457,
+        "pnlUsd": 1.2914,
+        "seUsd": 0.9861,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 1
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act6h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.3 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.3,
+        "activeH": 6,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 3,
+        "hitRate": 0.3333,
+        "pnlPerNoteUsd": 0.1586,
+        "pnlUsd": 0.4759,
+        "seUsd": 0.4997,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 2,
+        "byAsset": {
+          "WETH": {
+            "notes": 3,
+            "hitRate": 0.3333,
+            "pnlPerNoteUsd": 0.1586,
+            "pnlUsd": 0.4759,
+            "seUsd": 0.4997,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 2
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3406,
+        "pnlUsd": -0.6812,
+        "seUsd": 0.0002,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act6h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.3 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.3,
+        "activeH": 6,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 2,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": 0.4086,
+        "pnlUsd": 0.8172,
+        "seUsd": 0.7494,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 1,
+        "byAsset": {
+          "WETH": {
+            "notes": 2,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": 0.4086,
+            "pnlUsd": 0.8172,
+            "seUsd": 0.7494,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": 0.6457,
+        "pnlUsd": 1.2914,
+        "seUsd": 0.9861,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 1
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act12h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.3 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.3,
+        "activeH": 12,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 4,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": 0.0338,
+        "pnlUsd": 0.1354,
+        "seUsd": 0.3747,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 3,
+        "byAsset": {
+          "WETH": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": 0.0338,
+            "pnlUsd": 0.1354,
+            "seUsd": 0.3747,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3406,
+        "pnlUsd": -0.6812,
+        "seUsd": 0.0002,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act12h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.3 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.3,
+        "activeH": 12,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 2,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": 0.4086,
+        "pnlUsd": 0.8172,
+        "seUsd": 0.7494,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 1,
+        "byAsset": {
+          "WETH": {
+            "notes": 2,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": 0.4086,
+            "pnlUsd": 0.8172,
+            "seUsd": 0.7494,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": 0.6457,
+        "pnlUsd": 1.2914,
+        "seUsd": 0.9861,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 1
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act1h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.5 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.5,
+        "activeH": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 15,
+        "hitRate": 0.3333,
+        "pnlPerNoteUsd": -0.1634,
+        "pnlUsd": -2.4516,
+        "seUsd": 0.0822,
+        "honoured": 5,
+        "void": 1,
+        "lapsed": 9,
+        "byAsset": {
+          "WETH": {
+            "notes": 7,
+            "hitRate": 0.2857,
+            "pnlPerNoteUsd": -0.1378,
+            "pnlUsd": -0.9645,
+            "seUsd": 0.0889,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 5
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1859,
+            "pnlUsd": -1.4871,
+            "seUsd": 0.1388,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 18,
+        "hitRate": 0.1667,
+        "pnlPerNoteUsd": -0.2121,
+        "pnlUsd": -3.8175,
+        "seUsd": 0.0338,
+        "honoured": 3,
+        "void": 0,
+        "lapsed": 15
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act1h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.5 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.5,
+        "activeH": 1,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 13,
+        "hitRate": 0.3846,
+        "pnlPerNoteUsd": -0.2213,
+        "pnlUsd": -2.8765,
+        "seUsd": 0.1165,
+        "honoured": 5,
+        "void": 3,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 5,
+            "hitRate": 0.4,
+            "pnlPerNoteUsd": -0.2846,
+            "pnlUsd": -1.4229,
+            "seUsd": 0.2112,
+            "honoured": 2,
+            "void": 1,
+            "lapsed": 2
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1817,
+            "pnlUsd": -1.4537,
+            "seUsd": 0.1459,
+            "honoured": 3,
+            "void": 2,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 19,
+        "hitRate": 0.3158,
+        "pnlPerNoteUsd": -0.113,
+        "pnlUsd": -2.1469,
+        "seUsd": 0.1043,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 13
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act6h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.5 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.5,
+        "activeH": 6,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 21,
+        "hitRate": 0.2857,
+        "pnlPerNoteUsd": -0.1282,
+        "pnlUsd": -2.6922,
+        "seUsd": 0.0881,
+        "honoured": 6,
+        "void": 1,
+        "lapsed": 14,
+        "byAsset": {
+          "WETH": {
+            "notes": 13,
+            "hitRate": 0.2308,
+            "pnlPerNoteUsd": -0.0927,
+            "pnlUsd": -1.2051,
+            "seUsd": 0.1171,
+            "honoured": 3,
+            "void": 0,
+            "lapsed": 10
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1859,
+            "pnlUsd": -1.4871,
+            "seUsd": 0.1388,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 24,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.1881,
+        "pnlUsd": -4.5145,
+        "seUsd": 0.0364,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 18
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act6h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.5 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.5,
+        "activeH": 6,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 15,
+        "hitRate": 0.4,
+        "pnlPerNoteUsd": -0.1373,
+        "pnlUsd": -2.059,
+        "seUsd": 0.1368,
+        "honoured": 6,
+        "void": 3,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 7,
+            "hitRate": 0.4286,
+            "pnlPerNoteUsd": -0.0865,
+            "pnlUsd": -0.6054,
+            "seUsd": 0.2536,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 3
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1817,
+            "pnlUsd": -1.4537,
+            "seUsd": 0.1459,
+            "honoured": 3,
+            "void": 2,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 21,
+        "hitRate": 0.381,
+        "pnlPerNoteUsd": -0.0852,
+        "pnlUsd": -1.789,
+        "seUsd": 0.094,
+        "honoured": 8,
+        "void": 0,
+        "lapsed": 13
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act12h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.5 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.5,
+        "activeH": 12,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 23,
+        "hitRate": 0.3043,
+        "pnlPerNoteUsd": -0.1169,
+        "pnlUsd": -2.6876,
+        "seUsd": 0.0858,
+        "honoured": 7,
+        "void": 1,
+        "lapsed": 15,
+        "byAsset": {
+          "WETH": {
+            "notes": 14,
+            "hitRate": 0.2143,
+            "pnlPerNoteUsd": -0.1195,
+            "pnlUsd": -1.6725,
+            "seUsd": 0.1116,
+            "honoured": 3,
+            "void": 0,
+            "lapsed": 11
+          },
+          "WBTC": {
+            "notes": 1,
+            "hitRate": 1,
+            "pnlPerNoteUsd": 0.4587,
+            "pnlUsd": 0.4587,
+            "seUsd": null,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1842,
+            "pnlUsd": -1.4738,
+            "seUsd": 0.1395,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 28,
+        "hitRate": 0.2143,
+        "pnlPerNoteUsd": -0.2064,
+        "pnlUsd": -5.7778,
+        "seUsd": 0.0337,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 22
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act12h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.5 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.5,
+        "activeH": 12,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 16,
+        "hitRate": 0.4375,
+        "pnlPerNoteUsd": -0.1,
+        "pnlUsd": -1.6004,
+        "seUsd": 0.1332,
+        "honoured": 7,
+        "void": 3,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 7,
+            "hitRate": 0.4286,
+            "pnlPerNoteUsd": -0.0865,
+            "pnlUsd": -0.6054,
+            "seUsd": 0.2536,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 3
+          },
+          "WBTC": {
+            "notes": 1,
+            "hitRate": 1,
+            "pnlPerNoteUsd": 0.4587,
+            "pnlUsd": 0.4587,
+            "seUsd": null,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1817,
+            "pnlUsd": -1.4537,
+            "seUsd": 0.1459,
+            "honoured": 3,
+            "void": 2,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 22,
+        "hitRate": 0.3636,
+        "pnlPerNoteUsd": -0.0795,
+        "pnlUsd": -1.7481,
+        "seUsd": 0.0899,
+        "honoured": 8,
+        "void": 0,
+        "lapsed": 14
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act1h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.7 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.7,
+        "activeH": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 23,
+        "hitRate": 0.1304,
+        "pnlPerNoteUsd": -0.1946,
+        "pnlUsd": -4.4754,
+        "seUsd": 0.0531,
+        "honoured": 3,
+        "void": 0,
+        "lapsed": 20,
+        "byAsset": {
+          "WETH": {
+            "notes": 9,
+            "hitRate": 0.1111,
+            "pnlPerNoteUsd": -0.1827,
+            "pnlUsd": -1.6446,
+            "seUsd": 0.0741,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 8
+          },
+          "WBTC": {
+            "notes": 4,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3397,
+            "pnlUsd": -1.3586,
+            "seUsd": 0.0001,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 4
+          },
+          "WHSK": {
+            "notes": 10,
+            "hitRate": 0.2,
+            "pnlPerNoteUsd": -0.1472,
+            "pnlUsd": -1.4721,
+            "seUsd": 0.1014,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 8
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 26,
+        "hitRate": 0.1538,
+        "pnlPerNoteUsd": -0.1879,
+        "pnlUsd": -4.8845,
+        "seUsd": 0.0354,
+        "honoured": 4,
+        "void": 0,
+        "lapsed": 22
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act1h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.7 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.7,
+        "activeH": 1,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 18,
+        "hitRate": 0.3333,
+        "pnlPerNoteUsd": -0.1362,
+        "pnlUsd": -2.4512,
+        "seUsd": 0.0608,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 12,
+        "byAsset": {
+          "WETH": {
+            "notes": 6,
+            "hitRate": 0.1667,
+            "pnlPerNoteUsd": -0.2591,
+            "pnlUsd": -1.5546,
+            "seUsd": 0.0898,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 5
+          },
+          "WBTC": {
+            "notes": 2,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.2915,
+            "pnlUsd": -0.583,
+            "seUsd": 0.0484,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 2
+          },
+          "WHSK": {
+            "notes": 10,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": -0.0314,
+            "pnlUsd": -0.3136,
+            "seUsd": 0.084,
+            "honoured": 5,
+            "void": 0,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 24,
+        "hitRate": 0.2917,
+        "pnlPerNoteUsd": -0.0779,
+        "pnlUsd": -1.8701,
+        "seUsd": 0.0859,
+        "honoured": 7,
+        "void": 0,
+        "lapsed": 17
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act6h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.7 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.7,
+        "activeH": 6,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 30,
+        "hitRate": 0.1333,
+        "pnlPerNoteUsd": -0.1664,
+        "pnlUsd": -4.9926,
+        "seUsd": 0.0619,
+        "honoured": 4,
+        "void": 0,
+        "lapsed": 26,
+        "byAsset": {
+          "WETH": {
+            "notes": 14,
+            "hitRate": 0.1429,
+            "pnlPerNoteUsd": -0.1105,
+            "pnlUsd": -1.5472,
+            "seUsd": 0.1098,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 12
+          },
+          "WBTC": {
+            "notes": 4,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3156,
+            "pnlUsd": -1.2622,
+            "seUsd": 0.0241,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 4
+          },
+          "WHSK": {
+            "notes": 12,
+            "hitRate": 0.1667,
+            "pnlPerNoteUsd": -0.1819,
+            "pnlUsd": -2.1831,
+            "seUsd": 0.0869,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 10
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 36,
+        "hitRate": 0.1389,
+        "pnlPerNoteUsd": -0.2069,
+        "pnlUsd": -7.4468,
+        "seUsd": 0.0313,
+        "honoured": 5,
+        "void": 0,
+        "lapsed": 31
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act6h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.7 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.7,
+        "activeH": 6,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 20,
+        "hitRate": 0.4,
+        "pnlPerNoteUsd": -0.0468,
+        "pnlUsd": -0.9351,
+        "seUsd": 0.0872,
+        "honoured": 8,
+        "void": 0,
+        "lapsed": 12,
+        "byAsset": {
+          "WETH": {
+            "notes": 7,
+            "hitRate": 0.2857,
+            "pnlPerNoteUsd": -0.0567,
+            "pnlUsd": -0.3967,
+            "seUsd": 0.2162,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 5
+          },
+          "WBTC": {
+            "notes": 2,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.2915,
+            "pnlUsd": -0.583,
+            "seUsd": 0.0484,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 2
+          },
+          "WHSK": {
+            "notes": 11,
+            "hitRate": 0.5455,
+            "pnlPerNoteUsd": 0.0041,
+            "pnlUsd": 0.0446,
+            "seUsd": 0.0838,
+            "honoured": 6,
+            "void": 0,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 24,
+        "hitRate": 0.2917,
+        "pnlPerNoteUsd": -0.0737,
+        "pnlUsd": -1.7678,
+        "seUsd": 0.0856,
+        "honoured": 7,
+        "void": 0,
+        "lapsed": 17
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act12h-h4-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.7 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.7,
+        "activeH": 12,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 36,
+        "hitRate": 0.1667,
+        "pnlPerNoteUsd": -0.1718,
+        "pnlUsd": -6.1834,
+        "seUsd": 0.057,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 30,
+        "byAsset": {
+          "WETH": {
+            "notes": 17,
+            "hitRate": 0.1176,
+            "pnlPerNoteUsd": -0.1586,
+            "pnlUsd": -2.6969,
+            "seUsd": 0.0937,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 15
+          },
+          "WBTC": {
+            "notes": 6,
+            "hitRate": 0.1667,
+            "pnlPerNoteUsd": -0.1904,
+            "pnlUsd": -1.1424,
+            "seUsd": 0.1308,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 5
+          },
+          "WHSK": {
+            "notes": 13,
+            "hitRate": 0.2308,
+            "pnlPerNoteUsd": -0.1803,
+            "pnlUsd": -2.3441,
+            "seUsd": 0.0874,
+            "honoured": 3,
+            "void": 0,
+            "lapsed": 10
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 46,
+        "hitRate": 0.1087,
+        "pnlPerNoteUsd": -0.2359,
+        "pnlUsd": -10.8536,
+        "seUsd": 0.0253,
+        "honoured": 5,
+        "void": 0,
+        "lapsed": 41
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act12h-h12-all",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.7 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "all",
+        "k": 0.7,
+        "activeH": 12,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 23,
+        "hitRate": 0.3913,
+        "pnlPerNoteUsd": -0.0504,
+        "pnlUsd": -1.1596,
+        "seUsd": 0.081,
+        "honoured": 9,
+        "void": 0,
+        "lapsed": 14,
+        "byAsset": {
+          "WETH": {
+            "notes": 7,
+            "hitRate": 0.2857,
+            "pnlPerNoteUsd": -0.0567,
+            "pnlUsd": -0.3967,
+            "seUsd": 0.2162,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 5
+          },
+          "WBTC": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1158,
+            "pnlUsd": -0.4632,
+            "seUsd": 0.1929,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          },
+          "WHSK": {
+            "notes": 12,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": -0.025,
+            "pnlUsd": -0.2997,
+            "seUsd": 0.0819,
+            "honoured": 6,
+            "void": 0,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 25,
+        "hitRate": 0.28,
+        "pnlPerNoteUsd": -0.0844,
+        "pnlUsd": -2.1099,
+        "seUsd": 0.0828,
+        "honoured": 7,
+        "void": 0,
+        "lapsed": 18
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "poolmom-lb1h-th80-all",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 80 bps over 1 h with the last quarter agreeing and an external swap in the last hour, bet another 80 bps the same way within 4 h.",
+      "params": {
+        "scope": "all",
+        "lookbackH": 1,
+        "thresholdBps": 80,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 28,
+        "hitRate": 0.1429,
+        "pnlPerNoteUsd": -0.3053,
+        "pnlUsd": -8.5497,
+        "seUsd": 0.0466,
+        "honoured": 4,
+        "void": 3,
+        "lapsed": 21,
+        "byAsset": {
+          "WETH": {
+            "notes": 14,
+            "hitRate": 0.1429,
+            "pnlPerNoteUsd": -0.2881,
+            "pnlUsd": -4.0328,
+            "seUsd": 0.0561,
+            "honoured": 2,
+            "void": 1,
+            "lapsed": 11
+          },
+          "WBTC": {
+            "notes": 6,
+            "hitRate": 0.1667,
+            "pnlPerNoteUsd": -0.3467,
+            "pnlUsd": -2.0803,
+            "seUsd": 0.1072,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 5
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.125,
+            "pnlPerNoteUsd": -0.3046,
+            "pnlUsd": -2.4366,
+            "seUsd": 0.1125,
+            "honoured": 1,
+            "void": 2,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 12,
+        "hitRate": 0.0833,
+        "pnlPerNoteUsd": -0.2681,
+        "pnlUsd": -3.2167,
+        "seUsd": 0.0319,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 11
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb1h-th150-all",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 150 bps over 1 h with the last quarter agreeing and an external swap in the last hour, bet another 150 bps the same way within 4 h.",
+      "params": {
+        "scope": "all",
+        "lookbackH": 1,
+        "thresholdBps": 150,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.2276,
+        "pnlUsd": -1.8209,
+        "seUsd": 0.164,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.2149,
+            "pnlUsd": -0.8594,
+            "seUsd": 0.2844,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          },
+          "WBTC": {
+            "notes": 2,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.4803,
+            "pnlUsd": -0.9606,
+            "seUsd": 0.1358,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 2
+          },
+          "WHSK": {
+            "notes": 2,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": -0.0004,
+            "pnlUsd": -0.0009,
+            "seUsd": 0.3648,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 1
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3405,
+        "pnlUsd": -0.6811,
+        "seUsd": 0.0001,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb2h-th80-all",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 80 bps over 2 h with the last quarter agreeing and an external swap in the last hour, bet another 80 bps the same way within 4 h.",
+      "params": {
+        "scope": "all",
+        "lookbackH": 2,
+        "thresholdBps": 80,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 32,
+        "hitRate": 0.1563,
+        "pnlPerNoteUsd": -0.2975,
+        "pnlUsd": -9.519,
+        "seUsd": 0.045,
+        "honoured": 5,
+        "void": 3,
+        "lapsed": 24,
+        "byAsset": {
+          "WETH": {
+            "notes": 16,
+            "hitRate": 0.1875,
+            "pnlPerNoteUsd": -0.275,
+            "pnlUsd": -4.3993,
+            "seUsd": 0.0621,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 12
+          },
+          "WBTC": {
+            "notes": 8,
+            "hitRate": 0.125,
+            "pnlPerNoteUsd": -0.3354,
+            "pnlUsd": -2.6831,
+            "seUsd": 0.0792,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 7
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.125,
+            "pnlPerNoteUsd": -0.3046,
+            "pnlUsd": -2.4366,
+            "seUsd": 0.1125,
+            "honoured": 1,
+            "void": 2,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 14,
+        "hitRate": 0.1429,
+        "pnlPerNoteUsd": -0.254,
+        "pnlUsd": -3.556,
+        "seUsd": 0.0339,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 12
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb2h-th150-all",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 150 bps over 2 h with the last quarter agreeing and an external swap in the last hour, bet another 150 bps the same way within 4 h.",
+      "params": {
+        "scope": "all",
+        "lookbackH": 2,
+        "thresholdBps": 150,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 11,
+        "hitRate": 0.1818,
+        "pnlPerNoteUsd": -0.2678,
+        "pnlUsd": -2.9458,
+        "seUsd": 0.1083,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 9,
+        "byAsset": {
+          "WETH": {
+            "notes": 5,
+            "hitRate": 0.2,
+            "pnlPerNoteUsd": -0.2721,
+            "pnlUsd": -1.3607,
+            "seUsd": 0.1934,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 4
+          },
+          "WBTC": {
+            "notes": 3,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.4353,
+            "pnlUsd": -1.306,
+            "seUsd": 0.0904,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 3
+          },
+          "WHSK": {
+            "notes": 3,
+            "hitRate": 0.3333,
+            "pnlPerNoteUsd": -0.093,
+            "pnlUsd": -0.279,
+            "seUsd": 0.2301,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 2
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3405,
+        "pnlUsd": -0.6811,
+        "seUsd": 0.0001,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb4h-th80-all",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 80 bps over 4 h with the last quarter agreeing and an external swap in the last hour, bet another 80 bps the same way within 4 h.",
+      "params": {
+        "scope": "all",
+        "lookbackH": 4,
+        "thresholdBps": 80,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 35,
+        "hitRate": 0.1429,
+        "pnlPerNoteUsd": -0.2948,
+        "pnlUsd": -10.3172,
+        "seUsd": 0.0427,
+        "honoured": 5,
+        "void": 3,
+        "lapsed": 27,
+        "byAsset": {
+          "WETH": {
+            "notes": 17,
+            "hitRate": 0.1765,
+            "pnlPerNoteUsd": -0.2748,
+            "pnlUsd": -4.6716,
+            "seUsd": 0.0633,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 13
+          },
+          "WBTC": {
+            "notes": 9,
+            "hitRate": 0.1111,
+            "pnlPerNoteUsd": -0.3165,
+            "pnlUsd": -2.8488,
+            "seUsd": 0.0723,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 8
+          },
+          "WHSK": {
+            "notes": 9,
+            "hitRate": 0.1111,
+            "pnlPerNoteUsd": -0.3108,
+            "pnlUsd": -2.7968,
+            "seUsd": 0.0976,
+            "honoured": 1,
+            "void": 2,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 16,
+        "hitRate": 0.125,
+        "pnlPerNoteUsd": -0.2499,
+        "pnlUsd": -3.9987,
+        "seUsd": 0.0316,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 14
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb4h-th150-all",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 150 bps over 4 h with the last quarter agreeing and an external swap in the last hour, bet another 150 bps the same way within 4 h.",
+      "params": {
+        "scope": "all",
+        "lookbackH": 4,
+        "thresholdBps": 150,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 16,
+        "hitRate": 0.125,
+        "pnlPerNoteUsd": -0.2279,
+        "pnlUsd": -3.646,
+        "seUsd": 0.0797,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 14,
+        "byAsset": {
+          "WETH": {
+            "notes": 8,
+            "hitRate": 0.125,
+            "pnlPerNoteUsd": -0.2261,
+            "pnlUsd": -1.8085,
+            "seUsd": 0.1235,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 7
+          },
+          "WBTC": {
+            "notes": 4,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3024,
+            "pnlUsd": -1.2095,
+            "seUsd": 0.1475,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 4
+          },
+          "WHSK": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.157,
+            "pnlUsd": -0.6281,
+            "seUsd": 0.1748,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 7,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2922,
+        "pnlUsd": -2.0451,
+        "seUsd": 0.0479,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 7
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "exlead-x80-n30m-h2-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 30 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 80,
+        "windowMin": 30,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 9,
+        "hitRate": 0.2222,
+        "pnlPerNoteUsd": -0.1717,
+        "pnlUsd": -1.5453,
+        "seUsd": 0.0789,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 7,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 9,
+            "hitRate": 0.2222,
+            "pnlPerNoteUsd": -0.1717,
+            "pnlUsd": -1.5453,
+            "seUsd": 0.0789,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 7
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3404,
+        "pnlUsd": -1.3615,
+        "seUsd": 0.0002,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x80-n30m-h4-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 30 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 80,
+        "windowMin": 30,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.2223,
+        "pnlUsd": -1.7787,
+        "seUsd": 0.1327,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.2223,
+            "pnlUsd": -1.7787,
+            "seUsd": 0.1327,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 3,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3405,
+        "pnlUsd": -1.0215,
+        "seUsd": 0.0001,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 3
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x80-n60m-h2-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 60 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 80,
+        "windowMin": 60,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 9,
+        "hitRate": 0.2222,
+        "pnlPerNoteUsd": -0.1736,
+        "pnlUsd": -1.5625,
+        "seUsd": 0.0794,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 7,
+        "byAsset": {
+          "WETH": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3407,
+            "pnlUsd": -0.3407,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1527,
+            "pnlUsd": -1.2218,
+            "seUsd": 0.0869,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 5,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2718,
+        "pnlUsd": -1.3592,
+        "seUsd": 0.0684,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 5
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x80-n60m-h4-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 60 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 80,
+        "windowMin": 60,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.1634,
+        "pnlUsd": -1.3073,
+        "seUsd": 0.1047,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3407,
+            "pnlUsd": -0.3407,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 7,
+            "hitRate": 0.2857,
+            "pnlPerNoteUsd": -0.1381,
+            "pnlUsd": -0.9665,
+            "seUsd": 0.1173,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2548,
+        "pnlUsd": -1.0193,
+        "seUsd": 0.0856,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n30m-h2-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 30 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 150,
+        "windowMin": 30,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 6,
+        "hitRate": 0.1667,
+        "pnlPerNoteUsd": -0.1733,
+        "pnlUsd": -1.0396,
+        "seUsd": 0.0899,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.0411,
+            "pnlUsd": -0.0411,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 5,
+            "hitRate": 0.2,
+            "pnlPerNoteUsd": -0.1997,
+            "pnlUsd": -0.9985,
+            "seUsd": 0.1052,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 3,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3025,
+        "pnlUsd": -0.9074,
+        "seUsd": 0.0379,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 3
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n30m-h4-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 30 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 150,
+        "windowMin": 30,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 6,
+        "hitRate": 0.1667,
+        "pnlPerNoteUsd": -0.1866,
+        "pnlUsd": -1.1199,
+        "seUsd": 0.1194,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.0411,
+            "pnlUsd": -0.0411,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 5,
+            "hitRate": 0.2,
+            "pnlPerNoteUsd": -0.2157,
+            "pnlUsd": -1.0787,
+            "seUsd": 0.1418,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2803,
+        "pnlUsd": -0.5607,
+        "seUsd": 0.0605,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n60m-h2-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 60 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 150,
+        "windowMin": 60,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 6,
+        "hitRate": 0.1667,
+        "pnlPerNoteUsd": -0.1736,
+        "pnlUsd": -1.0417,
+        "seUsd": 0.09,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.0411,
+            "pnlUsd": -0.0411,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3396,
+            "pnlUsd": -0.3396,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WHSK": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1652,
+            "pnlUsd": -0.661,
+            "seUsd": 0.1284,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2864,
+        "pnlUsd": -1.1455,
+        "seUsd": 0.0313,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n60m-h4-all",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 60 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "all",
+        "moveBps": 150,
+        "windowMin": 60,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 6,
+        "hitRate": 0.1667,
+        "pnlPerNoteUsd": -0.1884,
+        "pnlUsd": -1.1302,
+        "seUsd": 0.1198,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.0411,
+            "pnlUsd": -0.0411,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WBTC": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3396,
+            "pnlUsd": -0.3396,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          },
+          "WHSK": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1874,
+            "pnlUsd": -0.7495,
+            "seUsd": 0.1793,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 3,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2662,
+        "pnlUsd": -0.7987,
+        "seUsd": 0.0376,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 3
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "fade-s80-k0.5-h2-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 0.5 x the jump within 2 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 80,
+        "k": 0.5,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s80-k0.5-h4-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 0.5 x the jump within 4 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 80,
+        "k": 0.5,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s80-k1-h2-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 1 x the jump within 2 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 80,
+        "k": 1,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s80-k1-h4-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 1 x the jump within 4 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 80,
+        "k": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k0.5-h2-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 0.5 x the jump within 2 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 150,
+        "k": 0.5,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k0.5-h4-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 0.5 x the jump within 4 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 150,
+        "k": 0.5,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k1-h2-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 1 x the jump within 2 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 150,
+        "k": 1,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k1-h4-all",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 1 x the jump within 4 h.",
+      "params": {
+        "scope": "all",
+        "jumpBps": 150,
+        "k": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "catchup-k0.3-act1h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.3 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.3,
+        "activeH": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act1h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.3 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.3,
+        "activeH": 1,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act6h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.3 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.3,
+        "activeH": 6,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act6h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.3 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.3,
+        "activeH": 6,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act12h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.3 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.3,
+        "activeH": 12,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.3-act12h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.3 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.3,
+        "activeH": 12,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act1h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.5 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.5,
+        "activeH": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.375,
+        "pnlPerNoteUsd": -0.1842,
+        "pnlUsd": -1.4738,
+        "seUsd": 0.1395,
+        "honoured": 3,
+        "void": 1,
+        "lapsed": 4,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1842,
+            "pnlUsd": -1.4738,
+            "seUsd": 0.1395,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 3,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2316,
+        "pnlUsd": -0.6949,
+        "seUsd": 0.0597,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 3
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act1h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.5 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.5,
+        "activeH": 1,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.375,
+        "pnlPerNoteUsd": -0.1817,
+        "pnlUsd": -1.4537,
+        "seUsd": 0.1459,
+        "honoured": 3,
+        "void": 2,
+        "lapsed": 3,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1817,
+            "pnlUsd": -1.4537,
+            "seUsd": 0.1459,
+            "honoured": 3,
+            "void": 2,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 3,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3518,
+        "pnlUsd": -1.0554,
+        "seUsd": 0.0886,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 3
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act6h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.5 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.5,
+        "activeH": 6,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.375,
+        "pnlPerNoteUsd": -0.1842,
+        "pnlUsd": -1.4738,
+        "seUsd": 0.1395,
+        "honoured": 3,
+        "void": 1,
+        "lapsed": 4,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1842,
+            "pnlUsd": -1.4738,
+            "seUsd": 0.1395,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.257,
+        "pnlUsd": -1.0278,
+        "seUsd": 0.0492,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act6h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.5 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.5,
+        "activeH": 6,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.375,
+        "pnlPerNoteUsd": -0.1817,
+        "pnlUsd": -1.4537,
+        "seUsd": 0.1459,
+        "honoured": 3,
+        "void": 2,
+        "lapsed": 3,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1817,
+            "pnlUsd": -1.4537,
+            "seUsd": 0.1459,
+            "honoured": 3,
+            "void": 2,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 3,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3518,
+        "pnlUsd": -1.0554,
+        "seUsd": 0.0886,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 3
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act12h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.5 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.5,
+        "activeH": 12,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.375,
+        "pnlPerNoteUsd": -0.1842,
+        "pnlUsd": -1.4738,
+        "seUsd": 0.1395,
+        "honoured": 3,
+        "void": 1,
+        "lapsed": 4,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1842,
+            "pnlUsd": -1.4738,
+            "seUsd": 0.1395,
+            "honoured": 3,
+            "void": 1,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.257,
+        "pnlUsd": -1.0278,
+        "seUsd": 0.0492,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.5-act12h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.5 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.5,
+        "activeH": 12,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.375,
+        "pnlPerNoteUsd": -0.1817,
+        "pnlUsd": -1.4537,
+        "seUsd": 0.1459,
+        "honoured": 3,
+        "void": 2,
+        "lapsed": 3,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.375,
+            "pnlPerNoteUsd": -0.1817,
+            "pnlUsd": -1.4537,
+            "seUsd": 0.1459,
+            "honoured": 3,
+            "void": 2,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 3,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3518,
+        "pnlUsd": -1.0554,
+        "seUsd": 0.0886,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 3
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act1h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.7 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.7,
+        "activeH": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 10,
+        "hitRate": 0.3,
+        "pnlPerNoteUsd": -0.1289,
+        "pnlUsd": -1.2888,
+        "seUsd": 0.1093,
+        "honoured": 3,
+        "void": 0,
+        "lapsed": 7,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 10,
+            "hitRate": 0.3,
+            "pnlPerNoteUsd": -0.1289,
+            "pnlUsd": -1.2888,
+            "seUsd": 0.1093,
+            "honoured": 3,
+            "void": 0,
+            "lapsed": 7
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.1762,
+        "pnlUsd": -0.7049,
+        "seUsd": 0.0656,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act1h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 1 h, bet the pool moves 0.7 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.7,
+        "activeH": 1,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 10,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": -0.0314,
+        "pnlUsd": -0.3136,
+        "seUsd": 0.084,
+        "honoured": 5,
+        "void": 0,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 10,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": -0.0314,
+            "pnlUsd": -0.3136,
+            "seUsd": 0.084,
+            "honoured": 5,
+            "void": 0,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2662,
+        "pnlUsd": -1.0648,
+        "seUsd": 0.089,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act6h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.7 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.7,
+        "activeH": 6,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 12,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.1666,
+        "pnlUsd": -1.9998,
+        "seUsd": 0.0938,
+        "honoured": 3,
+        "void": 0,
+        "lapsed": 9,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 12,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1666,
+            "pnlUsd": -1.9998,
+            "seUsd": 0.0938,
+            "honoured": 3,
+            "void": 0,
+            "lapsed": 9
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 5,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2076,
+        "pnlUsd": -1.0379,
+        "seUsd": 0.0597,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 5
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act6h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 6 h, bet the pool moves 0.7 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.7,
+        "activeH": 6,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 11,
+        "hitRate": 0.5455,
+        "pnlPerNoteUsd": 0.0041,
+        "pnlUsd": 0.0446,
+        "seUsd": 0.0838,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 11,
+            "hitRate": 0.5455,
+            "pnlPerNoteUsd": 0.0041,
+            "pnlUsd": 0.0446,
+            "seUsd": 0.0838,
+            "honoured": 6,
+            "void": 0,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2662,
+        "pnlUsd": -1.0648,
+        "seUsd": 0.089,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act12h-h4-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.7 of the way to the exchange mid within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.7,
+        "activeH": 12,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 13,
+        "hitRate": 0.2308,
+        "pnlPerNoteUsd": -0.1803,
+        "pnlUsd": -2.3441,
+        "seUsd": 0.0874,
+        "honoured": 3,
+        "void": 0,
+        "lapsed": 10,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 13,
+            "hitRate": 0.2308,
+            "pnlPerNoteUsd": -0.1803,
+            "pnlUsd": -2.3441,
+            "seUsd": 0.0874,
+            "honoured": 3,
+            "void": 0,
+            "lapsed": 10
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 5,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2076,
+        "pnlUsd": -1.0379,
+        "seUsd": 0.0597,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 5
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "catchup-k0.7-act12h-h12-WHSK",
+      "round": 1,
+      "description": "When k x |gap| clears the round-trip cost and the pool had an external swap in the last 12 h, bet the pool moves 0.7 of the way to the exchange mid within 12 h.",
+      "params": {
+        "scope": "WHSK",
+        "k": 0.7,
+        "activeH": 12,
+        "horizonH": 12
+      },
+      "inSample": {
+        "notes": 12,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": -0.025,
+        "pnlUsd": -0.2997,
+        "seUsd": 0.0819,
+        "honoured": 6,
+        "void": 0,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 12,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": -0.025,
+            "pnlUsd": -0.2997,
+            "seUsd": 0.0819,
+            "honoured": 6,
+            "void": 0,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 4,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2662,
+        "pnlUsd": -1.0648,
+        "seUsd": 0.089,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 4
+      },
+      "family": "catchup-partial"
+    },
+    {
+      "name": "poolmom-lb1h-th80-WHSK",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 80 bps over 1 h with the last quarter agreeing and an external swap in the last hour, bet another 80 bps the same way within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "lookbackH": 1,
+        "thresholdBps": 80,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.125,
+        "pnlPerNoteUsd": -0.3046,
+        "pnlUsd": -2.4366,
+        "seUsd": 0.1125,
+        "honoured": 1,
+        "void": 2,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.125,
+            "pnlPerNoteUsd": -0.3046,
+            "pnlUsd": -2.4366,
+            "seUsd": 0.1125,
+            "honoured": 1,
+            "void": 2,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2325,
+        "pnlUsd": -0.465,
+        "seUsd": 0.0979,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb1h-th150-WHSK",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 150 bps over 1 h with the last quarter agreeing and an external swap in the last hour, bet another 150 bps the same way within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "lookbackH": 1,
+        "thresholdBps": 150,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 2,
+        "hitRate": 0.5,
+        "pnlPerNoteUsd": -0.0004,
+        "pnlUsd": -0.0009,
+        "seUsd": 0.3648,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 1,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 2,
+            "hitRate": 0.5,
+            "pnlPerNoteUsd": -0.0004,
+            "pnlUsd": -0.0009,
+            "seUsd": 0.3648,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 1
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb2h-th80-WHSK",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 80 bps over 2 h with the last quarter agreeing and an external swap in the last hour, bet another 80 bps the same way within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "lookbackH": 2,
+        "thresholdBps": 80,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.125,
+        "pnlPerNoteUsd": -0.3046,
+        "pnlUsd": -2.4366,
+        "seUsd": 0.1125,
+        "honoured": 1,
+        "void": 2,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.125,
+            "pnlPerNoteUsd": -0.3046,
+            "pnlUsd": -2.4366,
+            "seUsd": 0.1125,
+            "honoured": 1,
+            "void": 2,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2325,
+        "pnlUsd": -0.465,
+        "seUsd": 0.0978,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb2h-th150-WHSK",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 150 bps over 2 h with the last quarter agreeing and an external swap in the last hour, bet another 150 bps the same way within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "lookbackH": 2,
+        "thresholdBps": 150,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 3,
+        "hitRate": 0.3333,
+        "pnlPerNoteUsd": -0.093,
+        "pnlUsd": -0.279,
+        "seUsd": 0.2301,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 2,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 3,
+            "hitRate": 0.3333,
+            "pnlPerNoteUsd": -0.093,
+            "pnlUsd": -0.279,
+            "seUsd": 0.2301,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 2
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb4h-th80-WHSK",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 80 bps over 4 h with the last quarter agreeing and an external swap in the last hour, bet another 80 bps the same way within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "lookbackH": 4,
+        "thresholdBps": 80,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 9,
+        "hitRate": 0.1111,
+        "pnlPerNoteUsd": -0.3108,
+        "pnlUsd": -2.7968,
+        "seUsd": 0.0976,
+        "honoured": 1,
+        "void": 2,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 9,
+            "hitRate": 0.1111,
+            "pnlPerNoteUsd": -0.3108,
+            "pnlUsd": -2.7968,
+            "seUsd": 0.0976,
+            "honoured": 1,
+            "void": 2,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2325,
+        "pnlUsd": -0.465,
+        "seUsd": 0.0978,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "poolmom-lb4h-th150-WHSK",
+      "round": 1,
+      "description": "When the pool TWAP moved >= 150 bps over 4 h with the last quarter agreeing and an external swap in the last hour, bet another 150 bps the same way within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "lookbackH": 4,
+        "thresholdBps": 150,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 4,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.157,
+        "pnlUsd": -0.6281,
+        "seUsd": 0.1748,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 3,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.157,
+            "pnlUsd": -0.6281,
+            "seUsd": 0.1748,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "pool-momentum"
+    },
+    {
+      "name": "exlead-x80-n30m-h2-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 30 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 80,
+        "windowMin": 30,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 9,
+        "hitRate": 0.2222,
+        "pnlPerNoteUsd": -0.1717,
+        "pnlUsd": -1.5453,
+        "seUsd": 0.0789,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 7,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 9,
+            "hitRate": 0.2222,
+            "pnlPerNoteUsd": -0.1717,
+            "pnlUsd": -1.5453,
+            "seUsd": 0.0789,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 7
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3402,
+        "pnlUsd": -0.6803,
+        "seUsd": 0.0002,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x80-n30m-h4-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 30 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 80,
+        "windowMin": 30,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.2223,
+        "pnlUsd": -1.7787,
+        "seUsd": 0.1327,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.2223,
+            "pnlUsd": -1.7787,
+            "seUsd": 0.1327,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 1,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3404,
+        "pnlUsd": -0.3404,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 1
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x80-n60m-h2-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 60 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 80,
+        "windowMin": 60,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 8,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.1527,
+        "pnlUsd": -1.2218,
+        "seUsd": 0.0869,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 6,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 8,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1527,
+            "pnlUsd": -1.2218,
+            "seUsd": 0.0869,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 6
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3402,
+        "pnlUsd": -0.6803,
+        "seUsd": 0.0002,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x80-n60m-h4-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 80 bps in 60 min, the pool TWAP moved < 26.666666666666668 bps that way, the gap is >= 40 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 80,
+        "windowMin": 60,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 7,
+        "hitRate": 0.2857,
+        "pnlPerNoteUsd": -0.1381,
+        "pnlUsd": -0.9665,
+        "seUsd": 0.1173,
+        "honoured": 2,
+        "void": 0,
+        "lapsed": 5,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 7,
+            "hitRate": 0.2857,
+            "pnlPerNoteUsd": -0.1381,
+            "pnlUsd": -0.9665,
+            "seUsd": 0.1173,
+            "honoured": 2,
+            "void": 0,
+            "lapsed": 5
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 1,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3404,
+        "pnlUsd": -0.3404,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 1
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n30m-h2-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 30 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 150,
+        "windowMin": 30,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 5,
+        "hitRate": 0.2,
+        "pnlPerNoteUsd": -0.1997,
+        "pnlUsd": -0.9985,
+        "seUsd": 0.1052,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 4,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 5,
+            "hitRate": 0.2,
+            "pnlPerNoteUsd": -0.1997,
+            "pnlUsd": -0.9985,
+            "seUsd": 0.1052,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2833,
+        "pnlUsd": -0.5666,
+        "seUsd": 0.0567,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n30m-h4-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 30 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 150,
+        "windowMin": 30,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 5,
+        "hitRate": 0.2,
+        "pnlPerNoteUsd": -0.2157,
+        "pnlUsd": -1.0787,
+        "seUsd": 0.1418,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 4,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 5,
+            "hitRate": 0.2,
+            "pnlPerNoteUsd": -0.2157,
+            "pnlUsd": -1.0787,
+            "seUsd": 0.1418,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 4
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 1,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2199,
+        "pnlUsd": -0.2199,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 1
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n60m-h2-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 60 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 150,
+        "windowMin": 60,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 4,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.1652,
+        "pnlUsd": -0.661,
+        "seUsd": 0.1284,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 3,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1652,
+            "pnlUsd": -0.661,
+            "seUsd": 0.1284,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 2,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2833,
+        "pnlUsd": -0.5666,
+        "seUsd": 0.0567,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 2
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "exlead-x150-n60m-h4-WHSK",
+      "round": 1,
+      "description": "When the exchange mid moved >= 150 bps in 60 min, the pool TWAP moved < 50 bps that way, the gap is >= 75 bps and the pool swapped in the last hour, bet the pool follows 0.7 of the gap within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "moveBps": 150,
+        "windowMin": 60,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 4,
+        "hitRate": 0.25,
+        "pnlPerNoteUsd": -0.1874,
+        "pnlUsd": -0.7495,
+        "seUsd": 0.1793,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 3,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 4,
+            "hitRate": 0.25,
+            "pnlPerNoteUsd": -0.1874,
+            "pnlUsd": -0.7495,
+            "seUsd": 0.1793,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 3
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 1,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2199,
+        "pnlUsd": -0.2199,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 1
+      },
+      "family": "exchange-lead"
+    },
+    {
+      "name": "fade-s80-k0.5-h2-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 0.5 x the jump within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 80,
+        "k": 0.5,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s80-k0.5-h4-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 0.5 x the jump within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 80,
+        "k": 0.5,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s80-k1-h2-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 1 x the jump within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 80,
+        "k": 1,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s80-k1-h4-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 80 bps in 15 min while the exchange moved < 26.666666666666668 bps that way and the pool now sits >= 40 bps past the exchange mid, bet it reverts 1 x the jump within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 80,
+        "k": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k0.5-h2-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 0.5 x the jump within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 150,
+        "k": 0.5,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k0.5-h4-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 0.5 x the jump within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 150,
+        "k": 0.5,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k1-h2-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 1 x the jump within 2 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 150,
+        "k": 1,
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade-s150-k1-h4-WHSK",
+      "round": 1,
+      "description": "When the pool spot jumped >= 150 bps in 15 min while the exchange moved < 50 bps that way and the pool now sits >= 75 bps past the exchange mid, bet it reverts 1 x the jump within 4 h.",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 150,
+        "k": 1,
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s30-to-mid-h2-all",
+      "round": 2,
+      "description": "When the pool spot jumped >= 30 bps in 15 min while the exchange moved < 10 bps that way, bet the pool returns all the way to the exchange mid within 2 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "all",
+        "jumpBps": 30,
+        "target": "exchange mid",
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 1,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3693,
+        "pnlUsd": -0.3693,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 1,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3693,
+            "pnlUsd": -0.3693,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s30-to-mid-h4-all",
+      "round": 2,
+      "description": "When the pool spot jumped >= 30 bps in 15 min while the exchange moved < 10 bps that way, bet the pool returns all the way to the exchange mid within 4 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "all",
+        "jumpBps": 30,
+        "target": "exchange mid",
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 1,
+        "hitRate": 1,
+        "pnlPerNoteUsd": 0.2085,
+        "pnlUsd": 0.2085,
+        "seUsd": null,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 1,
+            "hitRate": 1,
+            "pnlPerNoteUsd": 0.2085,
+            "pnlUsd": 0.2085,
+            "seUsd": null,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s60-to-mid-h2-all",
+      "round": 2,
+      "description": "When the pool spot jumped >= 60 bps in 15 min while the exchange moved < 20 bps that way, bet the pool returns all the way to the exchange mid within 2 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "all",
+        "jumpBps": 60,
+        "target": "exchange mid",
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s60-to-mid-h4-all",
+      "round": 2,
+      "description": "When the pool spot jumped >= 60 bps in 15 min while the exchange moved < 20 bps that way, bet the pool returns all the way to the exchange mid within 4 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "all",
+        "jumpBps": 60,
+        "target": "exchange mid",
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s30-to-mid-h2-WHSK",
+      "round": 2,
+      "description": "When the pool spot jumped >= 30 bps in 15 min while the exchange moved < 10 bps that way, bet the pool returns all the way to the exchange mid within 2 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 30,
+        "target": "exchange mid",
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 1,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.3693,
+        "pnlUsd": -0.3693,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 1,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 1,
+            "hitRate": 0,
+            "pnlPerNoteUsd": -0.3693,
+            "pnlUsd": -0.3693,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 1
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s30-to-mid-h4-WHSK",
+      "round": 2,
+      "description": "When the pool spot jumped >= 30 bps in 15 min while the exchange moved < 10 bps that way, bet the pool returns all the way to the exchange mid within 4 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 30,
+        "target": "exchange mid",
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 1,
+        "hitRate": 1,
+        "pnlPerNoteUsd": 0.2085,
+        "pnlUsd": 0.2085,
+        "seUsd": null,
+        "honoured": 1,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 1,
+            "hitRate": 1,
+            "pnlPerNoteUsd": 0.2085,
+            "pnlUsd": 0.2085,
+            "seUsd": null,
+            "honoured": 1,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s60-to-mid-h2-WHSK",
+      "round": 2,
+      "description": "When the pool spot jumped >= 60 bps in 15 min while the exchange moved < 20 bps that way, bet the pool returns all the way to the exchange mid within 2 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 60,
+        "target": "exchange mid",
+        "horizonH": 2
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    },
+    {
+      "name": "fade2-s60-to-mid-h4-WHSK",
+      "round": 2,
+      "description": "When the pool spot jumped >= 60 bps in 15 min while the exchange moved < 20 bps that way, bet the pool returns all the way to the exchange mid within 4 h (needs the gap itself to clear the cost).",
+      "params": {
+        "scope": "WHSK",
+        "jumpBps": 60,
+        "target": "exchange mid",
+        "horizonH": 4
+      },
+      "inSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0,
+        "byAsset": {
+          "WETH": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WBTC": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          },
+          "WHSK": {
+            "notes": 0,
+            "hitRate": null,
+            "pnlPerNoteUsd": null,
+            "pnlUsd": 0,
+            "seUsd": null,
+            "honoured": 0,
+            "void": 0,
+            "lapsed": 0
+          }
+        }
+      },
+      "outOfSample": {
+        "notes": 0,
+        "hitRate": null,
+        "pnlPerNoteUsd": null,
+        "pnlUsd": 0,
+        "seUsd": null,
+        "honoured": 0,
+        "void": 0,
+        "lapsed": 0
+      },
+      "family": "fade"
+    }
+  ],
+  "selectionRule": "in-sample only: among configs with >= 15 in-sample notes, max(mean net P&L per note - 1 standard error); require > 0; then read out-of-sample once and keep it only if it made money after all costs",
+  "selection": "best in-sample lower bound (catchup-k0.7-act12h-h12-all: -0.0504 - 0.081 USD per note) is not above zero, so nothing was taken out of sample",
+  "chosen": null,
+  "configsTried": 88,
+  "configsByRound": {
+    "round1": 80,
+    "round2": 8
+  },
+  "edgeBudget": [
+    {
+      "asset": "WETH",
+      "gapBps": "50-100",
+      "horizonH": 2,
+      "samples": 991,
+      "meanPoolMoveTowardExchangeBps": 13.0961,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.0515,
+      "meanMaxFavourableBps": 13.9968,
+      "shareMaxFavourableAtLeast70Bps": 0.0515
+    },
+    {
+      "asset": "WETH",
+      "gapBps": "50-100",
+      "horizonH": 4,
+      "samples": 990,
+      "meanPoolMoveTowardExchangeBps": 17.0574,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.0929,
+      "meanMaxFavourableBps": 21.124,
+      "shareMaxFavourableAtLeast70Bps": 0.0929
+    },
+    {
+      "asset": "WETH",
+      "gapBps": "50-100",
+      "horizonH": 12,
+      "samples": 960,
+      "meanPoolMoveTowardExchangeBps": 18.4442,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.2292,
+      "meanMaxFavourableBps": 45.8034,
+      "shareMaxFavourableAtLeast70Bps": 0.2479
+    },
+    {
+      "asset": "WETH",
+      "gapBps": "100-200",
+      "horizonH": 2,
+      "samples": 941,
+      "meanPoolMoveTowardExchangeBps": 18.6561,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.1137,
+      "meanMaxFavourableBps": 18.6561,
+      "shareMaxFavourableAtLeast70Bps": 0.1137
+    },
+    {
+      "asset": "WETH",
+      "gapBps": "100-200",
+      "horizonH": 4,
+      "samples": 941,
+      "meanPoolMoveTowardExchangeBps": 30.5785,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.1987,
+      "meanMaxFavourableBps": 30.8626,
+      "shareMaxFavourableAtLeast70Bps": 0.1998
+    },
+    {
+      "asset": "WETH",
+      "gapBps": "100-200",
+      "horizonH": 12,
+      "samples": 941,
+      "meanPoolMoveTowardExchangeBps": 43.8072,
+      "medianBps": 22.9724,
+      "shareMovedAtLeast70Bps": 0.2806,
+      "meanMaxFavourableBps": 53.1455,
+      "shareMaxFavourableAtLeast70Bps": 0.3422
+    },
+    {
+      "asset": "WETH",
+      "gapBps": ">=200",
+      "horizonH": 2,
+      "samples": 256,
+      "meanPoolMoveTowardExchangeBps": 53.3439,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.1289,
+      "meanMaxFavourableBps": 53.3439,
+      "shareMaxFavourableAtLeast70Bps": 0.1289
+    },
+    {
+      "asset": "WETH",
+      "gapBps": ">=200",
+      "horizonH": 4,
+      "samples": 256,
+      "meanPoolMoveTowardExchangeBps": 84.3924,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.2109,
+      "meanMaxFavourableBps": 87.2391,
+      "shareMaxFavourableAtLeast70Bps": 0.2109
+    },
+    {
+      "asset": "WETH",
+      "gapBps": ">=200",
+      "horizonH": 12,
+      "samples": 256,
+      "meanPoolMoveTowardExchangeBps": 91.9454,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.2422,
+      "meanMaxFavourableBps": 99.7541,
+      "shareMaxFavourableAtLeast70Bps": 0.2422
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": "50-100",
+      "horizonH": 2,
+      "samples": 1139,
+      "meanPoolMoveTowardExchangeBps": 12.2868,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.0825,
+      "meanMaxFavourableBps": 12.9037,
+      "shareMaxFavourableAtLeast70Bps": 0.0825
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": "50-100",
+      "horizonH": 4,
+      "samples": 1135,
+      "meanPoolMoveTowardExchangeBps": 18.3935,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.1339,
+      "meanMaxFavourableBps": 20.5206,
+      "shareMaxFavourableAtLeast70Bps": 0.1366
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": "50-100",
+      "horizonH": 12,
+      "samples": 1113,
+      "meanPoolMoveTowardExchangeBps": 35.7793,
+      "medianBps": 35.0596,
+      "shareMovedAtLeast70Bps": 0.3279,
+      "meanMaxFavourableBps": 53.5428,
+      "shareMaxFavourableAtLeast70Bps": 0.3432
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": "100-200",
+      "horizonH": 2,
+      "samples": 721,
+      "meanPoolMoveTowardExchangeBps": 14.6456,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.1096,
+      "meanMaxFavourableBps": 14.6456,
+      "shareMaxFavourableAtLeast70Bps": 0.1096
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": "100-200",
+      "horizonH": 4,
+      "samples": 721,
+      "meanPoolMoveTowardExchangeBps": 34.7092,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.233,
+      "meanMaxFavourableBps": 34.8565,
+      "shareMaxFavourableAtLeast70Bps": 0.233
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": "100-200",
+      "horizonH": 12,
+      "samples": 679,
+      "meanPoolMoveTowardExchangeBps": 57.2109,
+      "medianBps": 38.0704,
+      "shareMovedAtLeast70Bps": 0.4507,
+      "meanMaxFavourableBps": 63.6317,
+      "shareMaxFavourableAtLeast70Bps": 0.4507
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": ">=200",
+      "horizonH": 2,
+      "samples": 10,
+      "meanPoolMoveTowardExchangeBps": 0,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0,
+      "meanMaxFavourableBps": 0,
+      "shareMaxFavourableAtLeast70Bps": 0
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": ">=200",
+      "horizonH": 4,
+      "samples": 10,
+      "meanPoolMoveTowardExchangeBps": 0,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0,
+      "meanMaxFavourableBps": 0,
+      "shareMaxFavourableAtLeast70Bps": 0
+    },
+    {
+      "asset": "WBTC",
+      "gapBps": ">=200",
+      "horizonH": 12,
+      "samples": 10,
+      "meanPoolMoveTowardExchangeBps": 0,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0,
+      "meanMaxFavourableBps": 0,
+      "shareMaxFavourableAtLeast70Bps": 0
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": "50-100",
+      "horizonH": 2,
+      "samples": 2794,
+      "meanPoolMoveTowardExchangeBps": 6.2725,
+      "medianBps": 0.9999,
+      "shareMovedAtLeast70Bps": 0.0215,
+      "meanMaxFavourableBps": 7.9024,
+      "shareMaxFavourableAtLeast70Bps": 0.0215
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": "50-100",
+      "horizonH": 4,
+      "samples": 2789,
+      "meanPoolMoveTowardExchangeBps": 12.1336,
+      "medianBps": 2.0001,
+      "shareMovedAtLeast70Bps": 0.0463,
+      "meanMaxFavourableBps": 14.7783,
+      "shareMaxFavourableAtLeast70Bps": 0.047
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": "50-100",
+      "horizonH": 12,
+      "samples": 2776,
+      "meanPoolMoveTowardExchangeBps": 33.5491,
+      "medianBps": 16.9847,
+      "shareMovedAtLeast70Bps": 0.1481,
+      "meanMaxFavourableBps": 42.1205,
+      "shareMaxFavourableAtLeast70Bps": 0.1697
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": "100-200",
+      "horizonH": 2,
+      "samples": 90,
+      "meanPoolMoveTowardExchangeBps": 19.246,
+      "medianBps": 1,
+      "shareMovedAtLeast70Bps": 0.1,
+      "meanMaxFavourableBps": 21.438,
+      "shareMaxFavourableAtLeast70Bps": 0.1
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": "100-200",
+      "horizonH": 4,
+      "samples": 89,
+      "meanPoolMoveTowardExchangeBps": 23.91,
+      "medianBps": 1,
+      "shareMovedAtLeast70Bps": 0.1348,
+      "meanMaxFavourableBps": 30.7712,
+      "shareMaxFavourableAtLeast70Bps": 0.1348
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": "100-200",
+      "horizonH": 12,
+      "samples": 89,
+      "meanPoolMoveTowardExchangeBps": 72.5833,
+      "medianBps": 29.9535,
+      "shareMovedAtLeast70Bps": 0.2921,
+      "meanMaxFavourableBps": 81.157,
+      "shareMaxFavourableAtLeast70Bps": 0.2921
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": ">=200",
+      "horizonH": 2,
+      "samples": 105,
+      "meanPoolMoveTowardExchangeBps": 86.4031,
+      "medianBps": 0,
+      "shareMovedAtLeast70Bps": 0.3524,
+      "meanMaxFavourableBps": 86.4031,
+      "shareMaxFavourableAtLeast70Bps": 0.3524
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": ">=200",
+      "horizonH": 4,
+      "samples": 105,
+      "meanPoolMoveTowardExchangeBps": 182.1933,
+      "medianBps": 199.9636,
+      "shareMovedAtLeast70Bps": 0.581,
+      "meanMaxFavourableBps": 182.3742,
+      "shareMaxFavourableAtLeast70Bps": 0.581
+    },
+    {
+      "asset": "WHSK",
+      "gapBps": ">=200",
+      "horizonH": 12,
+      "samples": 105,
+      "meanPoolMoveTowardExchangeBps": 390.6285,
+      "medianBps": 421.8233,
+      "shareMovedAtLeast70Bps": 0.9905,
+      "meanMaxFavourableBps": 390.7427,
+      "shareMaxFavourableAtLeast70Bps": 0.9905
+    }
+  ],
+  "sensitivity": {
+    "impactModel": "persist",
+    "current": [
+      {
+        "asset": "WETH",
+        "kind": "catch-up",
+        "notes": 39,
+        "hitRate": 0.1795,
+        "pnlPerNoteUsd": -0.1821,
+        "inSample": -0.1808,
+        "outOfSample": -0.2081
+      },
+      {
+        "asset": "WBTC",
+        "kind": "catch-up",
+        "notes": 37,
+        "hitRate": 0.1892,
+        "pnlPerNoteUsd": -0.2196,
+        "inSample": -0.2354,
+        "outOfSample": -0.1992
+      },
+      {
+        "asset": "WHSK",
+        "kind": "catch-up",
+        "notes": 34,
+        "hitRate": 0.2059,
+        "pnlPerNoteUsd": -0.1377,
+        "inSample": -0.1229,
+        "outOfSample": -0.1856
+      },
+      {
+        "asset": "WETH",
+        "kind": "momentum",
+        "notes": 36,
+        "hitRate": 0.1389,
+        "pnlPerNoteUsd": -0.1168,
+        "inSample": -0.1938,
+        "outOfSample": -0.0114
+      },
+      {
+        "asset": "WBTC",
+        "kind": "momentum",
+        "notes": 29,
+        "hitRate": 0.069,
+        "pnlPerNoteUsd": -0.215,
+        "inSample": -0.2075,
+        "outOfSample": -0.2326
+      },
+      {
+        "asset": "WHSK",
+        "kind": "momentum",
+        "notes": 25,
+        "hitRate": 0,
+        "pnlPerNoteUsd": -0.2899,
+        "inSample": -0.2881,
+        "outOfSample": -0.2922
+      }
+    ],
+    "pooled": {
+      "catch-up": {
+        "all": {
+          "notes": 110,
+          "hitRate": 0.1909,
+          "pnlPerNoteUsd": -0.181,
+          "pnlUsd": -19.9087,
+          "seUsd": 0.0357,
+          "honoured": 21,
+          "void": 2,
+          "lapsed": 87
+        },
+        "inSample": {
+          "notes": 63,
+          "hitRate": 0.1746,
+          "pnlPerNoteUsd": -0.1716,
+          "pnlUsd": -10.8136,
+          "seUsd": 0.0419,
+          "honoured": 11,
+          "void": 0,
+          "lapsed": 52
+        },
+        "outOfSample": {
+          "notes": 45,
+          "hitRate": 0.2222,
+          "pnlPerNoteUsd": -0.2003,
+          "pnlUsd": -9.0151,
+          "seUsd": 0.0643,
+          "honoured": 10,
+          "void": 2,
+          "lapsed": 33
+        },
+        "lapsedShare": 0.7838,
+        "meanPMin": 0.7799
+      },
+      "momentum": {
+        "all": {
+          "notes": 90,
+          "hitRate": 0.0778,
+          "pnlPerNoteUsd": -0.1965,
+          "pnlUsd": -17.6889,
+          "seUsd": 0.0439,
+          "honoured": 7,
+          "void": 3,
+          "lapsed": 80
+        },
+        "inSample": {
+          "notes": 50,
+          "hitRate": 0.1,
+          "pnlPerNoteUsd": -0.2249,
+          "pnlUsd": -11.2442,
+          "seUsd": 0.0579,
+          "honoured": 5,
+          "void": 2,
+          "lapsed": 43
+        },
+        "outOfSample": {
+          "notes": 38,
+          "hitRate": 0.0526,
+          "pnlPerNoteUsd": -0.1567,
+          "pnlUsd": -5.9556,
+          "seUsd": 0.0711,
+          "honoured": 2,
+          "void": 1,
+          "lapsed": 35
+        },
+        "lapsedShare": 0.8889,
+        "meanPMin": 0.5702
+      }
+    },
+    "selection": "best in-sample lower bound (catchup-k0.7-act12h-h12-all: -0.0438 - 0.0857 USD per note) is not above zero, so nothing was taken out of sample",
+    "chosen": null
+  },
+  "notes": "Replaying the live rules on 30 days of real HSKSwap swaps, the catch-up rule opened 111 notes (hit rate 16% against a mean break-even of 78%) and lost $17.89 ($0.161 per $50 note) after fees, impact and gas; momentum opened 90 (hit 7% vs 57%) and lost $21.43 ($0.238 per note), and every asset/kind cell lost money both in-sample and out-of-sample. The loss is structural: a round trip costs about 68 bps in pool fees and gas, plus price impact on these thin pools (a $50 trade moves WETH and WBTC about 16-18 bps and WHSK about 4.5 bps; execution impact averaged $0.095, $0.093 and $0.016 per note), while the pool itself rarely moves that far inside the horizon, so 82% of catch-up and 88% of momentum notes lapsed, most of them at about -$0.30 to -$0.34. A calibrated forecaster stating the true hit rate (0-20% per asset and kind) would have been refused by the vault on every one of these notes, since the contract requires stated odds of at least 50% and odds x (reward + risk) > risk + 60 bps. Of 88 alternative configs (80 declared up front, 8 fade variants added after every round-1 fade config fired zero times in-sample), the best in-sample lower bound was catchup-k0.7-act12h-h12-all at -0.050 USD per note (SE 0.081, 23 notes), not above zero, so no strategy is chosen (chosen = null): none of ours shows positive expectancy after costs on HSKSwap. The one regime with real pool-side catch-up, WHSK gaps of 200 bps or more while the pool was trading, is essentially one re-pricing episode (Oct 15-16, after the six-day dormant stretch), far too little to call a strategy. Limits: one 30-day window, the exchange mid is the mean of Gate.io and HashKey Global 5-minute closes and also stands in for the Chainlink seatbelt, settlement is checked every 30 s, and the persistence of our own price impact is modelled two ways (results similar, see sensitivity)."
+}

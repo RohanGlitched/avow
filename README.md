@@ -12,7 +12,7 @@
 <p align="center">
 <img alt="HSK Chain mainnet" src="https://img.shields.io/badge/HSK%20Chain-mainnet%20177-173C30">
 <img alt="HSKSwap" src="https://img.shields.io/badge/trades%20on-HSKSwap-2B3A57">
-<img alt="Fork tests" src="https://img.shields.io/badge/fork%20tests-31%20%2B%2013%20audit%20%2B%20invariants-9A7426">
+<img alt="Fork tests" src="https://img.shields.io/badge/fork%20tests-33%20%2B%2013%20audit%20%2B%20invariants-9A7426">
 <img alt="Model" src="https://img.shields.io/badge/model-Gemini%203.5%20Flash%20on%20Vertex-5E6B63">
 </p>
 
@@ -27,6 +27,21 @@ nobody has to trust the agent to execute), every settled note is graded against 
 may write — its **denomination** — grows only as its calibrated record earns it. *Dictum meum pactum*: my word is my bond.
 
 Built for the **HSK Chain Horizon Hackathon · India**, Track 1 *AI Agent Trading*.
+
+## What the data says (and why Avow trades rarely)
+
+We measured HSKSwap before trusting our own strategy, on 30 days of real mainnet swaps (Sep 30 – Oct 30 2026):
+
+- **[research/STUDY.md](research/STUDY.md)**: gaps between HSKSwap and the exchanges close fast, but in 90–100% of cases because the
+  *exchange* moves back; the pool itself moved half-way in about 53% (WETH, WBTC) and 35% (WHSK) of episodes.
+- **[research/REPLAY.md](research/REPLAY.md)**: replaying the agent's exact rules with the contract's settlement, both pool fees, measured
+  price impact (a $50 trade moves WETH/WBTC ~16–18 bps) and gas, every asset and strategy **lost money** in-sample and out-of-sample
+  (catch-up −$0.16 and momentum −$0.24 per $50 note), and none of 88 pre-declared alternatives cleared a pre-set bar.
+
+So on today's 0.30%-fee pools the honest posture is mostly to pass — and Avow's contract makes that binding: it refuses any note that
+cannot pay its round trip at the odds the agent states. The agent still watches every pool every 30 seconds and swears the moment a real
+dislocation appears (like the Oct 15–16 HSK re-pricing, when the pool sat 200+ bps from the exchanges after five days without a trade).
+Every pass is published with its reason in the journal.
 
 ## Try it in one minute
 
@@ -66,7 +81,7 @@ flowchart LR
 | keep trading through a drawdown or a bad day | `Frozen`, `DailyLossReached` | `test_drawdownFreezesTheVault`, `test_dailyLossLimit` |
 
 And the stop works without the agent: `test_voidLongIsThePermissionlessStopLoss`, but a spike alone cannot trigger it
-(`test_aSpikeDoesNotTriggerTheStop`, `test_aLevelThePriceLeftAgainDoesNotCount`). All tests (31 behaviour, 13 audit regression, a fuzz test and an invariant suite) run on a **fork of HSK Chain mainnet** against the
+(`test_aSpikeDoesNotTriggerTheStop`, `test_aLevelThePriceLeftAgainDoesNotCount`). All tests (33 behaviour, 13 audit regression, a fuzz test and an invariant suite, pinned at block 29,524,000) run on a **fork of HSK Chain mainnet** against the
 real HSKSwap pools: `cd contracts && forge test`. Trust boundaries and known limits: [SECURITY.md](SECURITY.md).
 
 ## Repository
