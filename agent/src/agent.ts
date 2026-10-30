@@ -5,8 +5,9 @@ import { privateKeyToAccount } from "viem/accounts";
 import { AGENT_KEY_FILE, ASSETS, DATA_DIR, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
 import { vaultAbi } from "./abi.js";
 import { chain, snapshot, type Snap } from "./market.js";
-import { readVault, type VaultView } from "./vault.js";
-import { candidates } from "./signals.js";
+import { mandateEvents, mandateWords, readVault, type VaultView } from "./vault.js";
+import { candidates, reshape } from "./signals.js";
+import { reviewNote } from "./brain.js";
 import { decide, statement, unsupportedNumbers } from "./brain.js";
 import { journal } from "./journal.js";
 import { history } from "./history.js";
@@ -61,9 +62,9 @@ async function send(fn: "swear" | "settle" | "tighten" | "retract" | "tightenSto
 
 const NL = String.fromCharCode(10);
 const GAS = join(DATA_DIR, "gas.jsonl");
-export const gasLog: { t: number; hsk: number }[] = existsSync(GAS) ? readFileSync(GAS, "utf8").split(NL).filter(Boolean).map((l) => JSON.parse(l)) : [];
+export const gasLog: { t: number; hsk: number; gas?: number }[] = existsSync(GAS) ? readFileSync(GAS, "utf8").split(NL).filter(Boolean).map((l) => JSON.parse(l)) : [];
 function logGas(r: { gasUsed: bigint; effectiveGasPrice: bigint }) {
-  const row = { t: Math.floor(Date.now() / 1000), hsk: Number(r.gasUsed * r.effectiveGasPrice) / 1e18 };
+  const row = { t: Math.floor(Date.now() / 1000), hsk: Number(r.gasUsed * r.effectiveGasPrice) / 1e18, gas: Number(r.gasUsed) };
   gasLog.push(row);
   appendFileSync(GAS, JSON.stringify(row) + NL);
 }
@@ -129,7 +130,9 @@ export async function think(snaps: Snap[], v: VaultView) {
     journal.add({ kind: "error", title: "The model did not answer", detail: (e as Error).message.slice(0, 300) });
     return;
   }
-  const c = fresh.find((x) => x.key === d.candidate);
+  const c0 = fresh.find((x) => x.key === d.candidate);
+  // the model may shape the target and horizon; the rules re-check reward/risk and costs, and fall back to the rule's own shape
+  const c = c0 ? reshape(c0, v, d.targetScale, d.horizonHours) ?? c0 : undefined;
   if (d.decision !== "swear" || !c) {
     for (const x of fresh) declined.set(x.key, Date.now());
     journal.add({ kind: "declined", asset: fresh[0].sym, title: `Declined to swear: ${fresh.map((x) => `${ASSETS[x.assetId].label} ${x.side} (${x.kind})`).join(", ")}`, detail: d.rationale || d.because, model: d.model, tokens: d.tokens });
@@ -180,6 +183,52 @@ export async function think(snaps: Snap[], v: VaultView) {
   }
 }
 
+const lastReview = new Map<number, number>();
+
+/** Every 15 minutes, a note that has moved, stalled or lost its reason is put back to the model: hold, tighten the stop, or retract. */
+export async function review(snaps: Snap[], v: VaultView) {
+  for (const n of v.notes.filter((x) => x.status === "outstanding")) {
+    if (Date.now() - (lastReview.get(n.id) ?? 0) < 15 * 60_000) continue;
+    const a = ASSETS[n.asset];
+    const s = snaps.find((x) => x.sym === a.sym);
+    if (!s?.twapPx) continue;
+    const long_ = n.side === 0;
+    const progress = (s.twapPx - n.entryPx) / (n.targetPx - n.entryPx); // 1 = at target, <0 = moving toward the void
+    const elapsed = (v.blockTime - n.openedAt) / Math.max(1, n.expiry - n.openedAt);
+    const gap = s.gapBps ?? 0; // + = pool cheap vs exchanges
+    const thesisGone = n.side === 0 ? gap < 0 : gap > 0; // the exchanges no longer sit on the side the note bets toward
+    const trigger = progress >= 0.5 ? "moved half-way to the target" : elapsed >= 0.5 && progress < 0.2 ? "half the time has passed with little progress" : thesisGone ? "the exchanges have moved to the other side of the pool" : null;
+    if (!trigger) continue;
+    lastReview.set(n.id, Date.now());
+    const fee = (2 * 30 + 25) / 1e4; // two pool fees plus the minimum stop distance
+    const breakeven = long_ ? n.entryPx * (1 + fee) : n.entryPx * (1 - fee);
+    const canLockIn = long_ ? breakeven < s.twapPx && breakeven > n.voidPx : breakeven > s.twapPx && breakeven < n.voidPx;
+    let r;
+    try {
+      r = await reviewNote(n, a.label, s, progress, elapsed, trigger, canLockIn ? breakeven : null);
+    } catch (e) {
+      journal.add({ kind: "error", noteId: n.id, title: `Could not review ${serial(n.id)}`, detail: (e as Error).message.slice(0, 200) });
+      continue;
+    }
+    try {
+      if (r.action === "tighten" && canLockIn) {
+        const tx = await send("tightenStop", [BigInt(n.id), BigInt(Math.round(breakeven * 1e8))]);
+        logGas(tx);
+        journal.add({ kind: "reviewed", asset: a.sym, noteId: n.id, tx: tx.hash, title: `Reviewed ${serial(n.id)}: moved the stop to break-even (${trigger})`, detail: r.reason, model: r.model, tokens: r.tokens });
+      } else if (r.action === "retract") {
+        const tx = await send("retract", [BigInt(n.id)]);
+        logGas(tx);
+        journal.add({ kind: "reviewed", asset: a.sym, noteId: n.id, tx: tx.hash, title: `Reviewed ${serial(n.id)}: retracted, graded as a miss (${trigger})`, detail: r.reason, model: r.model, tokens: r.tokens });
+      } else {
+        journal.add({ kind: "reviewed", asset: a.sym, noteId: n.id, title: `Reviewed ${serial(n.id)}: holding (${trigger})`, detail: r.reason, model: r.model, tokens: r.tokens });
+      }
+    } catch (e) {
+      const w = words(e);
+      journal.add({ kind: "blocked", asset: a.sym, noteId: n.id, title: `The vault refused a review action on ${serial(n.id)}`, detail: `${w.text} (${w.name})` });
+    }
+  }
+}
+
 let lastStateNote = "";
 function note(tag: string, text: string) {
   if (lastStateNote === tag) return;
@@ -187,10 +236,26 @@ function note(tag: string, text: string) {
   journal.add({ kind: "heartbeat", title: text });
 }
 
+/** Owner amendments and agent tightenings, journaled from the chain's own MandateChanged events. */
+function journalMandateEvents() {
+  const seen = new Set(journal.all().filter((j) => j.kind === "amended" || j.kind === "tightened").map((j) => j.tx));
+  let prev: ReturnType<typeof mandateWords> | null = null;
+  for (const e of mandateEvents) {
+    const now = mandateWords(e.mandate);
+    if (prev && !seen.has(e.tx)) {
+      const diff = Object.keys(now).filter((k) => JSON.stringify((now as Record<string, unknown>)[k]) !== JSON.stringify((prev as Record<string, unknown>)[k])).map((k) => `${k}: ${JSON.stringify((prev as Record<string, unknown>)[k])} → ${JSON.stringify((now as Record<string, unknown>)[k])}`);
+      if (diff.length) journal.add({ kind: e.tightening ? "tightened" : "amended", tx: e.tx, title: e.tightening ? "The agent tightened its own mandate" : "The owner amended the mandate", detail: diff.join("; ") });
+    }
+    prev = now;
+  }
+}
+
 export async function tick() {
   const [snaps, v] = await Promise.all([snapshot(), readVault()]);
   history.push(snaps);
+  journalMandateEvents();
   await keep(v).catch((e) => journal.add({ kind: "error", title: "Keeper error", detail: words(e).text }));
+  await review(snaps, v).catch((e) => journal.add({ kind: "error", title: "Review error", detail: words(e).text }));
   await think(snaps, v).catch((e) => journal.add({ kind: "error", title: "Think error", detail: words(e).text }));
   journal.beat();
   return { snaps, v };

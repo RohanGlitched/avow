@@ -1,0 +1,132 @@
+{
+  "generatedAt": 1793393174,
+  "windowDays": 30,
+  "rows": [
+    {
+      "asset": "WETH",
+      "gapBucket": "40–60 bps",
+      "episodes": 170,
+      "convergedWithin12h": 163,
+      "convergedWithin2h": 146,
+      "poolMovedHalfWithin12h": 90,
+      "medianHoursToConverge": 0.42,
+      "poolSideShare": 0.086
+    },
+    {
+      "asset": "WETH",
+      "gapBucket": "60–100 bps",
+      "episodes": 23,
+      "convergedWithin12h": 20,
+      "convergedWithin2h": 15,
+      "poolMovedHalfWithin12h": 12,
+      "medianHoursToConverge": 0.63,
+      "poolSideShare": 0.1
+    },
+    {
+      "asset": "WETH",
+      "gapBucket": "100–200 bps",
+      "episodes": 1,
+      "convergedWithin12h": 1,
+      "convergedWithin2h": 1,
+      "poolMovedHalfWithin12h": 1,
+      "medianHoursToConverge": 0.25,
+      "poolSideShare": 0
+    },
+    {
+      "asset": "WETH",
+      "gapBucket": ">200 bps",
+      "episodes": 0,
+      "convergedWithin12h": 0,
+      "convergedWithin2h": 0,
+      "poolMovedHalfWithin12h": 0,
+      "medianHoursToConverge": null,
+      "poolSideShare": null
+    },
+    {
+      "asset": "WBTC",
+      "gapBucket": "40–60 bps",
+      "episodes": 134,
+      "convergedWithin12h": 125,
+      "convergedWithin2h": 101,
+      "poolMovedHalfWithin12h": 74,
+      "medianHoursToConverge": 0.58,
+      "poolSideShare": 0.096
+    },
+    {
+      "asset": "WBTC",
+      "gapBucket": "60–100 bps",
+      "episodes": 10,
+      "convergedWithin12h": 7,
+      "convergedWithin2h": 6,
+      "poolMovedHalfWithin12h": 3,
+      "medianHoursToConverge": 0.33,
+      "poolSideShare": 0
+    },
+    {
+      "asset": "WBTC",
+      "gapBucket": "100–200 bps",
+      "episodes": 0,
+      "convergedWithin12h": 0,
+      "convergedWithin2h": 0,
+      "poolMovedHalfWithin12h": 0,
+      "medianHoursToConverge": null,
+      "poolSideShare": null
+    },
+    {
+      "asset": "WBTC",
+      "gapBucket": ">200 bps",
+      "episodes": 0,
+      "convergedWithin12h": 0,
+      "convergedWithin2h": 0,
+      "poolMovedHalfWithin12h": 0,
+      "medianHoursToConverge": null,
+      "poolSideShare": null
+    },
+    {
+      "asset": "WHSK",
+      "gapBucket": "40–60 bps",
+      "episodes": 276,
+      "convergedWithin12h": 271,
+      "convergedWithin2h": 236,
+      "poolMovedHalfWithin12h": 98,
+      "medianHoursToConverge": 0.25,
+      "poolSideShare": 0.004
+    },
+    {
+      "asset": "WHSK",
+      "gapBucket": "60–100 bps",
+      "episodes": 57,
+      "convergedWithin12h": 55,
+      "convergedWithin2h": 45,
+      "poolMovedHalfWithin12h": 20,
+      "medianHoursToConverge": 0.25,
+      "poolSideShare": 0
+    },
+    {
+      "asset": "WHSK",
+      "gapBucket": "100–200 bps",
+      "episodes": 11,
+      "convergedWithin12h": 11,
+      "convergedWithin2h": 11,
+      "poolMovedHalfWithin12h": 1,
+      "medianHoursToConverge": 0.17,
+      "poolSideShare": 0
+    },
+    {
+      "asset": "WHSK",
+      "gapBucket": ">200 bps",
+      "episodes": 1,
+      "convergedWithin12h": 1,
+      "convergedWithin2h": 0,
+      "poolMovedHalfWithin12h": 0,
+      "medianHoursToConverge": 8.08,
+      "poolSideShare": 0
+    }
+  ],
+  "swapsPerDay": {
+    "WETH": 4.6,
+    "WBTC": 2.8,
+    "WHSK": 64.1
+  },
+  "notes": "Window: the last 30 days (2026-09-30 to 2026-10-30), 5-minute samples against Gate.io closes, full archive-RPC coverage with no rate-limit failures; fully observed episodes number 194 (WETH), 144 (WBTC) and 345 (WHSK), but every bucket above 100 bps has 12 or fewer episodes in total and should be read as anecdote, not evidence. First-crossing gaps of 40-100 bps close quickly on their own (92-98% within 12 h, 74-84% within 2 h, median 0.25-0.6 h), yet the closing move came from the exchange side in 90-100% of cases (pool-side share 0-10%), because the pools trade only 2.8-4.6 swaps per day (WETH, WBTC) or 64 per day (WHSK), so most gaps are a stale pool quote against short-lived exchange noise rather than the pool catching up. For a catch-up note whose target needs the pool itself to move at least half the gap within 12 h, the hit rate on 40-100 bps entries was about 53% (WETH), 53% (WBTC) and 35% (WHSK), higher (63%, 82%, 36%) when the pool had traded in the prior 12 h and much lower (26%, 16%, 5%) when it had not, so the odds are near a coin flip at best and clearly below that for WHSK. Limits: all three pools had zero swaps from 2026-10-10 to 2026-10-15 (checked against slot0 at historical blocks) while gaps of 100-500 bps persisted for days, so entering at any time on a large gap converged within 12 h only 50-64% of the time at 100-200 bps and 20-24% above 200 bps (WETH, WHSK), and those samples are heavily autocorrelated, representing a handful of regimes. Convergence is measured on sampled gaps (episodes bucketed by the gap at first crossing, so gaps that start small and widen are filed under the lower bucket), the exchange price is a Gate.io 5-minute close (not the pool's actual arbitrage venue), and nothing here accounts for gas, slippage or the note's payoff beyond the gap itself."
+}

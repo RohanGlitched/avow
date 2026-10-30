@@ -12,6 +12,7 @@ type State = ReturnType<typeof import("./state.js").buildState>;
 export const live: { state: State | null; vault: VaultView | null } = { state: null, vault: null };
 
 const hits = new Map<string, number[]>();
+const usedSignatures = new Set<string>();
 function allow(ip: string, perHour: number) {
   const now = Date.now();
   const h = (hits.get(ip) ?? []).filter((t) => now - t < 3_600_000);
@@ -74,7 +75,11 @@ export function serve() {
         const ok = await verifyMessage({ address: owner, message: b.message, signature: b.signature }).catch(() => false);
         if (!ok) return send(res, 403, { error: "Only the vault owner's signature can ask the agent to change the mandate." });
         const [head, json, until] = b.message.split("\n");
-        if (head !== "Avow: tighten" || Number(until?.replace("until ", "")) < Date.now() / 1000) return send(res, 400, { error: "expired or malformed request" });
+        const u = Number(until?.replace("until ", ""));
+        const now = Date.now() / 1000;
+        if (head !== "Avow: tighten" || !Number.isFinite(u) || u < now || u > now + 15 * 60) return send(res, 400, { error: "Expired or malformed request: sign a fresh one (valid for 15 minutes)." });
+        if (usedSignatures.has(b.signature)) return send(res, 400, { error: "This signed request was already used." });
+        usedSignatures.add(b.signature);
         const changes = JSON.parse(json) as { field: string; to: unknown }[];
         const cls = changes.map((c) => classify(live.state!.mandate, c.field, c.to));
         if (cls.some((c) => !c || !c.stricter)) return send(res, 400, { error: "Only stricter changes can be applied by the agent; sign looser ones as an owner amendment." });

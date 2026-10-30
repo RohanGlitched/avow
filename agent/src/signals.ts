@@ -1,4 +1,6 @@
-import { CHAINLINK_MAX_AGE_S, CHAINLINK_MAX_DEV_BPS, POOL_FEE_BPS, ASSETS, type Sym } from "./config.js";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { CHAINLINK_MAX_AGE_S, CHAINLINK_MAX_DEV_BPS, DATA_DIR, POOL_FEE_BPS, ASSETS, type Sym } from "./config.js";
 import type { Snap } from "./market.js";
 import type { VaultView } from "./vault.js";
 
@@ -16,6 +18,7 @@ export interface Candidate {
   notionalUsd: number;
   rewardBps: number;
   riskBps: number;
+  costBps: number; // round trip: two pool fees plus gas, in bps of the notional
   pMin: number; // break-even probability at these levels: risk / (reward + risk)
   facts: string[]; // the numbers the model may quote
   why: string; // one deterministic line
@@ -61,15 +64,23 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
       `1 h volatility ${s.vol1h !== null ? r(s.vol1h * 100) : "n/a"}%`,
     ];
 
-    // 1. catch-up: HSKSwap lags the exchanges; trade toward fair value and claim the pool will follow
-    const edge = absGap - POOL_FEE_BPS - 10;
+    // costs of a round trip, measured: two pool fees plus gas for the note and its settlement at mainnet prices
+    const gasBps = (ROUND_TRIP_GAS_USD(snaps) / Math.max(1, cap)) * 1e4;
+    const costBps = 2 * POOL_FEE_BPS + gasBps;
+    const prior = studyFact(s.sym, Math.abs(s.gapBps ?? 0));
+    if (prior) facts.push(prior);
+    facts.push(`round-trip cost ${r(costBps, 0)} bps (two 0.30% pool fees + gas for a $${r(cap)} note)`);
+
+    // 1. catch-up: HSKSwap lags the exchanges; buy (or sell) toward fair value and claim the pool will follow
     let made = false;
-    if (edge > 0) {
+    if (absGap > costBps + 20) {
       const side = gap > 0 ? "long" : "short";
-      const rewardBps = Math.min(absGap * 0.8, maxStop * 2);
-      const riskBps = Math.min(maxStop, rewardBps / (Math.max(minRR, 1.2) * 1.06));
-      if (riskBps >= 28) list.push(build(s, a.id, side, "catch-up", rewardBps, riskBps, 12 * 3600, cap, facts, `HSKSwap is ${r(absGap / 100)}% ${gap > 0 ? "below" : "above"} the exchanges; the pool fee is 0.30%`, now, v));
-      made = riskBps >= 28;
+      const rewardBps = Math.min(absGap, maxStop * 2);
+      const riskBps = Math.max(30, Math.min(maxStop, rewardBps / Math.max(minRR * 1.06, 1.3)));
+      if (rewardBps / riskBps >= minRR * 1.02) {
+        list.push(build(s, a.id, side, "catch-up", rewardBps, riskBps, 12 * 3600, cap, costBps, facts, `HSKSwap is ${r(absGap / 100)}% ${gap > 0 ? "below" : "above"} the exchanges; a round trip costs ${r(costBps / 100)}%`, v));
+        made = true;
+      }
     }
     // 2. momentum: the exchanges have trended for 4 hours with the last hour agreeing
     if (s.r4h !== null && s.r1h !== null && s.vol1h !== null) {
@@ -80,21 +91,19 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
       if (agree && strong && notAgainstGap) {
         const side = trend > 0 ? "long" : "short";
         const riskBps = Math.max(40, Math.min(maxStop, s.vol1h * 1e4 * 2.5));
-        const rewardBps = riskBps * Math.max(minRR * 1.06, 1.5);
-        list.push(build(s, a.id, side, "momentum", rewardBps, riskBps, 8 * 3600, cap, facts, `the exchanges moved ${r(trend * 100)}% in 4 hours and the last hour agrees`, now, v));
+        const rewardBps = Math.max(riskBps * Math.max(minRR * 1.06, 1.8), costBps * 2.5);
+        list.push(build(s, a.id, side, "momentum", rewardBps, riskBps, 8 * 3600, cap, costBps, facts, `the exchanges moved ${r(trend * 100)}% in 4 hours and the last hour agrees`, v));
         made = true;
       }
     }
-    if (!made) passes.push({ sym: s.sym, reason: edge <= 0 ? `HSKSwap is within ${r(absGap / 100)}% of the exchanges, under the 0.40% needed to beat the fee` : "no trend strong enough" });
+    if (!made) passes.push({ sym: s.sym, reason: absGap <= costBps + 20 ? `HSKSwap is within ${r(absGap / 100)}% of the exchanges; a round trip costs ${r(costBps / 100)}%, so there is no edge` : "no trend strong enough" });
   }
   return { list, passes };
 }
 
-function build(s: Snap, assetId: number, side: "long" | "short", kind: Candidate["kind"], rewardBps: number, riskBps: number, horizon: number, cap: number, facts: string[], why: string, now: number, v: VaultView): Candidate {
+function build(s: Snap, assetId: number, side: "long" | "short", kind: Candidate["kind"], rewardBps: number, riskBps: number, horizon: number, cap: number, costBps: number, facts: string[], why: string, v: VaultView): Candidate {
   const e = s.twapPx!;
   const dir = side === "long" ? 1 : -1;
-  const target = e * (1 + (dir * rewardBps) / 1e4);
-  const voidPx = e * (1 - (dir * riskBps) / 1e4);
   const horizonSec = Math.min(horizon, v.mandate.maxHorizon);
   // short notes sell free inventory: size to what the vault holds
   let notional = cap;
@@ -109,14 +118,57 @@ function build(s: Snap, assetId: number, side: "long" | "short", kind: Candidate
     side,
     kind,
     entry: e,
-    target,
-    void: voidPx,
+    target: e * (1 + (dir * rewardBps) / 1e4),
+    void: e * (1 - (dir * riskBps) / 1e4),
     horizonSec,
     notionalUsd: Math.max(0, Math.floor(notional * 100) / 100),
     rewardBps,
     riskBps,
-    pMin: riskBps / (rewardBps + riskBps),
+    costBps,
+    pMin: (riskBps + costBps) / (rewardBps + riskBps),
     facts,
     why,
   };
+}
+
+/** The model may stretch or shrink the target (0.7–1.3×) and pick a horizon; the rules re-check everything. */
+export function reshape(c: Candidate, v: VaultView, scale: number | null, hours: number | null): Candidate | null {
+  const k = Math.min(1.3, Math.max(0.7, Number.isFinite(Number(scale)) ? Number(scale) : 1));
+  const h = [2, 4, 8, 12].includes(Number(hours)) ? Number(hours) * 3600 : c.horizonSec;
+  const rewardBps = c.rewardBps * k;
+  if (rewardBps <= c.costBps || rewardBps / c.riskBps < (v.mandate.minRewardRiskX100 / 100) * 1.02) return null;
+  const dir = c.side === "long" ? 1 : -1;
+  return {
+    ...c,
+    rewardBps,
+    target: c.entry * (1 + (dir * rewardBps) / 1e4),
+    horizonSec: Math.min(h, v.mandate.maxHorizon),
+    pMin: (c.riskBps + c.costBps) / (rewardBps + c.riskBps),
+  };
+}
+
+// ── measured priors from 30 days of real HSKSwap swaps (research/study.json), when present
+type StudyRow = { asset: string; gapBucket: string; episodes: number; convergedWithin12h: number; poolMovedHalfWithin12h?: number };
+let study: { rows: StudyRow[]; windowDays: number } | null = null;
+try {
+  const f = join(DATA_DIR, "study.json");
+  if (existsSync(f)) study = JSON.parse(readFileSync(f, "utf8"));
+} catch {}
+export const studyData = () => study;
+
+function studyFact(sym: string, gapBps: number): string | null {
+  if (!study) return null;
+  const lo = (b: string) => Number(b.match(/\d+/)?.[0] ?? 0);
+  const rows = study.rows.filter((x) => x.asset === sym).sort((a, b) => lo(a.gapBucket) - lo(b.gapBucket));
+  const row = [...rows].reverse().find((x) => gapBps >= lo(x.gapBucket));
+  if (!row || !row.episodes) return null;
+  const moved = row.poolMovedHalfWithin12h ?? row.convergedWithin12h;
+  return `measured over ${study.windowDays} days of real HSKSwap swaps: of ${row.episodes} past gaps of ${row.gapBucket} on this pool, the pool itself moved half-way toward the exchanges within 12 h in ${moved} (${Math.round((moved / row.episodes) * 100)}%)`;
+}
+
+const ROUND_TRIP_GAS = 920_000; // swear ≈ 0.54M + settle ≈ 0.38M gas, measured on the fork
+const GAS_PRICE_HSK = 500e-9; // 500 gwei on HSK mainnet
+function ROUND_TRIP_GAS_USD(snaps: Snap[]) {
+  const hsk = snaps.find((x) => x.sym === "WHSK")?.fairPx ?? 0.087;
+  return ROUND_TRIP_GAS * GAS_PRICE_HSK * hsk;
 }

@@ -2,7 +2,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { join } from "node:path";
 import { DATA_DIR, type Sym } from "./config.js";
 
-export type Kind = "heartbeat" | "considered" | "declined" | "sworn" | "settled" | "blocked" | "amended" | "tightened" | "error";
+export type Kind = "heartbeat" | "considered" | "declined" | "sworn" | "settled" | "blocked" | "amended" | "tightened" | "reviewed" | "error";
 export interface Entry { t: number; kind: Kind; asset?: Sym; title: string; detail?: string; noteId?: number; tx?: `0x${string}`; model?: string; tokens?: number }
 
 mkdirSync(DATA_DIR, { recursive: true });

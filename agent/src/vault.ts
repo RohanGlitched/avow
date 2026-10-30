@@ -63,7 +63,7 @@ export interface ChainNote {
 
 export interface VaultView {
   mandate: RawMandate;
-  ledger: { graded: number; honoured: number; voided: number; lapsed: number; retracted: number; voidStreak: number; windowCount: number; realisedPnl: number };
+  ledger: { graded: number; honoured: number; voided: number; lapsed: number; retracted: number; revoked: number; voidStreak: number; windowCount: number; realisedPnl: number };
   brier: number | null;
   tier: number;
   denomination: number;
@@ -84,6 +84,7 @@ export interface VaultView {
 }
 
 // ── events, read incrementally in 5,000-block chunks (the public RPC refuses ranges ≥ 10,000)
+export const mandateEvents: { tx: Hex; block: number; by: Hex; tightening: boolean; mandate: RawMandate }[] = [];
 const evCache: { to: bigint; sworn: Map<number, { statement: string; rationaleHash: Hex; tx: Hex; block: number }>; settled: Map<number, { tx: Hex; settler: Hex; sqErr: number }> } = {
   to: DEPLOY_BLOCK > 0n ? DEPLOY_BLOCK - 1n : 0n,
   sworn: new Map(),
@@ -102,6 +103,9 @@ async function syncEvents() {
       if (l.eventName === "NoteSworn") {
         const a = l.args as { id: bigint; statement: string; rationaleHash: Hex };
         evCache.sworn.set(Number(a.id), { statement: a.statement, rationaleHash: a.rationaleHash, tx: l.transactionHash!, block: Number(l.blockNumber) });
+      } else if (l.eventName === "MandateChanged") {
+        const a = l.args as { mandate: RawMandate; by: Hex; tightening: boolean };
+        mandateEvents.push({ tx: l.transactionHash!, block: Number(l.blockNumber), by: a.by, tightening: a.tightening, mandate: a.mandate });
       } else if (l.eventName === "NoteSettled") {
         const a = l.args as { id: bigint; settler: Hex; sqErr: bigint };
         evCache.settled.set(Number(a.id), { tx: l.transactionHash!, settler: a.settler, sqErr: Number(a.sqErr) / 1e8 });
@@ -142,7 +146,7 @@ export async function readVault(): Promise<VaultView> {
   })) as unknown[];
   const [m, l, br, tier, denom, nav, hwm, frozen, dailyLoss, lossDay, exposure, lastSwearAt, noteCount, owner, agent, lockedUsdt, usdtBal] = base as unknown as [
     RawMandate,
-    { graded: number; honoured: number; voided: number; lapsed: number; retracted: number; voidStreak: number; windowCount: number; realisedPnl: bigint },
+    { graded: number; honoured: number; voided: number; lapsed: number; retracted: number; revoked: number; voidStreak: number; windowCount: number; realisedPnl: bigint },
     bigint, number, bigint, bigint, bigint, boolean, bigint, bigint, bigint, bigint, bigint, Hex, Hex, bigint, bigint,
   ];
   const n = ASSETS.length;

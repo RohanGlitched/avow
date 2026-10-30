@@ -1,4 +1,7 @@
-import { ASSETS, DEPLOY_BLOCK, MODE, VAULT } from "./config.js";
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { ASSETS, DATA_DIR, DEPLOY_BLOCK, MODE, VAULT } from "./config.js";
+import type { MainnetPool } from "./market.js";
 import type { Snap } from "./market.js";
 import { TIER_NAMES, TIER_RULE, TIER_SHARE, mandateWords, type VaultView } from "./vault.js";
 import { journal } from "./journal.js";
@@ -9,7 +12,13 @@ import { gasLog, serial } from "./agent.js";
 let hskUsd = 0.087;
 
 /** The State the web app renders (web/lib/types.ts). */
-export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
+let study: unknown = null;
+try {
+  const f = join(DATA_DIR, "study.json");
+  if (existsSync(f)) study = JSON.parse(readFileSync(f, "utf8"));
+} catch {}
+
+export function buildState(snaps: Snap[], v: VaultView, agentAddr: string, mainnetPools: Record<string, MainnetPool> = {}) {
   const hskSnap = snaps.find((s) => s.sym === "WHSK");
   if (hskSnap?.fairPx) hskUsd = hskSnap.fairPx;
   const maxNotional = Number(v.mandate.maxNotional) / 1e6;
@@ -17,6 +26,8 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
   const now = Math.floor(Date.now() / 1000);
   const since = now - 86_400;
   const gas24 = gasLog.filter((g) => g.t >= since).reduce((s, g) => s + g.hsk, 0);
+  // gas priced at mainnet's 500 gwei even in rehearsal, so the net figure is honest about what mainnet costs
+  const gasUsdAll = gasLog.reduce((s, g) => s + (g.gas ? g.gas * 500e-9 : g.hsk), 0) * hskUsd;
   const spend = spend24h();
   const pxOf = (sym: string) => snaps.find((s) => s.sym === sym);
 
@@ -63,6 +74,14 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
       pnlUsd: n.status === "outstanding" ? undefined : n.pnl,
       sqError: n.sqErr,
       livePx: n.status === "outstanding" ? pxOf(a.sym)?.twapPx ?? undefined : undefined,
+      // marked at the live TWAP, less the 0.30% fee to close
+      unrealisedPnlUsd: (() => {
+        const px = pxOf(a.sym)?.twapPx;
+        if (n.status !== "outstanding" || !px) return undefined;
+        return n.side === 0
+          ? (Number(n.amountOut) / 10 ** a.decimals) * px * 0.997 - Number(n.amountIn) / 1e6
+          : Number(n.amountOut) / 1e6 - (Number(n.amountIn) / 10 ** a.decimals) * px * 1.003;
+      })(),
     };
   });
 
@@ -92,6 +111,7 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
     netFlowUsd3h: s.netFlowUsd3h,
     maxSwapUsd3h: s.maxSwapUsd3h,
     history: history.of(s.sym).map((h) => ({ t: h.t, dex: h.dex, cex: h.cex })),
+    mainnet: MODE === "mainnet" ? { twapPx: s.twapPx, spotPx: s.spotPx, lastSwapAgoSec: s.lastSwapAgoSec, swaps3h: s.swaps3h } : mainnetPools[s.sym] ?? null,
   }));
 
   const beat = journal.lastBeat();
@@ -125,7 +145,13 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
       hwmUsd: v.hwm,
       frozen: v.frozen,
       dailyLossUsd: v.dailyLoss,
+      revoked: v.ledger.revoked,
+      gasUsdAll: Number(gasUsdAll.toFixed(4)),
+      modelUsdAll: Number(spendAll().usd.toFixed(4)),
+      netPnlUsd: Number((v.ledger.realisedPnl - gasUsdAll - spendAll().usd).toFixed(4)),
     },
+    simulatedOutsideTraders: MODE === "fork-rehearsal",
+    study,
     holdings,
     notes,
     market,

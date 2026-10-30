@@ -15,9 +15,9 @@ const w = createWalletClient({ account: deployer, chain: hsk, transport: http(RP
 const poolAbi = parseAbi(["function slot0() view returns (uint160,int24,uint16,uint16,uint16,uint8,bool)", "function increaseObservationCardinalityNext(uint16)"]);
 
 const mandate = {
-  maxSlippageBps: 60, maxSpotDevBps: 100, maxStopBps: 800, minRewardRiskX100: 120, maxDrawdownBps: 1500,
+  maxSlippageBps: 60, maxSpotDevBps: 100, maxStopBps: 300, minRewardRiskX100: 120, maxDrawdownBps: 1500,
   cooldown: Number(process.env.DICTUM_COOLDOWN ?? 600), maxHorizon: 24 * 3600,
-  maxNotional: BigInt(process.env.DICTUM_MAX_NOTIONAL ?? 50_000_000), maxExposure: BigInt(process.env.DICTUM_MAX_EXPOSURE ?? 150_000_000),
+  maxNotional: BigInt(process.env.DICTUM_MAX_NOTIONAL ?? 250_000_000), maxExposure: BigInt(process.env.DICTUM_MAX_EXPOSURE ?? 250_000_000),
   dailyLossLimit: BigInt(process.env.DICTUM_DAILY_LOSS ?? 10_000_000), assetMask: 7, paused: false,
 };
 

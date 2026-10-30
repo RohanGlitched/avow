@@ -1,0 +1,863 @@
+{
+  "meta": {
+    "startT": 1790800800,
+    "endT": 1793392800,
+    "startBlock": 28226833,
+    "head": 29522956,
+    "step": 300,
+    "blockTimeInterpErrS": 0,
+    "rpcCalls": 14,
+    "rpcRetries": 0
+  },
+  "assets": {
+    "WETH": {
+      "pool": "0xb92b79ed6b370d5cfee2e14b1d0983c258304c16",
+      "token0IsUsdt": false,
+      "swapsInWindow": 138,
+      "activeFromIso": "2026-09-30T20:40:00.000Z",
+      "medianSignedGapBps": -0.4,
+      "perDay": [
+        {
+          "day": "2026-09-30",
+          "medianAbsBps": 29,
+          "medianSignedBps": -21,
+          "swaps": 8
+        },
+        {
+          "day": "2026-10-01",
+          "medianAbsBps": 20,
+          "medianSignedBps": -5,
+          "swaps": 21
+        },
+        {
+          "day": "2026-10-02",
+          "medianAbsBps": 33,
+          "medianSignedBps": -33,
+          "swaps": 2
+        },
+        {
+          "day": "2026-10-03",
+          "medianAbsBps": 42,
+          "medianSignedBps": -42,
+          "swaps": 3
+        },
+        {
+          "day": "2026-10-04",
+          "medianAbsBps": 27,
+          "medianSignedBps": -16,
+          "swaps": 10
+        },
+        {
+          "day": "2026-10-05",
+          "medianAbsBps": 28,
+          "medianSignedBps": -8,
+          "swaps": 2
+        },
+        {
+          "day": "2026-10-06",
+          "medianAbsBps": 20,
+          "medianSignedBps": -2,
+          "swaps": 19
+        },
+        {
+          "day": "2026-10-07",
+          "medianAbsBps": 27,
+          "medianSignedBps": -6,
+          "swaps": 17
+        },
+        {
+          "day": "2026-10-08",
+          "medianAbsBps": 26,
+          "medianSignedBps": -11,
+          "swaps": 8
+        },
+        {
+          "day": "2026-10-09",
+          "medianAbsBps": 35,
+          "medianSignedBps": -35,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-10",
+          "medianAbsBps": 80,
+          "medianSignedBps": -80,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-11",
+          "medianAbsBps": 207,
+          "medianSignedBps": -207,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-12",
+          "medianAbsBps": 99,
+          "medianSignedBps": -87,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-13",
+          "medianAbsBps": 94,
+          "medianSignedBps": -67,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-14",
+          "medianAbsBps": 437,
+          "medianSignedBps": 437,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-15",
+          "medianAbsBps": 164,
+          "medianSignedBps": 164,
+          "swaps": 2
+        },
+        {
+          "day": "2026-10-16",
+          "medianAbsBps": 239,
+          "medianSignedBps": 239,
+          "swaps": 1
+        },
+        {
+          "day": "2026-10-17",
+          "medianAbsBps": 119,
+          "medianSignedBps": 119,
+          "swaps": 7
+        },
+        {
+          "day": "2026-10-18",
+          "medianAbsBps": 89,
+          "medianSignedBps": -83,
+          "swaps": 3
+        },
+        {
+          "day": "2026-10-19",
+          "medianAbsBps": 33,
+          "medianSignedBps": 7,
+          "swaps": 3
+        },
+        {
+          "day": "2026-10-20",
+          "medianAbsBps": 83,
+          "medianSignedBps": -83,
+          "swaps": 7
+        },
+        {
+          "day": "2026-10-21",
+          "medianAbsBps": 132,
+          "medianSignedBps": 132,
+          "swaps": 8
+        },
+        {
+          "day": "2026-10-22",
+          "medianAbsBps": 28,
+          "medianSignedBps": 27,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-23",
+          "medianAbsBps": 99,
+          "medianSignedBps": 99,
+          "swaps": 5
+        },
+        {
+          "day": "2026-10-24",
+          "medianAbsBps": 126,
+          "medianSignedBps": 126,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-25",
+          "medianAbsBps": 68,
+          "medianSignedBps": 68,
+          "swaps": 4
+        },
+        {
+          "day": "2026-10-26",
+          "medianAbsBps": 74,
+          "medianSignedBps": 66,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-27",
+          "medianAbsBps": 77,
+          "medianSignedBps": -77,
+          "swaps": 2
+        },
+        {
+          "day": "2026-10-28",
+          "medianAbsBps": 49,
+          "medianSignedBps": 28,
+          "swaps": 3
+        },
+        {
+          "day": "2026-10-29",
+          "medianAbsBps": 46,
+          "medianSignedBps": 20,
+          "swaps": 3
+        }
+      ],
+      "samplesValid": 8641,
+      "medianAbsGapBps": 59.3,
+      "p90AbsGapBps": 210.6,
+      "shareTimeAbs40plus": 0.64,
+      "shareOfSamplesByBucket": {
+        "40–60 bps": 0.144,
+        "60–100 bps": 0.176,
+        "100–200 bps": 0.212,
+        ">200 bps": 0.108
+      },
+      "episodesTotal": 208,
+      "episodesCensoredLast12h": 14,
+      "episodesNeverConverged": 0,
+      "episodesPoolAboveExchange": 104,
+      "medianSecondsBetweenSwaps": 3094,
+      "exchangeZeroVolumeCandleShare": 0,
+      "sampleLevelAnyEntry": [
+        {
+          "gapBucket": "40–60 bps",
+          "samples": 1207,
+          "shareConvergedWithin12h": 0.86,
+          "sharePoolMovedHalfWithin12h": 0.537
+        },
+        {
+          "gapBucket": "60–100 bps",
+          "samples": 1513,
+          "shareConvergedWithin12h": 0.648,
+          "sharePoolMovedHalfWithin12h": 0.225
+        },
+        {
+          "gapBucket": "100–200 bps",
+          "samples": 1827,
+          "shareConvergedWithin12h": 0.595,
+          "sharePoolMovedHalfWithin12h": 0.315
+        },
+        {
+          "gapBucket": ">200 bps",
+          "samples": 935,
+          "shareConvergedWithin12h": 0.195,
+          "sharePoolMovedHalfWithin12h": 0.222
+        }
+      ],
+      "byPoolActivityAtEntry": [
+        {
+          "activity": "live (swap within prior 12h)",
+          "episodes": 141,
+          "convergedWithin12h": 137,
+          "poolSideOfConverged": 16,
+          "poolMovedHalfWithin12h": 89
+        },
+        {
+          "activity": "dormant (no swap in prior 12h)",
+          "episodes": 53,
+          "convergedWithin12h": 47,
+          "poolSideOfConverged": 0,
+          "poolMovedHalfWithin12h": 14
+        }
+      ],
+      "convergedAtAnyTimeInWindow": [
+        {
+          "gapBucket": "40–60 bps",
+          "episodes": 170,
+          "convergedAfter12hOrLater": 7,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": "60–100 bps",
+          "episodes": 23,
+          "convergedAfter12hOrLater": 3,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": "100–200 bps",
+          "episodes": 1,
+          "convergedAfter12hOrLater": 0,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": ">200 bps",
+          "episodes": 0,
+          "convergedAfter12hOrLater": 0,
+          "neverConverged": 0
+        }
+      ]
+    },
+    "WBTC": {
+      "pool": "0xd9ea2ce468957ba49ccc38c4758ed6ecd561449a",
+      "token0IsUsdt": false,
+      "swapsInWindow": 85,
+      "activeFromIso": "2026-09-30T20:40:00.000Z",
+      "medianSignedGapBps": 0.1,
+      "perDay": [
+        {
+          "day": "2026-09-30",
+          "medianAbsBps": 32,
+          "medianSignedBps": -6,
+          "swaps": 5
+        },
+        {
+          "day": "2026-10-01",
+          "medianAbsBps": 21,
+          "medianSignedBps": -2,
+          "swaps": 14
+        },
+        {
+          "day": "2026-10-02",
+          "medianAbsBps": 53,
+          "medianSignedBps": -53,
+          "swaps": 1
+        },
+        {
+          "day": "2026-10-03",
+          "medianAbsBps": 41,
+          "medianSignedBps": -41,
+          "swaps": 2
+        },
+        {
+          "day": "2026-10-04",
+          "medianAbsBps": 27,
+          "medianSignedBps": -15,
+          "swaps": 11
+        },
+        {
+          "day": "2026-10-05",
+          "medianAbsBps": 35,
+          "medianSignedBps": -15,
+          "swaps": 4
+        },
+        {
+          "day": "2026-10-06",
+          "medianAbsBps": 23,
+          "medianSignedBps": 11,
+          "swaps": 9
+        },
+        {
+          "day": "2026-10-07",
+          "medianAbsBps": 26,
+          "medianSignedBps": -3,
+          "swaps": 4
+        },
+        {
+          "day": "2026-10-08",
+          "medianAbsBps": 44,
+          "medianSignedBps": -44,
+          "swaps": 6
+        },
+        {
+          "day": "2026-10-09",
+          "medianAbsBps": 20,
+          "medianSignedBps": -20,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-10",
+          "medianAbsBps": 51,
+          "medianSignedBps": -51,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-11",
+          "medianAbsBps": 106,
+          "medianSignedBps": -106,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-12",
+          "medianAbsBps": 87,
+          "medianSignedBps": -80,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-13",
+          "medianAbsBps": 97,
+          "medianSignedBps": -87,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-14",
+          "medianAbsBps": 139,
+          "medianSignedBps": 139,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-15",
+          "medianAbsBps": 59,
+          "medianSignedBps": 59,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-16",
+          "medianAbsBps": 129,
+          "medianSignedBps": 129,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-17",
+          "medianAbsBps": 86,
+          "medianSignedBps": 86,
+          "swaps": 3
+        },
+        {
+          "day": "2026-10-18",
+          "medianAbsBps": 84,
+          "medianSignedBps": -79,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-19",
+          "medianAbsBps": 37,
+          "medianSignedBps": -33,
+          "swaps": 1
+        },
+        {
+          "day": "2026-10-20",
+          "medianAbsBps": 121,
+          "medianSignedBps": -121,
+          "swaps": 5
+        },
+        {
+          "day": "2026-10-21",
+          "medianAbsBps": 94,
+          "medianSignedBps": 86,
+          "swaps": 6
+        },
+        {
+          "day": "2026-10-22",
+          "medianAbsBps": 35,
+          "medianSignedBps": 35,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-23",
+          "medianAbsBps": 102,
+          "medianSignedBps": 102,
+          "swaps": 4
+        },
+        {
+          "day": "2026-10-24",
+          "medianAbsBps": 21,
+          "medianSignedBps": 15,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-25",
+          "medianAbsBps": 68,
+          "medianSignedBps": 68,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-26",
+          "medianAbsBps": 87,
+          "medianSignedBps": 87,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-27",
+          "medianAbsBps": 27,
+          "medianSignedBps": -26,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-28",
+          "medianAbsBps": 71,
+          "medianSignedBps": 47,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-29",
+          "medianAbsBps": 80,
+          "medianSignedBps": 63,
+          "swaps": 10
+        }
+      ],
+      "samplesValid": 8641,
+      "medianAbsGapBps": 52.5,
+      "p90AbsGapBps": 131.5,
+      "shareTimeAbs40plus": 0.637,
+      "shareOfSamplesByBucket": {
+        "40–60 bps": 0.199,
+        "60–100 bps": 0.193,
+        "100–200 bps": 0.234,
+        ">200 bps": 0.011
+      },
+      "episodesTotal": 147,
+      "episodesCensoredLast12h": 3,
+      "episodesNeverConverged": 0,
+      "episodesPoolAboveExchange": 75,
+      "medianSecondsBetweenSwaps": 4644,
+      "exchangeZeroVolumeCandleShare": 0,
+      "sampleLevelAnyEntry": [
+        {
+          "gapBucket": "40–60 bps",
+          "samples": 1701,
+          "shareConvergedWithin12h": 0.804,
+          "sharePoolMovedHalfWithin12h": 0.476
+        },
+        {
+          "gapBucket": "60–100 bps",
+          "samples": 1638,
+          "shareConvergedWithin12h": 0.627,
+          "sharePoolMovedHalfWithin12h": 0.302
+        },
+        {
+          "gapBucket": "100–200 bps",
+          "samples": 1963,
+          "shareConvergedWithin12h": 0.505,
+          "sharePoolMovedHalfWithin12h": 0.185
+        },
+        {
+          "gapBucket": ">200 bps",
+          "samples": 89,
+          "shareConvergedWithin12h": 0.91,
+          "sharePoolMovedHalfWithin12h": 0.18
+        }
+      ],
+      "byPoolActivityAtEntry": [
+        {
+          "activity": "live (swap within prior 12h)",
+          "episodes": 82,
+          "convergedWithin12h": 78,
+          "poolSideOfConverged": 11,
+          "poolMovedHalfWithin12h": 67
+        },
+        {
+          "activity": "dormant (no swap in prior 12h)",
+          "episodes": 62,
+          "convergedWithin12h": 54,
+          "poolSideOfConverged": 1,
+          "poolMovedHalfWithin12h": 10
+        }
+      ],
+      "convergedAtAnyTimeInWindow": [
+        {
+          "gapBucket": "40–60 bps",
+          "episodes": 134,
+          "convergedAfter12hOrLater": 9,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": "60–100 bps",
+          "episodes": 10,
+          "convergedAfter12hOrLater": 3,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": "100–200 bps",
+          "episodes": 0,
+          "convergedAfter12hOrLater": 0,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": ">200 bps",
+          "episodes": 0,
+          "convergedAfter12hOrLater": 0,
+          "neverConverged": 0
+        }
+      ]
+    },
+    "WHSK": {
+      "pool": "0x4ff515761864e7838b0adb8b5b2b8b7a068905dc",
+      "token0IsUsdt": false,
+      "swapsInWindow": 1924,
+      "activeFromIso": "2026-09-30T20:40:00.000Z",
+      "medianSignedGapBps": 9,
+      "perDay": [
+        {
+          "day": "2026-09-30",
+          "medianAbsBps": 51,
+          "medianSignedBps": -50,
+          "swaps": 185
+        },
+        {
+          "day": "2026-10-01",
+          "medianAbsBps": 32,
+          "medianSignedBps": -29,
+          "swaps": 128
+        },
+        {
+          "day": "2026-10-02",
+          "medianAbsBps": 41,
+          "medianSignedBps": 33,
+          "swaps": 75
+        },
+        {
+          "day": "2026-10-03",
+          "medianAbsBps": 55,
+          "medianSignedBps": 55,
+          "swaps": 44
+        },
+        {
+          "day": "2026-10-04",
+          "medianAbsBps": 28,
+          "medianSignedBps": 27,
+          "swaps": 71
+        },
+        {
+          "day": "2026-10-05",
+          "medianAbsBps": 52,
+          "medianSignedBps": 52,
+          "swaps": 61
+        },
+        {
+          "day": "2026-10-06",
+          "medianAbsBps": 57,
+          "medianSignedBps": 55,
+          "swaps": 275
+        },
+        {
+          "day": "2026-10-07",
+          "medianAbsBps": 20,
+          "medianSignedBps": 12,
+          "swaps": 51
+        },
+        {
+          "day": "2026-10-08",
+          "medianAbsBps": 43,
+          "medianSignedBps": -43,
+          "swaps": 50
+        },
+        {
+          "day": "2026-10-09",
+          "medianAbsBps": 32,
+          "medianSignedBps": -32,
+          "swaps": 3
+        },
+        {
+          "day": "2026-10-10",
+          "medianAbsBps": 96,
+          "medianSignedBps": -96,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-11",
+          "medianAbsBps": 93,
+          "medianSignedBps": -93,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-12",
+          "medianAbsBps": 117,
+          "medianSignedBps": 115,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-13",
+          "medianAbsBps": 90,
+          "medianSignedBps": 90,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-14",
+          "medianAbsBps": 527,
+          "medianSignedBps": 527,
+          "swaps": 0
+        },
+        {
+          "day": "2026-10-15",
+          "medianAbsBps": 518,
+          "medianSignedBps": 518,
+          "swaps": 63
+        },
+        {
+          "day": "2026-10-16",
+          "medianAbsBps": 61,
+          "medianSignedBps": 61,
+          "swaps": 13
+        },
+        {
+          "day": "2026-10-17",
+          "medianAbsBps": 60,
+          "medianSignedBps": 60,
+          "swaps": 203
+        },
+        {
+          "day": "2026-10-18",
+          "medianAbsBps": 60,
+          "medianSignedBps": 59,
+          "swaps": 83
+        },
+        {
+          "day": "2026-10-19",
+          "medianAbsBps": 43,
+          "medianSignedBps": -41,
+          "swaps": 11
+        },
+        {
+          "day": "2026-10-20",
+          "medianAbsBps": 56,
+          "medianSignedBps": 39,
+          "swaps": 89
+        },
+        {
+          "day": "2026-10-21",
+          "medianAbsBps": 38,
+          "medianSignedBps": 37,
+          "swaps": 36
+        },
+        {
+          "day": "2026-10-22",
+          "medianAbsBps": 16,
+          "medianSignedBps": -2,
+          "swaps": 49
+        },
+        {
+          "day": "2026-10-23",
+          "medianAbsBps": 54,
+          "medianSignedBps": -53,
+          "swaps": 46
+        },
+        {
+          "day": "2026-10-24",
+          "medianAbsBps": 47,
+          "medianSignedBps": -47,
+          "swaps": 76
+        },
+        {
+          "day": "2026-10-25",
+          "medianAbsBps": 49,
+          "medianSignedBps": -49,
+          "swaps": 138
+        },
+        {
+          "day": "2026-10-26",
+          "medianAbsBps": 54,
+          "medianSignedBps": -54,
+          "swaps": 5
+        },
+        {
+          "day": "2026-10-27",
+          "medianAbsBps": 36,
+          "medianSignedBps": -19,
+          "swaps": 16
+        },
+        {
+          "day": "2026-10-28",
+          "medianAbsBps": 41,
+          "medianSignedBps": 12,
+          "swaps": 125
+        },
+        {
+          "day": "2026-10-29",
+          "medianAbsBps": 31,
+          "medianSignedBps": -11,
+          "swaps": 28
+        }
+      ],
+      "samplesValid": 8641,
+      "medianAbsGapBps": 53.3,
+      "p90AbsGapBps": 116.9,
+      "shareTimeAbs40plus": 0.648,
+      "shareOfSamplesByBucket": {
+        "40–60 bps": 0.241,
+        "60–100 bps": 0.277,
+        "100–200 bps": 0.083,
+        ">200 bps": 0.048
+      },
+      "episodesTotal": 354,
+      "episodesCensoredLast12h": 9,
+      "episodesNeverConverged": 0,
+      "episodesPoolAboveExchange": 178,
+      "medianSecondsBetweenSwaps": 6,
+      "exchangeZeroVolumeCandleShare": 0.398,
+      "sampleLevelAnyEntry": [
+        {
+          "gapBucket": "40–60 bps",
+          "samples": 2061,
+          "shareConvergedWithin12h": 0.951,
+          "sharePoolMovedHalfWithin12h": 0.41
+        },
+        {
+          "gapBucket": "60–100 bps",
+          "samples": 2385,
+          "shareConvergedWithin12h": 0.86,
+          "sharePoolMovedHalfWithin12h": 0.288
+        },
+        {
+          "gapBucket": "100–200 bps",
+          "samples": 717,
+          "shareConvergedWithin12h": 0.64,
+          "sharePoolMovedHalfWithin12h": 0.054
+        },
+        {
+          "gapBucket": ">200 bps",
+          "samples": 410,
+          "shareConvergedWithin12h": 0.239,
+          "sharePoolMovedHalfWithin12h": 0.61
+        }
+      ],
+      "byPoolActivityAtEntry": [
+        {
+          "activity": "live (swap within prior 12h)",
+          "episodes": 324,
+          "convergedWithin12h": 320,
+          "poolSideOfConverged": 1,
+          "poolMovedHalfWithin12h": 118
+        },
+        {
+          "activity": "dormant (no swap in prior 12h)",
+          "episodes": 21,
+          "convergedWithin12h": 18,
+          "poolSideOfConverged": 0,
+          "poolMovedHalfWithin12h": 1
+        }
+      ],
+      "convergedAtAnyTimeInWindow": [
+        {
+          "gapBucket": "40–60 bps",
+          "episodes": 276,
+          "convergedAfter12hOrLater": 5,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": "60–100 bps",
+          "episodes": 57,
+          "convergedAfter12hOrLater": 2,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": "100–200 bps",
+          "episodes": 11,
+          "convergedAfter12hOrLater": 0,
+          "neverConverged": 0
+        },
+        {
+          "gapBucket": ">200 bps",
+          "episodes": 1,
+          "convergedAfter12hOrLater": 0,
+          "neverConverged": 0
+        }
+      ]
+    }
+  },
+  "pooledAllAssets": [
+    {
+      "gapBucket": "40–60 bps",
+      "episodes": 580,
+      "convergedWithin12hShare": 0.964,
+      "convergedWithin2hShare": 0.833,
+      "poolMovedHalfWithin12hShare": 0.452
+    },
+    {
+      "gapBucket": "60–100 bps",
+      "episodes": 90,
+      "convergedWithin12hShare": 0.911,
+      "convergedWithin2hShare": 0.733,
+      "poolMovedHalfWithin12hShare": 0.389
+    },
+    {
+      "gapBucket": "100–200 bps",
+      "episodes": 12,
+      "convergedWithin12hShare": 1,
+      "convergedWithin2hShare": 1,
+      "poolMovedHalfWithin12hShare": 0.167
+    },
+    {
+      "gapBucket": ">200 bps",
+      "episodes": 1,
+      "convergedWithin12hShare": 1,
+      "convergedWithin2hShare": 0,
+      "poolMovedHalfWithin12hShare": 0
+    }
+  ]
+}

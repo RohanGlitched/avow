@@ -200,6 +200,40 @@ export async function snapshot(): Promise<Snap[]> {
   );
 }
 
+export interface MainnetPool { twapPx: number | null; spotPx: number | null; lastSwapAgoSec: number | null; swaps3h: number | null }
+const mainCache = new Map<string, { t: number; v: MainnetPool }>();
+const pxOfTick = (a: AssetCfg, tick: number, assetIs0: boolean) => {
+  const raw = Math.pow(1.0001, tick); // token1 per token0 in raw units
+  return assetIs0 ? raw * 10 ** (a.decimals - 6) : 1 / (raw * 10 ** (6 - a.decimals));
+};
+/** The same pool on HSK mainnet (during rehearsal the fork drifts from it; this is what the real market shows). */
+export async function mainnetPool(a: AssetCfg): Promise<MainnetPool> {
+  const c = mainCache.get(a.sym);
+  if (c && Date.now() - c.t < 60_000) return c.v;
+  const pAbi = parseAbi(["function slot0() view returns (uint160,int24,uint16,uint16,uint16,uint8,bool)", "function observe(uint32[]) view returns (int56[],uint160[])", "function observations(uint256) view returns (uint32,int56,uint160,bool)"]);
+  try {
+    const assetIs0 = a.token.toLowerCase() < USDT.toLowerCase();
+    const s0 = await mainnet.readContract({ address: a.pool, abi: pAbi, functionName: "slot0" });
+    let twap: number | null = null;
+    try {
+      const o = await mainnet.readContract({ address: a.pool, abi: pAbi, functionName: "observe", args: [[300, 0]] });
+      twap = pxOfTick(a, Math.floor(Number(o[0][1] - o[0][0]) / 300), assetIs0);
+    } catch {}
+    const ob = await mainnet.readContract({ address: a.pool, abi: pAbi, functionName: "observations", args: [BigInt(s0[2])] });
+    const blk = await mainnet.getBlock();
+    let swaps3h: number | null = null;
+    try {
+      const logs = await mainnet.getLogs({ address: a.pool, event: swapEv, fromBlock: blk.number - 4_999n, toBlock: blk.number });
+      swaps3h = logs.length;
+    } catch {}
+    const v = { twapPx: twap, spotPx: pxOfTick(a, Number(s0[1]), assetIs0), lastSwapAgoSec: Number(blk.timestamp) - Number(ob[0]), swaps3h };
+    mainCache.set(a.sym, { t: Date.now(), v });
+    return v;
+  } catch {
+    return c?.v ?? { twapPx: null, spotPx: null, lastSwapAgoSec: null, swaps3h: null };
+  }
+}
+
 export function assetOf(sym: Sym): AssetCfg {
   return ASSETS.find((a) => a.sym === sym)!;
 }

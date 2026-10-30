@@ -1,5 +1,7 @@
-// Rehearsal only. On the fork nobody else trades, so simulated outside traders do what real ones would: arbitrageurs
-// pull the fork's HSKSwap pools toward the live exchange price, and noise traders swap small random amounts.
+// Rehearsal only. On the fork nobody else trades, so simulated outside traders stand in for real ones, calibrated to what
+// 30 days of real HSKSwap swaps show (research/STUDY.md): swaps arrive at each pool's measured rate (WETH 4.6, WBTC 2.8,
+// WHSK 64.1 a day, exponential gaps), and about half of them are arbitrageurs who close part of the gap to the exchanges;
+// the rest are noise traders of $20–250.
 // Never runs against mainnet (index.ts gates it on DICTUM_MODE=fork-rehearsal).
 import { createWalletClient, encodeAbiParameters, http, keccak256, parseAbi, toHex, type Address } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
@@ -26,6 +28,8 @@ async function fund() {
 }
 
 const nextAt = new Map<string, number>();
+const SWAPS_PER_DAY: Record<string, number> = { WETH: 4.6, WBTC: 2.8, WHSK: 64.1 };
+const nextGap = (sym: string) => -Math.log(1 - Math.random()) * (86_400_000 / (SWAPS_PER_DAY[sym] ?? 5));
 const rnd = (a: number, b: number) => a + Math.random() * (b - a);
 
 async function swap(tokenIn: Address, tokenOut: Address, amountIn: bigint) {
@@ -38,12 +42,12 @@ export async function simulateOutsideTraders(snaps: Snap[]) {
   const now = Date.now();
   for (const s of snaps) {
     const a = ASSETS.find((x) => x.sym === s.sym)!;
-    const due = nextAt.get(s.sym) ?? now + rnd(2, 8) * 60_000;
+    const due = nextAt.get(s.sym) ?? now + nextGap(s.sym);
     if (!nextAt.has(s.sym)) nextAt.set(s.sym, due);
     if (now < due || s.spotPx === null || s.fairPx === null || s.poolUsdt === null) continue;
-    nextAt.set(s.sym, now + rnd(4, 20) * 60_000);
+    nextAt.set(s.sym, now + nextGap(s.sym));
     const gap = (s.fairPx - s.spotPx) / s.spotPx; // + = pool cheap
-    if (Math.abs(gap) > 0.0035 && Math.random() < 0.65) {
+    if (Math.abs(gap) > 0.0035 && Math.random() < 0.5) {
       // an arbitrageur closes part of the gap in a few clips
       const goal = s.fairPx - gap * s.spotPx * rnd(0.1, 0.5);
       for (let i = 0; i < 10; i++) {
