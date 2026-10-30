@@ -4,8 +4,16 @@
   "type": "module",
   "scripts": {
     "build": "esbuild src/index.ts src/deploy.ts src/keygen.ts src/fund.ts src/addr.ts src/owner.ts --bundle --platform=node --format=esm --target=node22 --outdir=dist --banner:js=\"import{createRequire}from'module';const require=createRequire(import.meta.url);\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
-  "dependencies": { "viem": "2.38.4" },
-  "devDependencies": { "esbuild": "0.25.10", "typescript": "5.9.3", "@types/node": "22.18.6" }
+  "dependencies": {
+    "viem": "2.38.4"
+  },
+  "devDependencies": {
+    "@types/node": "22.18.6",
+    "esbuild": "0.25.10",
+    "typescript": "5.9.3",
+    "vitest": "^3.2.4"
+  }
 }

@@ -1,0 +1,33 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  agent:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: agent } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npx vitest run
+  web:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: web } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm ci
+      - run: npx tsc --noEmit
+  contracts:
+    runs-on: ubuntu-latest
+    defaults: { run: { working-directory: contracts } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - run: |
+          git clone --depth 1 -b 0.8 https://github.com/Uniswap/v3-core lib/v3-core
+          git clone --depth 1 https://github.com/foundry-rs/forge-std lib/forge-std
+      - run: forge build --sizes
+      # the fork tests read HSK mainnet state; the public RPC rate-limits shared CI runners, so they run locally (see VERIFY.md)
