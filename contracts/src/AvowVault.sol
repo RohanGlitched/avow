@@ -198,7 +198,7 @@ contract AvowVault {
         Asset[] memory assets_,
         Mandate memory mandate_
     ) {
-        require(assets_.length > 0 && assets_.length <= 8, "assets");
+        if (assets_.length == 0 || assets_.length > 8) revert BadAsset();
         owner = owner_;
         agent = agent_;
         usdt = usdt_;
@@ -207,8 +207,7 @@ contract AvowVault {
             Asset memory a = assets_[i];
             address t0 = IUniswapV3PoolLike(a.pool).token0();
             address t1 = IUniswapV3PoolLike(a.pool).token1();
-            require((t0 == a.token && t1 == usdt_) || (t1 == a.token && t0 == usdt_), "pool");
-            require(IUniswapV3PoolLike(a.pool).fee() == a.fee, "fee");
+            if (!((t0 == a.token && t1 == usdt_) || (t1 == a.token && t0 == usdt_)) || IUniswapV3PoolLike(a.pool).fee() != a.fee) revert BadAsset();
             a.assetIsToken0 = t0 == a.token;
             a.decimals = IERC20(a.token).decimals();
             _assets.push(a);
@@ -553,9 +552,13 @@ contract AvowVault {
         Mandate memory m = _mandate;
         uint256 exitSlip = s == Status.Retracted ? n.exitSlipBps - 2 * uint256(a.fee) / 100 : n.exitSlipBps;
         (bool hasTwap, uint256 px) = _tryTwap(a);
-        if (!hasTwap) {
-            (, int24 tick,,,,,) = IUniswapV3PoolLike(a.pool).slot0();
-            px = _pxAtTick(a, tick);
+        uint256 spot = _spot(a);
+        if (!hasTwap) px = spot;
+        if (s == Status.Void) {
+            // a stop executes in a fast crash: price the floor at the worse of TWAP and spot, but never more than four times the
+            // exit slippage beyond the TWAP (an attacker who shoves the live price further cannot make the stop fill anywhere)
+            uint256 band = px * 4 * exitSlip / BPS;
+            px = n.side == Side.Long ? _max(spot < px ? spot : px, px - band) : _min(spot > px ? spot : px, px + band);
         }
 
         int256 pnl;
@@ -683,6 +686,14 @@ contract AvowVault {
         uint256 spot = _pxAtTick(a, tick);
         uint256 dev = (spot > twap ? spot - twap : twap - spot) * BPS / twap;
         if (dev > m.maxSpotDevBps) revert SpotDeviation(spot, twap, dev);
+    }
+
+    function _max(uint256 x, uint256 y) internal pure returns (uint256) {
+        return x > y ? x : y;
+    }
+
+    function _min(uint256 x, uint256 y) internal pure returns (uint256) {
+        return x < y ? x : y;
     }
 
     function _bounds(Mandate memory m) internal pure {

@@ -551,6 +551,28 @@ contract AvowVaultForkTest is Test {
         v.tightenStop(id, uint96(uint256(n.entryPx) * 9970 / 10_000)); // 0.30%: allowed
     }
 
+    function test_theStopExecutesInAFastCrash() public {
+        uint256 id = _swear(ETH, AvowVault.Side.Long, 10e6, 8000); // 2% stop
+        uint256 vd = v.getNote(id).voidPx;
+        while (v.spotPx(ETH) > vd * 9700 / 10_000) _push(ETH, false, 0.1e18); // spot ~3% below the void level
+        uint256 waited;
+        while (true) {
+            (bool ok,) = v.settleable(id);
+            if (ok) break;
+            _wait(10);
+            waited += 10;
+            require(waited < 600, "never settleable");
+        }
+        // the 5-minute TWAP has only just crossed; the live price is ~3% lower: the stop must fill now, not wait for the TWAP
+        assertLt(v.spotPx(ETH) * 10_000, v.twapPx(ETH) * 9_900, "spot well below the TWAP");
+        vm.prank(stranger);
+        v.settle(id);
+        AvowVault.Note memory n = v.getNote(id);
+        assertEq(uint8(n.status), uint8(AvowVault.Status.Void));
+        emit log_named_uint("seconds after the crash", waited);
+        emit log_named_int("pnl on a $10 note", n.pnl);
+    }
+
     function test_navCountsEverything() public view {
         uint256 n = v.nav();
         // 200 USDT + 0.02 ETH + 300 HSK + 0.0005 BTC ≈ 200 + 44.7 + 26.2 + 38.4
