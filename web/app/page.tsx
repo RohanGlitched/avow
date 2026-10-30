@@ -15,7 +15,7 @@ import { CLAUSES } from "@/lib/mandate";
 import { FORK_TESTS_PASSING, GUARANTEES } from "@/lib/guarantees";
 import { ASSET_LABEL, num, pct, px, short, time, usd, when } from "@/lib/format";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const s = await getState();

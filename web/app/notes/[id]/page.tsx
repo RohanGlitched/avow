@@ -13,12 +13,7 @@ import { ownLink } from "@/lib/chain";
 import { noteRosette, hashBytes } from "@/lib/rosette";
 import { ASSET_LABEL, STATUS_EXPLAIN, duration, num, pct, px, rewardRisk, signed, stopBps, usd, when } from "@/lib/format";
 
-export const revalidate = 15;
-
-export async function generateStaticParams() {
-  const s = await getState();
-  return s.notes.map((n) => ({ id: String(n.id) }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;

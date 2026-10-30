@@ -6,7 +6,7 @@ import { Rosette } from "./Rosette";
 import { Needle, Until } from "./Live";
 import { Hex } from "./Ovi";
 import { Crossing, InkStamp, Perforation, Pantograph } from "./Stamps";
-import { ASSET_LABEL, STATUS_WORD, denom, num, pct, px, tidy, usd, when } from "@/lib/format";
+import { ASSET_LABEL, STATUS_WORD, denom, num, pct, px, splitStatement, usd, when } from "@/lib/format";
 import { ownLink } from "@/lib/chain";
 import type { Note as NoteT, State } from "@/lib/types";
 
@@ -64,7 +64,7 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
   const txHref = ownLink(state, "tx", note.openTx);
   const settleHref = ownLink(state, "tx", note.settleTx);
   const micro = `${note.statement} Statement hash ${note.hash}. Sworn in transaction ${note.openTx} at block ${note.openBlock}. ${note.serial}. `;
-  const statement = tidy(note.statement);
+  const { oath: statement, rest: because } = splitStatement(note.statement);
   const words = statement.split(" ");
   const Tag = as;
   const H = headingLevel === 2 ? "h2" : "h3";
@@ -118,6 +118,7 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
                   ))
                 : statement}
             </p>
+            {because && <p className="note__because">{because}</p>}
             <p className="note__terms">
               Payable to the record. Anyone may settle this note once the HSKSwap 5-minute TWAP and the live price are both past a level, or at expiry. Graded against the stated{" "}
               {pct(note.confidence)}.

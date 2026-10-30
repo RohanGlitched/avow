@@ -7,7 +7,7 @@ import { StatusMark } from "@/components/NoteStub";
 import { ASSET_LABEL, STATUS_EXPLAIN, num, usd } from "@/lib/format";
 import type { AssetSym, NoteStatus } from "@/lib/types";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Notes", description: "Every note Avow has sworn on HSK Chain, how it ended and what it cost." };
 
 export default async function NotesPage() {

@@ -7,7 +7,7 @@ import { Crossing } from "@/components/Stamps";
 import { seedHash } from "@/lib/rosette";
 import { day, usd } from "@/lib/format";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Business",
   description: "Avow sells autonomy you can audit: vaults that hold AI agents to a written mandate on chain, grade every trade and let size grow only with a graded record.",

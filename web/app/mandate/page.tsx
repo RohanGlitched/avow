@@ -7,7 +7,7 @@ import { SecHead, Divider } from "@/components/Bits";
 import { CLAUSES, STANDING_CLAUSES, blockedFor, clauseUsage } from "@/lib/mandate";
 import { ASSET_LABEL, time, day } from "@/lib/format";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Mandate", description: "The owner's rules for Avow, enforced by the vault on HSK Chain, with live usage and every blocked attempt." };
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII"];

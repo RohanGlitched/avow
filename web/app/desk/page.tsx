@@ -5,7 +5,7 @@ import { Desk } from "@/components/Desk";
 import { SecHead } from "@/components/Bits";
 import { ASSET_LABEL, pct, px, usd } from "@/lib/format";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Desk", description: "Talk to Avow: positions, P&L, why it did what it did, and changes to the mandate." };
 
 export default async function DeskPage() {

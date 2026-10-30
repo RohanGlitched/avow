@@ -6,7 +6,7 @@ import { SecHead } from "@/components/Bits";
 import { Ago } from "@/components/Live";
 import { num, usd } from "@/lib/format";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Journal", description: "Every decision Avow makes: sworn, declined with reasons, blocked by a clause, settled." };
 
 export default async function JournalPage() {

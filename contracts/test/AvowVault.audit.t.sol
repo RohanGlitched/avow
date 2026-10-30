@@ -194,8 +194,8 @@ contract AvowVaultAuditTest is Test {
         uint256 id = _swear(ETH, AvowVault.Side.Long, 10e6, 8000);
         uint256 vd = v.getNote(id).voidPx;
         while (v.spotPx(ETH) > vd * 9900 / 10_000) _push(ETH, false, 0.05e18);
-        // one tick-moving swap per 2 s block for 280 s: 140 writes, fewer than the ring holds
-        for (uint256 i; i < 140; i++) {
+        // the attack that emptied a 64-slot ring: one tick-moving swap per 2 s block for 140 s
+        for (uint256 i; i < 70; i++) {
             _wait(2);
             if (i % 2 == 0) _push(ETH, false, 0.002e18);
             else _push(ETH, true, 4e6);

@@ -23,7 +23,7 @@ export const viewport: Viewport = {
   ],
 };
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const state = await getState();

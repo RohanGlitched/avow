@@ -98,6 +98,13 @@ export function tidy(statement: string): string {
     .replace(/(\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/g, "$1 $2");
 }
 
+/** The sworn sentence (target, time, void level) and what follows it on chain (odds, the agent's one-line reason). */
+export function splitStatement(statement: string): { oath: string; rest: string } {
+  const t = tidy(statement);
+  const m = t.match(/^([\s\S]*?void at [\d,]+(?:\.\d+)?\.)\s*([\s\S]*)$/);
+  return m ? { oath: m[1], rest: m[2] } : { oath: t, rest: "" };
+}
+
 export const STATUS_WORD: Record<NoteStatus, string> = {
   outstanding: "Outstanding",
   honoured: "Honoured",

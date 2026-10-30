@@ -1,7 +1,7 @@
 // A counterfoil: the stub a cheque book keeps after the note itself has gone out.
 import Link from "next/link";
 import { Rosette } from "./Rosette";
-import { ASSET_LABEL, STATUS_WORD, pct, px, scalePos, tidy, usd, when } from "@/lib/format";
+import { ASSET_LABEL, STATUS_WORD, pct, px, scalePos, splitStatement, usd, when } from "@/lib/format";
 import type { Note } from "@/lib/types";
 
 export function StatusMark({ status }: { status: Note["status"] }) {
@@ -43,7 +43,7 @@ export function NoteStub({ note }: { note: Note }) {
             {note.side === "long" ? "Long" : "Short"} {L}
           </span>
         </div>
-        <p className="stub__statement">{tidy(note.statement)}</p>
+        <p className="stub__statement">{splitStatement(note.statement).oath}</p>
         <p className="stub__meta">
           Sworn {when(note.openedAt)} at <b>{pct(note.confidence)}</b> confidence for <b>{usd(note.notionalUsd)}</b>
           {note.status === "outstanding" && note.livePx != null ? (

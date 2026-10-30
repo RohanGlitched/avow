@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { getState } from "@/lib/data";
 import { curvePoints, noteRosette, pathD } from "@/lib/rosette";
-import { denom, tidy } from "@/lib/format";
+import { denom, splitStatement } from "@/lib/format";
 
 export const runtime = "nodejs";
 export const alt = "Avow: an AI trader on HSK Chain that must swear a falsifiable note before every trade";
@@ -60,7 +60,7 @@ export default async function OG() {
                 <span style={{ fontSize: 38, marginTop: 10, textDecoration: "underline" }}>{d.cents}</span>
               </div>
             </div>
-            <div style={{ fontFamily: "Bodoni", fontSize: 36, lineHeight: 1.3, color: "#173c30" }}>{n ? tidy(n.statement) : "Avow swears before it trades."}</div>
+            <div style={{ fontFamily: "Bodoni", fontSize: 36, lineHeight: 1.3, color: "#173c30" }}>{n ? splitStatement(n.statement).oath : "Avow swears before it trades."}</div>
             <div style={{ display: "flex", justifyContent: "space-between", fontFamily: "Archivo", fontSize: 20, color: "#56645b" }}>
               <span>An AI trader that must swear before it trades</span>
               <span style={{ color: "#2f7d5b" }}>HSK Chain</span>

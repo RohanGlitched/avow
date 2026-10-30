@@ -892,6 +892,15 @@ a.ovi {
   max-width: 34ch;
   font-variant-numeric: lining-nums tabular-nums;
 }
+.note__clause .note__because {
+  font-family: var(--serif);
+  font-style: italic;
+  margin-top: 12px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink-2, var(--ink));
+  max-width: 52ch;
+}
 .note__clause .note__terms {
   font-family: var(--sans);
   font-variation-settings: normal;

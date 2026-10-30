@@ -22,7 +22,7 @@ export function JournalRow({ e, state }: { e: JournalEntry; state: Pick<State, "
   const quiet = e.kind === "heartbeat" || e.kind === "considered";
   return (
     <li className={`jrow${quiet ? " jrow--quiet" : ""}`} id={`j${e.t}`}>
-      <span className="jrow__t">{time(e.t)}</span>
+      <span className="jrow__t" suppressHydrationWarning>{time(e.t)}</span>
       <span className={`jkind jkind--${e.kind}`}>
         <i aria-hidden="true" />
         {KIND_WORD[e.kind]}
@@ -105,7 +105,7 @@ export function JournalList({ entries, state, initial = "all" }: { entries: Jour
       ) : (
         days.map((d) => (
           <section key={d.key} aria-label={d.label}>
-            <h2 className="jday">{d.label}</h2>
+            <h2 className="jday" suppressHydrationWarning>{d.label}</h2>
             <ol className="journal">
               {d.items.map((e) => (
                 <JournalRow key={`${e.t}-${e.kind}-${e.title}`} e={e} state={state} />

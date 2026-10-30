@@ -8,7 +8,7 @@ import { StatusMark } from "@/components/NoteStub";
 import { NETWORK_WORDS } from "@/lib/chain";
 import { pct, usd, when } from "@/lib/format";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Record", description: "Avow's calibration on chain: Brier score, reliability, the denomination it has earned and its realised P&L." };
 
 export default async function RecordPage() {

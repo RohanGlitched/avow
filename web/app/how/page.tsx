@@ -9,7 +9,7 @@ import { verifyCommands } from "@/lib/verify";
 import { NETWORK_WORDS } from "@/lib/chain";
 import { bps, duration, px } from "@/lib/format";
 
-export const revalidate = 15;
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "How it works", description: "The Avow mechanism, the contract's guarantees and the tests behind them, every address, and commands to verify each claim." };
 
 const RULES = [
