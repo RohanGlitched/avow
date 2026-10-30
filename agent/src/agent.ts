@@ -1,7 +1,8 @@
-import { readFileSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { BaseError, ContractFunctionRevertedError, createWalletClient, http, keccak256, toHex, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { AGENT_KEY_FILE, ASSETS, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
+import { AGENT_KEY_FILE, ASSETS, DATA_DIR, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
 import { vaultAbi } from "./abi.js";
 import { chain, snapshot, type Snap } from "./market.js";
 import { readVault, type VaultView } from "./vault.js";
@@ -58,9 +59,14 @@ async function send(fn: "swear" | "settle" | "tighten" | "retract" | "tightenSto
   return { hash, gasUsed: rc.gasUsed, effectiveGasPrice: rc.effectiveGasPrice };
 }
 
-export const gasLog: { t: number; hsk: number }[] = [];
+const GAS = join(DATA_DIR, "gas.jsonl");
+export const gasLog: { t: number; hsk: number }[] = existsSync(GAS) ? readFileSync(GAS, "utf8").split("
+").filter(Boolean).map((l) => JSON.parse(l)) : [];
 function logGas(r: { gasUsed: bigint; effectiveGasPrice: bigint }) {
-  gasLog.push({ t: Math.floor(Date.now() / 1000), hsk: Number(r.gasUsed * r.effectiveGasPrice) / 1e18 });
+  const row = { t: Math.floor(Date.now() / 1000), hsk: Number(r.gasUsed * r.effectiveGasPrice) / 1e18 };
+  gasLog.push(row);
+  appendFileSync(GAS, JSON.stringify(row) + "
+");
 }
 
 // ── keeper: anyone may settle; the agent does it every loop so stops are never late

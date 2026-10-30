@@ -1,6 +1,8 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { GCP_PROJECT, MODELS } from "./config.js";
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { DATA_DIR, GCP_PROJECT, MODELS } from "./config.js";
 
 const exec = promisify(execFile);
 let tok: { v: string; exp: number } | null = null;
@@ -22,7 +24,12 @@ async function token(): Promise<string> {
 }
 
 export interface Usage { model: string; inTokens: number; outTokens: number; usd: number; ms: number }
-export const usageLog: (Usage & { t: number; purpose: string })[] = [];
+mkdirSync(DATA_DIR, { recursive: true });
+const USAGE = join(DATA_DIR, "usage.jsonl");
+export const usageLog: (Usage & { t: number; purpose: string })[] = existsSync(USAGE)
+  ? readFileSync(USAGE, "utf8").split("
+").filter(Boolean).flatMap((l) => { try { return [JSON.parse(l)]; } catch { return []; } }).slice(-5000)
+  : [];
 
 // list prices per 1M tokens (USD); flash-lite is the budget fallback
 const PRICE: Record<string, [number, number]> = { "gemini-3.5-flash": [0.3, 2.5], "gemini-3.5-flash-lite": [0.1, 0.4], "gemini-3.1-flash-lite": [0.1, 0.4] };
@@ -70,7 +77,10 @@ export async function generate(o: GenOpts): Promise<GenResult> {
       const outT = (j.usageMetadata?.candidatesTokenCount ?? 0) + (j.usageMetadata?.thoughtsTokenCount ?? 0);
       const [pi, po] = PRICE[model] ?? [0.3, 2.5];
       const usage = { model, inTokens: inT, outTokens: outT, usd: (inT * pi + outT * po) / 1e6, ms: Date.now() - t0 };
-      usageLog.push({ ...usage, t: Math.floor(Date.now() / 1000), purpose: o.purpose });
+      const row = { ...usage, t: Math.floor(Date.now() / 1000), purpose: o.purpose };
+      usageLog.push(row);
+      appendFileSync(USAGE, JSON.stringify(row) + "
+");
       if (usageLog.length > 5000) usageLog.splice(0, 1000);
       if (!text && !parts.some((p) => p.functionCall)) throw new Error(`empty answer (${j.candidates?.[0]?.finishReason ?? "?"})`);
       if (o.schema) {
@@ -82,6 +92,10 @@ export async function generate(o: GenOpts): Promise<GenResult> {
     }
   }
   throw new Error(errors.join(" | "));
+}
+
+export function spendAll() {
+  return { calls: usageLog.length, usd: usageLog.reduce((s, u) => s + u.usd, 0) };
 }
 
 export function spend24h() {

@@ -3,7 +3,7 @@ import type { Snap } from "./market.js";
 import { TIER_NAMES, TIER_RULE, TIER_SHARE, mandateWords, type VaultView } from "./vault.js";
 import { journal } from "./journal.js";
 import { history } from "./history.js";
-import { spend24h } from "./llm.js";
+import { spend24h, spendAll } from "./llm.js";
 import { gasLog, serial } from "./agent.js";
 
 let hskUsd = 0.087;
@@ -118,6 +118,14 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string) {
     notes,
     market,
     journal: journal.recent(200),
-    costs: { modelCalls24h: spend.calls, modelUsd24h: Number(spend.usd.toFixed(4)), gasHsk24h: Number(gas24.toFixed(5)), gasUsd24h: Number((gas24 * hskUsd).toFixed(4)) },
+    costs: {
+      modelCalls24h: spend.calls,
+      modelUsd24h: Number(spend.usd.toFixed(4)),
+      gasHsk24h: Number(gas24.toFixed(5)),
+      gasUsd24h: Number((gas24 * hskUsd).toFixed(4)),
+      modelCallsAll: spendAll().calls,
+      modelUsdAll: Number(spendAll().usd.toFixed(4)),
+      gasHskAll: Number(gasLog.reduce((s, g) => s + g.hsk, 0).toFixed(5)),
+    },
   };
 }
