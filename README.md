@@ -31,6 +31,13 @@ Every settled note is graded on chain against the odds the agent stated (a rolli
 by what their vaults grant them, and the `AvowLeague` registry lets any vault's owner enter their own agent. The registry stores no scores,
 so a place cannot be bought: every number is read from the vaults.
 
+Every grade is also published as **ERC-8004** reputation (the Draft "Trustless Agents" standard for agent identity and reputation).
+There was no ERC-8004 deployment on HSK Chain, so Avow ships one: each league agent is an ERC-8004 agent with a registration file, and
+`AvowGrader`, which anyone may call, posts each settled note's grade as feedback, computed from the vault rather than written by anyone:
+100 − 100·(stated odds − outcome)², tagged `avow-calibration`. Any ERC-8004 client can read an agent's calibration with one call
+(`getSummary(agentId, [grader], "avow-calibration", "")`, which returns 100·(1 − Brier)). Avow is a calibration layer other reputation
+systems can read, not one more leaderboard.
+
 Guardrails (a mandate the agent cannot loosen, slippage and spike checks, daily loss and drawdown limits) are table stakes here. What no
 guardrail gives an allocator is a record of whether an agent's *stated confidence* means anything. That record is what Avow writes.
 
