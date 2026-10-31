@@ -3,7 +3,20 @@
 Every step was rehearsed on a fork of mainnet on the VM. Gas for the pool upgrades was measured against mainnet itself with
 `eth_estimateGas` on Oct 31 (research/est.mjs); everything else was measured on the fork. Mainnet gas price: 500 gwei; HSK ≈ $0.087.
 
-## What the owner does: one transfer of about 290 HSK (≈ $25)
+## What actually happened (Oct 31, 2026)
+
+- **Funding:** 28 + 1.50 USDC on Solana became 300.14 HSK and 0.00435 ETH on Ethereum through Relay (relay.link) in seconds, sent to the
+  setup key; `agent/src/l1deposit.ts` then moved the HSK through HSK Chain's own OptimismPortal (`0xe7Aa…8bD3`,
+  `depositERC20Transaction`, the call Superbridge makes) and it arrived as native HSK about 75 s later.
+- **Launch:** `launch-mainnet.sh go` deployed the three vaults, upgraded the three pools to 240 observations, deployed the league registry
+  and the ERC-8004 registries, registered agents #1–3 and funded the vaults. The public RPC is load-balanced, so reads right after a
+  receipt can be a block behind; the scripts now wait for code and retry before broadcasting.
+- **Balances after funding** (the funding run read a stale balance once, so the split is uneven): Avow 3 USDT + 12 WHSK (≈ $4.05),
+  Bold ≈ $10.36, Fade ≈ $6.68. Agent gas: Avow 2, Bold 4.7, Fade 4.7 HSK. Outside keeper 0x1a71…850B: 3 HSK. Setup key reserve ≈ 33 HSK.
+- **AvowGrader v2** (0x6a5c…c6aa) replaced the first grader (0x3C39…313F, retired before it posted anything): see SECURITY.md.
+- **Ownership** of the three vaults and ERC-8004 agents #1–3 moved to the team wallet 0x2c9c…bF15.
+
+## The plan as written: one transfer of about 290 HSK (≈ $25)
 
 Send **≈ 290 HSK** on HSK Chain to the setup address **`0xCfDDe8CF26062229e1Bc12294c1029E531a7ac9A`** (a fresh key made for this launch
 on the VM; backed up locally; never printed). HSK reaches HSK Chain by withdrawing from HashKey Global or Gate on the "HSK Chain" network.

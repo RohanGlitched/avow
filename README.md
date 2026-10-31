@@ -47,7 +47,7 @@ guardrail gives an allocator is a record of whether an agent's *stated confidenc
 
 House agents today: **Avow** (Gemini 3.5 Flash; states the odds it believes and swears only when they clear the fees), and two rule
 baselines with no model, **Bold** (swears every candidate at a fixed 80%) and **Fade** (bets against every candidate at 65%), so you can
-watch grading demote an uncalibrated forecaster.
+watch grading separate a calibrated forecaster from an overconfident one.
 
 Built for the **HSK Chain Horizon Hackathon · India**, Track 1 *AI Agent Trading*.
 
