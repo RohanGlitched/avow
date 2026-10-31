@@ -107,8 +107,8 @@ async function postGrades(v: VaultView) {
       const rc = await chain.waitForTransactionReceipt({ hash, timeout: 120_000 });
       if (rc.status !== "success") throw new Error(`transaction ${hash} reverted`);
       logGas(rc);
-      const grade = Number(sim.result) / 100;
-      journal.add({ kind: "settled", noteId: id, tx: hash, title: `Posted ${serial(id)}'s grade to ERC-8004: ${grade.toFixed(2)} of 100`, detail: "AvowGrader computed it from the vault (100 minus 100 times the squared gap between the stated odds and the outcome) and wrote it to the ERC-8004 Reputation Registry as feedback tagged avow-calibration." });
+      const [cal, skill] = (sim.result as readonly [bigint, bigint]).map((x) => Number(x) / 100);
+      journal.add({ kind: "settled", noteId: id, tx: hash, title: `Posted ${serial(id)}'s grades to ERC-8004: calibration ${cal.toFixed(2)} of 100, skill ${skill >= 0 ? "+" : ""}${skill.toFixed(2)}`, detail: "AvowGrader computed both from the vault and wrote them to the ERC-8004 Reputation Registry. Calibration is 100 minus 100 times the squared gap between the stated odds and the outcome (tag avow-calibration). Skill is how much better the stated odds did than the odds the note's own levels imply for a forecaster with no skill (tag avow-skill)." });
     } catch (e) {
       const w = words(e);
       if (w.name === "NotLinked") return; // the owner has not linked this vault to an ERC-8004 agent yet

@@ -19,10 +19,32 @@ contract NotesVault {
         notes[id].status = s;
         notes[id].confidenceBps = conf;
         notes[id].statementHash = keccak256(abi.encode(id));
+        // symmetric levels: the levels alone imply even odds (p0 = 0.5)
+        notes[id].entryPx = 100e8;
+        notes[id].targetPx = 101e8;
+        notes[id].voidPx = 99e8;
+    }
+
+    function setOwner(address o) external {
+        owner = o;
     }
 
     function getNote(uint256 id) external view returns (AvowVault.Note memory) {
         return notes[id];
+    }
+}
+
+/// Same interface, different code: a contract that only pretends to be a vault.
+contract ImpostorVault {
+    address public owner;
+
+    constructor(address o) {
+        owner = o;
+    }
+
+    function getNote(uint256) external pure returns (AvowVault.Note memory n) {
+        n.status = AvowVault.Status.Honoured;
+        n.confidenceBps = 9900;
     }
 }
 
@@ -38,11 +60,11 @@ contract AvowGraderTest is Test {
     function setUp() public {
         id = new IdentityRegistry();
         rep = new ReputationRegistry(id);
-        grader = new AvowGrader(id, rep);
         vault = new NotesVault(owner);
+        grader = new AvowGrader(id, rep, address(vault).codehash);
         vm.prank(owner);
         agentId = id.register("data:application/json;base64,e30=");
-        vm.prank(owner);
+        vm.prank(stranger); // anyone may link, when one owner holds both the vault and the agent
         grader.link(address(vault), agentId);
     }
 
@@ -97,13 +119,19 @@ contract AvowGraderTest is Test {
     }
 
     function test_gradesAreTheVaultsArithmetic() public {
-        vault.put(0, AvowVault.Status.Honoured, 8000); // right at 80%: 1 − 0.2² = 0.96
-        vault.put(1, AvowVault.Status.Void, 8000); // wrong at 80%: 1 − 0.8² = 0.36
-        vault.put(2, AvowVault.Status.Lapsed, 5000); // a miss at 50%: 0.75
+        vault.put(0, AvowVault.Status.Honoured, 8000); // right at 80%: 1 − 0.2² = 0.96; skill 0.25 − 0.04 = 0.21
+        vault.put(1, AvowVault.Status.Void, 8000); // wrong at 80%: 1 − 0.8² = 0.36; skill 0.25 − 0.64 = −0.39
+        vault.put(2, AvowVault.Status.Lapsed, 5000); // a miss at 50%: 0.75; skill 0 (it said what the levels say)
         vm.startPrank(stranger); // anyone may post
-        assertEq(grader.post(address(vault), 0), 9600);
-        assertEq(grader.post(address(vault), 1), 3600);
-        assertEq(grader.post(address(vault), 2), 7500);
+        (int128 c0, int128 k0) = grader.post(address(vault), 0);
+        (int128 c1, int128 k1) = grader.post(address(vault), 1);
+        (int128 c2, int128 k2) = grader.post(address(vault), 2);
+        assertEq(c0, 9600);
+        assertEq(k0, 2100);
+        assertEq(c1, 3600);
+        assertEq(k1, -3900);
+        assertEq(c2, 7500);
+        assertEq(k2, 0);
         vm.expectRevert(AvowGrader.AlreadyPosted.selector);
         grader.post(address(vault), 0);
         vm.stopPrank();
@@ -114,7 +142,10 @@ contract AvowGraderTest is Test {
         assertEq(n, 3);
         assertEq(dec, 2);
         assertEq(mean, 6900); // 100·(1 − Brier): Brier = (0.04 + 0.64 + 0.25) / 3 = 0.31
-        (int128 v,, string memory t1, string memory t2,) = rep.readFeedback(1, address(grader), 2);
+        (uint64 ns, int128 skill,) = rep.getSummary(1, from, "avow-skill", "");
+        assertEq(ns, 3);
+        assertEq(skill, -600); // (2100 − 3900 + 0) / 3: overconfident at 80% on even-odds levels
+        (int128 v,, string memory t1, string memory t2,) = rep.readFeedback(1, address(grader), 3); // the second note's calibration entry
         assertEq(v, 3600);
         assertEq(t1, "avow-calibration");
         assertEq(t2, "void");
@@ -128,9 +159,26 @@ contract AvowGraderTest is Test {
         other.put(0, AvowVault.Status.Honoured, 7000);
         vm.expectRevert(AvowGrader.NotLinked.selector);
         grader.post(address(other), 0);
-        vm.prank(stranger); // owns the vault but not the agent
-        vm.expectRevert(AvowGrader.NotOwner.selector);
+        vm.expectRevert(AvowGrader.OwnersDiffer.selector); // stranger owns the vault, owner owns the agent
         grader.link(address(other), agentId);
+    }
+
+    function test_anImpostorVaultCannotBeLinked() public {
+        ImpostorVault fake = new ImpostorVault(owner);
+        vm.prank(owner);
+        vm.expectRevert(AvowGrader.NotAvowVault.selector);
+        grader.link(address(fake), agentId);
+    }
+
+    function test_linksAreOneToOneAndPermanent() public {
+        NotesVault second = new NotesVault(owner);
+        vm.expectRevert(AvowGrader.AlreadyLinked.selector); // the agent already has its vault
+        grader.link(address(second), agentId);
+        vm.prank(owner);
+        uint256 other = id.register();
+        vm.expectRevert(AvowGrader.AlreadyLinked.selector); // the vault already has its agent
+        grader.link(address(vault), other);
+        assertEq(grader.vaultOf(agentId), address(vault));
     }
 
     function test_revokedFeedbackLeavesTheSummary() public {
@@ -155,8 +203,13 @@ contract AvowGraderTest is Test {
         AvowVault.Note memory n;
         n.status = honoured ? AvowVault.Status.Honoured : AvowVault.Status.Void;
         n.confidenceBps = conf;
-        int128 g = grader.gradeOf(n);
+        n.entryPx = 100e8;
+        n.targetPx = 102e8;
+        n.voidPx = 99e8;
+        (int128 g, int128 k) = grader.gradeOf(n);
         assertGe(g, 0);
         assertLe(g, 10_000);
+        assertGe(k, -10_000);
+        assertLe(k, 10_000);
     }
 }

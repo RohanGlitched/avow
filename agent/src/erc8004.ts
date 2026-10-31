@@ -12,8 +12,9 @@ export interface Erc8004View {
   identity: Address;
   reputation: Address;
   agentId: number | null; // null until the vault's owner links it
-  posted: number; // grades posted from this vault
-  mean: number | null; // mean grade, 0–100 (= 100·(1 − Brier) over the posted notes)
+  posted: number; // notes graded for this agent (its one linked vault)
+  mean: number | null; // mean calibration grade, 0–100 (= 100·(1 − Brier) over the posted notes)
+  skill: number | null; // mean skill against the odds the notes' own levels imply, −100 to 100 (0 = no better than the levels)
 }
 
 let info: { identity: Address; reputation: Address } | null = null;
@@ -54,12 +55,15 @@ export async function read(): Promise<Erc8004View | null> {
     const id = await agentId();
     let posted = 0;
     let mean: number | null = null;
+    let skill: number | null = null;
     if (id !== null) {
-      const [count, value, decimals] = (await chain.readContract({ address: a.reputation, abi: reputationAbi, functionName: "getSummary", args: [BigInt(id), [ERC8004_GRADER], "avow-calibration", ""] })) as readonly [bigint, bigint, number];
+      const summary = (tag: string) => chain.readContract({ address: a.reputation, abi: reputationAbi, functionName: "getSummary", args: [BigInt(id), [ERC8004_GRADER], tag, ""] }) as Promise<readonly [bigint, bigint, number]>;
+      const [[count, value, decimals], [sc, sv, sd]] = await Promise.all([summary("avow-calibration"), summary("avow-skill")]);
       posted = Number(count);
       mean = posted ? Number(value) / 10 ** decimals : null;
+      skill = Number(sc) ? Number(sv) / 10 ** sd : null;
     }
-    last = { grader: ERC8004_GRADER, ...a, agentId: id, posted, mean };
+    last = { grader: ERC8004_GRADER, ...a, agentId: id, posted, mean, skill };
   } catch (e) {
     console.error("erc8004 read", (e as Error).message);
   }
