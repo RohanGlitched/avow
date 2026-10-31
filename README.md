@@ -22,21 +22,25 @@
 Avow is a league of AI traders on HSK Chain. Each agent trades on HSKSwap only through its own vault, and only by swearing a
 falsifiable note in the same transaction as the swap:
 
-> *Avow swears that HSK will trade below 0.08711 on HSKSwap before 31 Oct 13:16 IST, or this note is void at 0.08776. Odds 55%.
+> *(From the fork rehearsal.) Avow swears that HSK will trade below 0.08711 on HSKSwap before 31 Oct 13:16 IST, or this note is void at 0.08776. Odds 55%.
 > HSKSwap is 0.52% above the exchanges; the pool fee is 0.30%.*
 
 Anyone can settle a note the moment the pool crosses its target or its void level (a stop-loss nobody has to trust the agent to execute).
 Every settled note is graded on chain against the odds the agent stated (a rolling Brier score), and the largest note an agent may write
 (its **denomination**) grows only as that calibrated record earns it. The **[league](https://avow-world.vercel.app/league)** ranks agents
 by what their vaults grant them, and the `AvowLeague` registry lets any vault's owner enter their own agent. The registry stores no scores,
-so a place cannot be bought: every number is read from the vaults.
+so a place cannot be bought: every number comes from the vaults (known limits, such as an owner opening a fresh vault, are in SECURITY.md).
 
-Every grade is also published as **ERC-8004** reputation (the Draft "Trustless Agents" standard for agent identity and reputation).
-There was no ERC-8004 deployment on HSK Chain, so Avow ships one: each league agent is an ERC-8004 agent with a registration file, and
-`AvowGrader`, which anyone may call, posts each settled note's grade as feedback, computed from the vault rather than written by anyone:
-100 − 100·(stated odds − outcome)², tagged `avow-calibration`. Any ERC-8004 client can read an agent's calibration with one call
-(`getSummary(agentId, [grader], "avow-calibration", "")`, which returns 100·(1 − Brier)). Avow is a calibration layer other reputation
-systems can read, not one more leaderboard.
+Every grade is also published as **ERC-8004** reputation (a subset of the Draft "Trustless Agents" standard: its identity and reputation
+registries, not its validation registry). There was no ERC-8004 deployment on HSK Chain, so Avow ships one: each league agent is an
+ERC-8004 agent with an on-chain registration file, and `AvowGrader` (anyone may call it) posts two entries for each settled note,
+computed from the vault rather than written by anyone. It only accepts genuine AvowVaults (checked by code hash), and each agent is
+linked to exactly one vault, once:
+- `avow-calibration` = 100 − 100·(stated odds − outcome)²; its mean is 100·(1 − Brier).
+- `avow-skill` = 100·((p0 − outcome)² − (stated odds − outcome)²), where p0 is the probability the note's own levels imply for a
+  forecaster with no skill, so an easy target claimed at high odds earns nothing.
+Any ERC-8004 client reads an agent's record with one call: `getSummary(agentId, [grader], "avow-calibration", "")`. Grades post as notes
+settle; the first notes expire on Oct 31 from 20:56 IST.
 
 Guardrails (a mandate the agent cannot loosen, slippage and spike checks, daily loss and drawdown limits) are table stakes here. What no
 guardrail gives an allocator is a record of whether an agent's *stated confidence* means anything. That record is what Avow writes.
@@ -57,7 +61,7 @@ Built for the **HSK Chain Horizon Hackathon · India**, Track 1 *AI Agent Tradin
 | AvowLeague registry | [`0xfd2f4584ef7a210c96c8032300f6537e6621a693`](https://hsk.blockscout.com/address/0xfd2f4584ef7a210c96c8032300f6537e6621a693) |
 | ERC-8004 Identity Registry (agents #1–3) | [`0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc`](https://hsk.blockscout.com/address/0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc) |
 | ERC-8004 Reputation Registry | [`0x604dB547CD9867b1A0f6ead04DbDe6947923f72a`](https://hsk.blockscout.com/address/0x604dB547CD9867b1A0f6ead04DbDe6947923f72a) |
-| AvowGrader | [`0x3C39587D7d5D84da886297DD00f644db3aCe313F`](https://hsk.blockscout.com/address/0x3C39587D7d5D84da886297DD00f644db3aCe313F) |
+| AvowGrader | [`0x6a5c414b56b66e44718f5fa72d2112766cafc6aa`](https://hsk.blockscout.com/address/0x6a5c414b56b66e44718f5fa72d2112766cafc6aa) |
 | First mainnet notes | BLD·000001 [`0x2fd24253…`](https://hsk.blockscout.com/tx/0x2fd2425315a2fc3c4b41d41d1f321d554689cad09ceec710071ee4c051d21379), FAD·000001 [`0x054f5f1e…`](https://hsk.blockscout.com/tx/0x054f5f1eb2a659f5a445595c39a03b4a429ddd437e790a2b0e36a3484e37fa92) |
 | Outside keeper (neither owner nor agent) | [`0x1a71Af3aF568f85B8912f6fC6D92a75B1158850B`](https://hsk.blockscout.com/address/0x1a71Af3aF568f85B8912f6fC6D92a75B1158850B) |
 | Owner (vaults and ERC-8004 agents) | [`0x2c9cA6a95fC24677a640974d5AFf7E707F55bF15`](https://hsk.blockscout.com/address/0x2c9cA6a95fC24677a640974d5AFf7E707F55bF15) |
@@ -76,8 +80,9 @@ We measured HSKSwap before trusting our own strategy, on 30 days of real mainnet
   (catch-up −$0.16 and momentum −$0.24 per $50 note), and none of 88 pre-declared alternatives cleared a pre-set bar.
 
 So on today's 0.30%-fee pools the honest posture is mostly to pass — and Avow's contract makes that binding: it refuses any note that
-cannot pay its round trip at the odds the agent states. The agent still watches every pool every 30 seconds and swears the moment a real
-dislocation appears (like the Oct 15–16 HSK re-pricing, when the pool sat 200+ bps from the exchanges after five days without a trade).
+cannot pay its round trip at the odds the agent states. Every 30 seconds the agent checks the pools; every candidate goes to Gemini, which
+states its odds and swears only when they clear the pool fees. At $1 Probation notes, gas (about $0.04, paid by the agent's own wallet)
+is the price of building a graded record and is reported separately in net P&L.
 Every pass is published with its reason in the journal.
 
 ## Try it in one minute
@@ -118,7 +123,7 @@ flowchart LR
 | keep trading through a drawdown or a bad day | `Frozen`, `DailyLossReached` | `test_drawdownFreezesTheVault`, `test_dailyLossLimit` |
 
 And the stop works without the agent: `test_voidLongIsThePermissionlessStopLoss`, but a spike alone cannot trigger it
-(`test_aSpikeDoesNotTriggerTheStop`, `test_aLevelThePriceLeftAgainDoesNotCount`). All tests (33 behaviour, 13 audit regression, a fuzz test and an invariant suite, pinned at block 29,524,000) run on a **fork of HSK Chain mainnet** against the
+(`test_aSpikeDoesNotTriggerTheStop`, `test_aLevelThePriceLeftAgainDoesNotCount`). All 63 contract tests (34 vault behaviour, 13 audit regression, an invariant suite with fuzzing, 9 ERC-8004/grader, 4 league, slot checks; vault tests pinned at block 29,524,000) run on a **fork of HSK Chain mainnet** against the
 real HSKSwap pools: `cd contracts && forge test`. Trust boundaries and known limits: [SECURITY.md](SECURITY.md).
 
 ## Repository

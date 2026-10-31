@@ -41,7 +41,7 @@ larger note (`test_overconfidenceKeepsTheAgentOnProbation`); a coin flip that hi
 Targets and expiries settle only in a calm pool (`test_aLapsedNoteWaitsForACalmPool`); the drawdown freeze counts the agent's realised
 losses, not inventory price moves (`test_inventoryPriceMovesDoNotFreezeTheAgent`).
 
-All tests run on a fork of HSK Chain mainnet against the real HSKSwap pools and tokens (`cd contracts && forge test`): 33 behaviour tests,
+All tests run with `cd contracts && forge test` (63 in all; the vault tests on a fork of HSK Chain mainnet against the real HSKSwap pools and tokens): 34 behaviour tests,
 13 audit regression tests, a price-math fuzz test and a stateful invariant suite (bookkeeping, locked funds backed, grading replay).
 
 ## Attacks and what stops them
@@ -71,3 +71,19 @@ All tests run on a fork of HSK Chain mainnet against the real HSKSwap pools and 
 - **The record can be bought on a thin pool.** Someone willing to hold a pool past a target for 5 minutes, paying fees both ways, can honour a
   note. We state this limit here and on /how, and will ask the HSK Chain team to whitelist the vault on Chainlink so a second oracle
   can confirm settlements on chain.
+
+## Reputation (league and ERC-8004): what holds and what doesn't yet
+
+- **Forged vaults are refused (fixed Oct 31).** The first AvowGrader (0x3C39…313F, retired before it posted anything) linked any contract
+  that reported the caller as owner, so an impostor "vault" could have fed it perfect notes. AvowGrader v2 (0x6a5c…c6aa) accepts only
+  contracts whose runtime code hash is the AvowVault's, links each agent to exactly one vault once and for good, and only when one address
+  owns both (`test_anImpostorVaultCannotBeLinked`, `test_linksAreOneToOneAndPermanent`).
+- **Easy targets earn calibration but not skill.** An owner can loosen a mandate and claim high odds on targets just past the fee; that can
+  score well on `avow-calibration`. The `avow-skill` entry compares the stated odds with the probability the note's own levels imply for a
+  forecaster with no skill, so such notes score about zero there. Read both.
+- **An owner can start a fresh vault.** A bad record stays with its vault and its ERC-8004 agent forever, but nothing stops an owner from
+  deploying a new vault and a new agent id. Readers should weigh the age and depth of a record; per-owner history is planned.
+- **League entries can leave and re-enter, and an owner can change a vault's agent key (`setAgent`).** Both are events on chain; the league
+  page does not yet show them. Planned: permanent rows that grey out, and agent changes shown on the row.
+- **Tiny notes.** Mainnet Probation notes are $1. Grades are not yet weighted by notional, so a record built on $1 notes reads the same as
+  one built on $1,000 notes. Planned: notional-weighted grades.
