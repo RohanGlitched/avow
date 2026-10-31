@@ -12,14 +12,21 @@ const me = privateKeyToAccount(readFileSync(process.env.DICTUM_OUTSIDE_KEY_FILE 
 const w = createWalletClient({ account: me, chain: hsk, transport: http(RPC, { timeout: 20_000 }) });
 const VAULTS = (process.env.DICTUM_OUTSIDE_VAULTS ?? "").split(",").filter(Boolean) as Address[];
 const done = new Set<string>();
+const NL = String.fromCharCode(10);
 
 async function sweep() {
   for (const vault of VAULTS) {
     const count = Number(await chain.readContract({ address: vault, abi: vaultAbi, functionName: "noteCount" }));
-    for (let id = 0; id < count; id++) {
+    const ids = Array.from({ length: count }, (_, i) => i).filter((id) => !done.has(`${vault}:${id}`));
+    if (!ids.length) continue;
+    // one multicall for every open note of this vault
+    const res = await chain.multicall({ allowFailure: true, contracts: ids.map((id) => ({ address: vault, abi: vaultAbi, functionName: "settleable", args: [BigInt(id)] }) as const) });
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
       const key = `${vault}:${id}`;
-      if (done.has(key)) continue;
-      const [ok, status] = (await chain.readContract({ address: vault, abi: vaultAbi, functionName: "settleable", args: [BigInt(id)] })) as readonly [boolean, number];
+      const r = res[i];
+      if (r.status !== "success") continue;
+      const [ok, status] = r.result as readonly [boolean, number];
       if (!ok) {
         if (status >= 2) done.add(key); // already settled by someone
         continue;
@@ -27,15 +34,15 @@ async function sweep() {
       try {
         const sim = await chain.simulateContract({ account: me, address: vault, abi: vaultAbi, functionName: "settle", args: [BigInt(id)] });
         const hash = await w.writeContract(sim.request);
-        const rc = await chain.waitForTransactionReceipt({ hash, timeout: 120_000 });
+        const rc = await chain.waitForTransactionReceipt({ hash, timeout: 120_000, pollingInterval: 3_000 });
         console.log(new Date().toISOString(), "settled", vault, id, rc.status, hash);
         done.add(key);
       } catch (e) {
-        console.log(new Date().toISOString(), "not settled", vault, id, (e as Error).message.split("\n")[0]); // the agent's keeper may have been first
+        console.log(new Date().toISOString(), "not settled", vault, id, (e as Error).message.split(NL)[0]); // the agent's keeper may have been first
       }
     }
   }
 }
 
 console.log("outside keeper", me.address, "watching", VAULTS.join(", "));
-setInterval(() => sweep().catch((e) => console.error("sweep", (e as Error).message.split("\n")[0])), 4_000);
+setInterval(() => sweep().catch((e) => console.error("sweep", (e as Error).message.split(NL)[0])), 15_000);

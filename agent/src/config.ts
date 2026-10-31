@@ -4,9 +4,12 @@ export type Mode = "mainnet" | "fork-rehearsal" | "testnet";
 export const MODE = (process.env.DICTUM_MODE ?? "fork-rehearsal") as Mode;
 
 /** The chain the vault lives on. In rehearsal this is an anvil fork of HSK mainnet on the same machine. */
-export const RPC = process.env.DICTUM_RPC ?? (MODE === "fork-rehearsal" ? "http://127.0.0.1:8545" : "https://mainnet.hsk.xyz");
+/** Comma-separated: the first is used for sends, all of them (in order) as a fallback for reads. */
+export const RPCS = (process.env.DICTUM_RPC ?? (MODE === "fork-rehearsal" ? "http://127.0.0.1:8545" : "https://mainnet.hsk.xyz")).split(",").map((x) => x.trim()).filter(Boolean);
+export const RPC = RPCS[0];
 /** Always the real mainnet: Chainlink seatbelt and the live HSKSwap reference read from here. */
-export const MAINNET_RPC = "https://mainnet.hsk.xyz";
+export const MAINNET_RPCS = (process.env.DICTUM_MAINNET_RPC ?? "https://mainnet.hsk.xyz,https://hashkey.drpc.org").split(",").map((x) => x.trim()).filter(Boolean);
+export const MAINNET_RPC = MAINNET_RPCS[0];
 
 export const hsk = defineChain({
   id: 177,
