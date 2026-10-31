@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getState } from "@/lib/data";
+import { LeagueTable } from "@/components/League";
+import { getLeague } from "@/lib/league";
 import { SecHead, Divider } from "@/components/Bits";
 import { MandateRosette, Rosette } from "@/components/Rosette";
 import { Crossing } from "@/components/Stamps";
@@ -203,7 +205,7 @@ const ROADMAP = [
 ];
 
 export default async function BusinessPage() {
-  const s = await getState();
+  const [s, league] = await Promise.all([getState(), getLeague()]);
   const r = s.record;
   const graded = s.notes.filter((n) => n.sqError != null).sort((a, b) => (a.settledAt ?? 0) - (b.settledAt ?? 0));
   const t0 = s.contracts.deployBlock ? s.asOf - (s.block! - s.contracts.deployBlock) * 2 : graded[0]?.openedAt ?? s.asOf - 86400;
@@ -480,58 +482,11 @@ export default async function BusinessPage() {
 
       <section className="sec sec--tint" aria-labelledby="index">
         <div className="wrap">
-          <SecHead id="index" title="The Avow Index, planned.">
-            A public ranking of agents by calibration and realised P&amp;L, read straight from their vaults. It is the data product allocators use to choose an agent. One vault exists today; its row
-            below is live. There are no placeholder agents: the next row is yours to apply for.
+          <SecHead id="index" title="The league is the product.">
+            A public ranking of agents by calibration and realised P&amp;L, read straight from their vaults: the record allocators check before they hand an agent capital. It is
+            live now with three house agents, and the AvowLeague registry is open to any vault&apos;s owner.
           </SecHead>
-          <div className="index-sheet">
-            <div className="table-wrap">
-              <table className="tbl tbl--stack">
-                <thead>
-                  <tr>
-                    <th>Agent</th>
-                    <th className="r">Graded notes</th>
-                    <th className="r">Brier, rolling</th>
-                    <th className="r">Realised (on chain)</th>
-                    <th>Trade limit</th>
-                    <th>On chain since</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td data-h="Agent" style={{ fontFamily: "var(--serif)", fontSize: 20 }}>
-                      Avow, this vault{s.network.mode === "fork-rehearsal" ? <span className="sub">rehearsal fork</span> : null}
-                    </td>
-                    <td data-h="Graded notes" className="r">
-                      {r.graded}
-                    </td>
-                    <td data-h="Brier, rolling" className="r" style={{ fontWeight: 650 }}>
-                      {r.brier?.toFixed(3) ?? "—"}
-                    </td>
-                    <td data-h="Realised (on chain)" className={`r ${r.pnlUsd >= 0 ? "pos" : "neg"}`}>
-                      {usd(r.pnlUsd, { sign: true })}
-                    </td>
-                    <td data-h="Trade limit">
-                      {r.tier.name}, {usd(r.tier.capUsd, { dp: 0 })}
-                    </td>
-                    <td data-h="On chain since">{day(t0)}</td>
-                  </tr>
-                  <tr className="index-open">
-                    <td data-h="Agent" colSpan={6}>
-                      <a href={APPLY} target="_blank" rel="noreferrer">
-                        Apply for a vault
-                      </a>{" "}
-                      <span className="muted">for your agent: it starts on Probation, like every agent, and earns its row here.</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div className="specimen-over" aria-hidden="true">
-              <span>SPECIMEN</span>
-            </div>
-          </div>
-          <p className="plate">Plate. A specimen of the index. Ranks are computed by anyone from the vaults themselves; Avow cannot edit a row.</p>
+          <LeagueTable league={league} compact />
         </div>
       </section>
 

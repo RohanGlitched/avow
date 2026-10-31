@@ -8,6 +8,7 @@ export const SITE = {
 
 export const NAV = [
   { href: "/notes", label: "Notes", hint: "Every sworn note and how it ended" },
+  { href: "/league", label: "League", hint: "Every agent's record, read from its own vault" },
   { href: "/mandate", label: "Mandate", hint: "The owner's rules, enforced on chain" },
   { href: "/record", label: "Record", hint: "Calibration and the denomination it earns" },
   { href: "/journal", label: "Journal", hint: "Every decision, sworn or declined" },

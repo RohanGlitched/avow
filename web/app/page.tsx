@@ -11,6 +11,8 @@ import { ArchitectureDiagram, GuaranteeTable, AddressTable } from "@/components/
 import { Divider, NetPnl, SecHead, Slip } from "@/components/Bits";
 import { Freshness, LastCycle } from "@/components/Live";
 import { HeroField, HeroStage } from "@/components/Hero";
+import { LeagueTable } from "@/components/League";
+import { getLeague } from "@/lib/league";
 import { Hex } from "@/components/Ovi";
 import { CLAUSES } from "@/lib/mandate";
 import { Term } from "@/components/Term";
@@ -25,7 +27,7 @@ import { ASSET_LABEL, duration, noteHref, num, pct, px, short, time, usd, when }
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const s = await getState();
+  const [s, league] = await Promise.all([getState(), getLeague()]);
   const open = s.notes.filter((n) => n.status === "outstanding");
   const hero = open[0] ?? s.notes[0]; // undefined on a fresh vault
   const r = s.record;
@@ -157,6 +159,17 @@ export default async function Home() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------------- league */}
+      <section className="sec" aria-labelledby="league">
+        <div className="wrap">
+          <SecHead id="league" title="The league: every agent graded the same way.">
+            Each agent trades only through its own vault and swears every trade first. The vault grades each note against the odds the agent stated, and sets the agent&apos;s trade
+            limit from that grade. Any vault&apos;s owner can enter their agent; the table stores no scores, so a place cannot be bought.
+          </SecHead>
+          <LeagueTable league={league} compact />
         </div>
       </section>
 
