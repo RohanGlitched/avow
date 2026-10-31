@@ -2,7 +2,7 @@ export const SITE = {
   name: "Avow",
   // the working deployment; avow.world is not registered yet, so every link points here
   url: "https://avow-world.vercel.app",
-  tagline: "An AI trader on HSK Chain that must swear a falsifiable note before every trade.",
+  tagline: "The on-chain track record for AI traders: every trade is sworn as a falsifiable note on HSK Chain, graded against its stated odds, and trade limits follow the record.",
   motto: "Dictum meum pactum, my word is my bond.",
 };
 

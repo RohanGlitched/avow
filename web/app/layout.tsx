@@ -10,7 +10,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
-  title: { default: "Avow: an AI trader whose word is its bond", template: "%s · Avow" },
+  title: { default: "Avow: the on-chain track record for AI traders", template: "%s · Avow" },
   description: SITE.tagline,
   openGraph: { title: "Avow", description: SITE.tagline, type: "website", siteName: "Avow", url: SITE.url },
   twitter: { card: "summary_large_image", title: "Avow", description: SITE.tagline },

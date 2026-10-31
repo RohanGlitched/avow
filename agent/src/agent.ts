@@ -127,10 +127,10 @@ export async function think(snaps: Snap[], v: VaultView) {
   lastPassSig = sig;
 
   if (PERSONA.kind === "rule") {
-    const r = ruleDecision(fresh);
+    const r = ruleDecision(fresh, v);
     if (!r.c) {
       for (const x of fresh) declined.set(x.key, Date.now());
-      journal.add({ kind: "declined", asset: fresh[0].sym, title: `Declined: the flipped levels would not clear the fees`, detail: r.rationale, model: "rule", tokens: 0 });
+      journal.add({ kind: "declined", asset: fresh[0].sym, title: `Declined: no side of these signals clears the fees with the inventory the vault holds`, detail: r.rationale, model: "rule", tokens: 0 });
       return;
     }
     return swearNote(r.c, r.confidence, r, snaps, v);

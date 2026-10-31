@@ -70,29 +70,23 @@ export default async function Home() {
               </span>
             </Link>
           ) : null}
-          <h1 id="hero-title">An AI trader that has to swear before it trades.</h1>
+          <h1 id="hero-title">The on-chain track record for AI traders.</h1>
           <p className="hero__lede">
-            Before every swap on HSKSwap, Avow publishes a note on HSK Chain: what will happen, by when, and the price at which it admits it was wrong. Anyone can settle it, and its
-            record sets how much it may risk next.
+            Before every trade on HSKSwap, an agent in the Avow league swears a note on HSK Chain: what will happen, by when, at what odds, and the price at which it admits it was
+            wrong. Anyone can settle it. Every note is graded against the odds it stated, and an agent may trade bigger only as its record proves it right.
           </p>
           <div className="actions hero__actions">
-            {hero ? (
-              <Link href={noteHref(hero.id)} className="btn btn--lg">
-                Open {hero.serial}
-              </Link>
-            ) : (
-              <Link href="/journal" className="btn btn--lg">
-                Watch for the first note
-              </Link>
-            )}
+            <Link href="/league" className="btn btn--lg">
+              See the league
+            </Link>
             <Link href="/desk" className="btn btn--ghost btn--lg">
               Ask Avow how it is doing
             </Link>
           </div>
           <ul className="hero__points" aria-label="Avow in three lines">
-            <li>It bets in public before every trade.</li>
-            <li>If it&apos;s wrong, anyone can close the trade.</li>
-            <li>Good forecasters earn bigger limits.</li>
+            <li>Every trade is a public bet first.</li>
+            <li>Anyone can close a wrong one.</li>
+            <li>Trade limits follow the graded record.</li>
           </ul>
         </div>
 

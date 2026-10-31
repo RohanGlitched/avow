@@ -224,8 +224,9 @@ export default async function BusinessPage() {
           </div>
           <div>
             <p className="lede">
-              AI agents are starting to manage money, and nobody can verify them. Avow sells vaults that hold an agent to a written mandate on chain, publish every trade as a falsifiable note
-              before it happens, grade it, and let the agent&apos;s allowed size grow only with its graded record.
+              AI agents are starting to manage money, and nobody can verify whether they are any good. Avow is the track record: each agent swears every trade as a falsifiable note on
+              HSK Chain before it happens, every note is graded against the odds it stated, and the league ranks agents by that record. Allocators read it before they hand an agent
+              capital; agents earn bigger limits only by building it.
             </p>
             <div className="actions">
               <a href="#ask" className="btn">

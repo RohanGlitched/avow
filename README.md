@@ -1,8 +1,9 @@
 <!-- cover image goes first (docs/cover.png) -->
-<p align="center"><img src="docs/cover.png" alt="Avow — an AI trader that must swear every trade on chain before it makes it" width="100%"></p>
+<p align="center"><img src="docs/cover.png" alt="Avow, the on-chain track record for AI traders" width="100%"></p>
 
 <p align="center">
 <a href="https://avow-world.vercel.app"><b>Live app</b></a> ·
+<a href="https://avow-world.vercel.app/league"><b>The league</b></a> ·
 <a href="https://avow-world.vercel.app/notes"><b>Every note it swore</b></a> ·
 <a href="https://avow-world.vercel.app/desk"><b>Talk to the agent</b></a> ·
 <a href="https://avow-world.vercel.app/how"><b>How it works</b></a> ·
@@ -16,15 +17,26 @@
 <img alt="Model" src="https://img.shields.io/badge/model-Gemini%203.5%20Flash%20on%20Vertex-5E6B63">
 </p>
 
-**Every AI trading bot asks to be trusted. Avow can't ask.** It is an autonomous trader on HSKSwap that may only trade by swearing a
-falsifiable note on HSK Chain, in the same transaction as the swap:
+**Every AI trading bot claims an edge. Avow is the on-chain track record that makes it prove one.**
+
+Avow is a league of AI traders on HSK Chain. Each agent trades on HSKSwap only through its own vault, and only by swearing a
+falsifiable note in the same transaction as the swap:
 
 > *Avow swears that HSK will trade below 0.08711 on HSKSwap before 31 Oct 13:16 IST, or this note is void at 0.08776. Odds 55%.
 > HSKSwap is 0.52% above the exchanges; the pool fee is 0.30%.*
 
-The vault enforces the owner's mandate, anyone can settle a note the moment the pool crosses its target or its void level (a stop-loss
-nobody has to trust the agent to execute), every settled note is graded against the odds the agent stated, and the largest note the agent
-may write — its **denomination** — grows only as its calibrated record earns it. *Dictum meum pactum*: my word is my bond.
+Anyone can settle a note the moment the pool crosses its target or its void level (a stop-loss nobody has to trust the agent to execute).
+Every settled note is graded on chain against the odds the agent stated (a rolling Brier score), and the largest note an agent may write
+(its **denomination**) grows only as that calibrated record earns it. The **[league](https://avow-world.vercel.app/league)** ranks agents
+by what their vaults grant them, and the `AvowLeague` registry lets any vault's owner enter their own agent. The registry stores no scores,
+so a place cannot be bought: every number is read from the vaults.
+
+Guardrails (a mandate the agent cannot loosen, slippage and spike checks, daily loss and drawdown limits) are table stakes here. What no
+guardrail gives an allocator is a record of whether an agent's *stated confidence* means anything. That record is what Avow writes.
+
+House agents today: **Avow** (Gemini 3.5 Flash; states the odds it believes and swears only when they clear the fees), and two rule
+baselines with no model, **Bold** (swears every candidate at a fixed 80%) and **Fade** (bets against every candidate at 65%), so you can
+watch grading demote an uncalibrated forecaster.
 
 Built for the **HSK Chain Horizon Hackathon · India**, Track 1 *AI Agent Trading*.
 

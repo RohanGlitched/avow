@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { CHAINLINK_MAX_AGE_S, CHAINLINK_MAX_DEV_BPS, DATA_DIR, POOL_FEE_BPS, ASSETS, type Sym } from "./config.js";
 import type { Snap } from "./market.js";
+import { PERSONA } from "./personas.js";
 import type { VaultView } from "./vault.js";
 
 /** A trade the rules allow, with levels computed here (never by the model). */
@@ -30,6 +31,8 @@ export interface Pass {
 }
 
 const r = (x: number, p = 2) => Number(x.toFixed(p));
+/** The league's rule baselines trade on looser signals than Avow does (see personas.ts). */
+const LOOSE = PERSONA.kind === "rule";
 
 export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; passes: Pass[] } {
   const list: Candidate[] = [];
@@ -73,9 +76,10 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
 
     // 1. catch-up: HSKSwap lags the exchanges; buy (or sell) toward fair value and claim the pool will follow
     let made = false;
-    if (absGap > costBps + 20) {
+    if (absGap > (LOOSE ? 15 : costBps + 20)) {
       const side = gap > 0 ? "long" : "short";
-      const rewardBps = Math.min(absGap, maxStop * 2);
+      // a rule baseline aims past the fees even when the gap is smaller than them; the vault still checks the note at its stated odds
+      const rewardBps = LOOSE ? Math.max(Math.min(absGap, maxStop * 2), costBps * 1.4) : Math.min(absGap, maxStop * 2);
       const riskBps = Math.max(30, Math.min(maxStop, rewardBps / Math.max(minRR * 1.06, 1.3)));
       if (rewardBps / riskBps >= minRR * 1.02) {
         list.push(build(s, a.id, side, "catch-up", rewardBps, riskBps, 12 * 3600, cap, costBps, facts, `HSKSwap is ${r(absGap / 100)}% ${gap > 0 ? "below" : "above"} the exchanges; a round trip costs ${r(costBps / 100)}%`, v));
@@ -86,7 +90,7 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
     if (s.r4h !== null && s.r1h !== null && s.vol1h !== null) {
       const trend = s.r4h;
       const agree = Math.sign(s.r1h) === Math.sign(trend);
-      const strong = Math.abs(trend) > Math.max(0.012, 2.2 * s.vol1h);
+      const strong = Math.abs(trend) > (LOOSE ? Math.max(0.005, 1.2 * s.vol1h) : Math.max(0.012, 2.2 * s.vol1h));
       const notAgainstGap = trend > 0 ? gap > -60 : gap < 60;
       if (agree && strong && notAgainstGap) {
         const side = trend > 0 ? "long" : "short";
