@@ -79,8 +79,9 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
     if (absGap > (LOOSE ? 15 : costBps + 20)) {
       const side = gap > 0 ? "long" : "short";
       // a rule baseline aims past the fees even when the gap is smaller than them; the vault still checks the note at its stated odds
-      const rewardBps = LOOSE ? Math.max(Math.min(absGap, maxStop * 2), costBps * 1.4) : Math.min(absGap, maxStop * 2);
-      const riskBps = Math.max(30, Math.min(maxStop, rewardBps / Math.max(minRR * 1.06, 1.3)));
+      const rewardBps = LOOSE ? Math.max(Math.min(absGap, maxStop * 2), costBps * 2.5) : Math.min(absGap, maxStop * 2);
+      // the baselines take a 2:1 target so their fixed odds clear break-even; the vault still checks it
+      const riskBps = Math.max(30, Math.min(maxStop, rewardBps / (LOOSE ? 2 : Math.max(minRR * 1.06, 1.3))));
       if (rewardBps / riskBps >= minRR * 1.02) {
         list.push(build(s, a.id, side, "catch-up", rewardBps, riskBps, 12 * 3600, cap, costBps, facts, `HSKSwap is ${r(absGap / 100)}% ${gap > 0 ? "below" : "above"} the exchanges; a round trip costs ${r(costBps / 100)}%`, v));
         made = true;
