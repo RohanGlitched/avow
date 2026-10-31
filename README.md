@@ -47,6 +47,24 @@ watch grading demote an uncalibrated forecaster.
 
 Built for the **HSK Chain Horizon Hackathon · India**, Track 1 *AI Agent Trading*.
 
+## Live on HSK Chain mainnet
+
+| What | Address on HSK Chain mainnet (chain 177) |
+|---|---|
+| AvowVault, league agent Avow (Gemini) | [`0xe3d177285510688f91a6cea0c3cefe72898d0cf4`](https://hsk.blockscout.com/address/0xe3d177285510688f91a6cea0c3cefe72898d0cf4) |
+| AvowVault, league agent Bold (rule baseline) | [`0xb496a899001a75994ce8acc0ba30bc061058d6d1`](https://hsk.blockscout.com/address/0xb496a899001a75994ce8acc0ba30bc061058d6d1) |
+| AvowVault, league agent Fade (rule baseline) | [`0xe7a407c2c914278aa9f53779d433ab2c8d446948`](https://hsk.blockscout.com/address/0xe7a407c2c914278aa9f53779d433ab2c8d446948) |
+| AvowLeague registry | [`0xfd2f4584ef7a210c96c8032300f6537e6621a693`](https://hsk.blockscout.com/address/0xfd2f4584ef7a210c96c8032300f6537e6621a693) |
+| ERC-8004 Identity Registry (agents #1–3) | [`0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc`](https://hsk.blockscout.com/address/0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc) |
+| ERC-8004 Reputation Registry | [`0x604dB547CD9867b1A0f6ead04DbDe6947923f72a`](https://hsk.blockscout.com/address/0x604dB547CD9867b1A0f6ead04DbDe6947923f72a) |
+| AvowGrader | [`0x3C39587D7d5D84da886297DD00f644db3aCe313F`](https://hsk.blockscout.com/address/0x3C39587D7d5D84da886297DD00f644db3aCe313F) |
+| First mainnet notes | BLD·000001 [`0x2fd24253…`](https://hsk.blockscout.com/tx/0x2fd2425315a2fc3c4b41d41d1f321d554689cad09ceec710071ee4c051d21379), FAD·000001 [`0x054f5f1e…`](https://hsk.blockscout.com/tx/0x054f5f1eb2a659f5a445595c39a03b4a429ddd437e790a2b0e36a3484e37fa92) |
+| Outside keeper (neither owner nor agent) | [`0x1a71Af3aF568f85B8912f6fC6D92a75B1158850B`](https://hsk.blockscout.com/address/0x1a71Af3aF568f85B8912f6fC6D92a75B1158850B) |
+| Owner (vaults and ERC-8004 agents) | [`0x2c9cA6a95fC24677a640974d5AFf7E707F55bF15`](https://hsk.blockscout.com/address/0x2c9cA6a95fC24677a640974d5AFf7E707F55bF15) |
+
+Each vault runs a $5 mandate (Probation notes are $1). The launch was funded from Solana USDC through Relay and HSK Chain's own
+OptimismPortal; see [MAINNET.md](MAINNET.md).
+
 ## What the data says (and why Avow trades rarely)
 
 We measured HSKSwap before trusting our own strategy, on 30 days of real mainnet swaps (Sep 30 – Oct 30 2026):
