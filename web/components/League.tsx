@@ -1,5 +1,5 @@
-// The league table and each agent's folio. Every figure is read from the agent's own vault; the registry only
-// records who entered which vault under what name.
+// The league table and each agent's folio. Each agent reports its own vault's on-chain record; addresses link to the
+// explorer so anyone can check it. The registry only records who entered which vault under what name.
 import Link from "next/link";
 import { Rosette } from "./Rosette";
 import { Hex } from "./Ovi";
@@ -8,7 +8,7 @@ import { seedHash } from "@/lib/rosette";
 import { TIER_RULES } from "@/lib/tiers";
 import { NETWORK_WORDS } from "@/lib/chain";
 import { noteHref, pct, splitStatement, usd, when } from "@/lib/format";
-import { KIND_WORD, leagueLink, placeText, ranked, vaultOf, type League, type Ranked } from "@/lib/league";
+import { KIND_WORD, UNRATED_NOTE, leagueLink, placeText, ranked, vaultOf, type League, type Ranked } from "@/lib/league";
 import type { Tier } from "@/lib/types";
 
 const money = (v: number | null | undefined, sign = true) => usd(v, { sign, dp: v != null && v !== 0 && Math.abs(v) < 1 ? 3 : 2 });
@@ -54,11 +54,13 @@ export function LeagueTable({ league, compact, limit = 3 }: { league: League; co
   const anchor = (id: string) => (compact ? `/league#agent-${id}` : `#agent-${id}`);
   const fork = league.mode === "fork-rehearsal";
   const allTied = rows.length > 1 && rows.every((r) => r.tied && r.place === 1);
+  const anyRated = rows.some((r) => r.rated);
+  const anyUnrated = rows.some((r) => !r.rated);
   if (!rows.length)
     return (
       <div className="empty">
         <b>No agent on the table yet</b>
-        The house agents have not reported. Their rows appear here, read from their vaults, as soon as they answer.
+        The house agents have not reported. Each agent&apos;s row appears here, with its vault&apos;s on-chain record, as soon as it answers.
       </div>
     );
   return (
@@ -102,9 +104,15 @@ export function LeagueTable({ league, compact, limit = 3 }: { league: League; co
             {shown.map((e) => (
               <tr key={e.persona.id} className={e.alive ? undefined : "lg-row--down"}>
                 <td className="lg-c-place">
-                  <span className="lg-place" aria-label={`${e.tied ? "Tied for place" : "Place"} ${e.place}`}>
-                    {placeText(e)}
-                  </span>
+                  {e.rated ? (
+                    <span className="lg-place" aria-label={`${e.tied ? "Tied for place" : "Place"} ${e.place}`}>
+                      {placeText(e)}
+                    </span>
+                  ) : (
+                    <span className="lg-place lg-place--unrated" title={UNRATED_NOTE}>
+                      Unrated
+                    </span>
+                  )}
                 </td>
                 <td className="lg-c-agent">
                   <div className="lg-agent">
@@ -173,16 +181,17 @@ export function LeagueTable({ league, compact, limit = 3 }: { league: League; co
         </table>
       </div>
       <p className="plate lg__plate">
-        {allTied
-          ? rows.every((r) => r.record.graded === 0)
-            ? "Every agent is level: same tier, nothing graded yet, so the order shown is not a ranking. The first settled note breaks the tie. "
-            : "Every agent is level on tier, Brier and graded notes, so the order shown is not a ranking. "
-          : rows.some((r) => r.tied)
-            ? "An equals sign marks agents level on tier, Brier and graded notes. "
-            : ""}
+        {!anyRated
+          ? "No agent has a graded note yet, so every agent is unrated and the order shown is not a ranking. The first graded note gives its agent a place. "
+          : allTied
+            ? "Every rated agent is level on tier, Brier and graded notes, so their order is not a ranking. "
+            : rows.some((r) => r.tied)
+              ? "An equals sign marks agents level on tier, Brier and graded notes. "
+              : ""}
+        {anyUnrated ? `${UNRATED_NOTE}${anyRated ? " Unrated agents are listed after rated ones." : ""} ` : ""}
         {compact ? "Ranked by tier, then Brier (lower is better), then graded notes. " : `${league.rule} `}
         {fork ? "Rehearsal on an HSK mainnet fork: outcomes are not evidence." : NETWORK_WORDS[league.mode].short + "."}
-        {league.source === "fixture" ? " Sample data: the agent could not be reached, so this is a recorded response." : ""}
+        {league.source === "fixture" ? ` Saved snapshot: the agent could not be reached, so this is the mainnet record as of ${when(league.asOf)}.` : ""}
         {compact && rows.length > shown.length ? ` ${rows.length - shown.length} more on the full table.` : ""}
       </p>
       {compact ? (
@@ -215,8 +224,17 @@ export function LeagueFolio({ e, ladder, own }: { e: Ranked; ladder: Tier[]; own
         <VaultMark e={e} size="lg" />
         <div className="lg-folio__who">
           <div className="lg-folio__place">
-            Place <span>{placeText(e)}</span>
-            {e.tied ? <em>, level with others</em> : null}
+            {e.rated ? (
+              <>
+                Place <span>{placeText(e)}</span>
+                {e.tied ? <em>, level with others</em> : null}
+              </>
+            ) : (
+              <>
+                <span>Unrated</span>
+                <em>, no note graded yet</em>
+              </>
+            )}
           </div>
           <h3 id={`agent-${e.persona.id}-h`}>{e.persona.name}</h3>
           <div className="lg-folio__tags">
@@ -389,6 +407,10 @@ function Erc8004Block({ e }: { e: Ranked }) {
           <dd className="lg-8004__n">{x.mean != null ? x.mean.toFixed(2) : <span className="lg-none">No grade posted yet</span>}</dd>
         </div>
         <div>
+          <dt>Mean skill, −100 to 100</dt>
+          <dd className="lg-8004__n">{x.skill != null ? `${x.skill > 0 ? "+" : ""}${x.skill.toFixed(2)}` : <span className="lg-none">No grade posted yet</span>}</dd>
+        </div>
+        <div>
           <dt>Identity registry</dt>
           <dd>
             <Hex value={x.identity} href={leagueLink(e.mode, x.identity)} />
@@ -410,8 +432,8 @@ function Erc8004Block({ e }: { e: Ranked }) {
       <p className="plate">
         {x.posted
           ? `The mean grade is 100 × (1 − Brier) over the ${x.posted} posted ${x.posted === 1 ? "note" : "notes"}. `
-          : "Each settled note is posted as one grade, computed by the grader from the vault. "}
-        Any ERC-8004 client can read it from the reputation registry, filtered to the grader&apos;s address and the tag avow-calibration.
+          : "Each settled note is posted as two grades, calibration and skill, computed by the grader from the vault. "}
+        Any ERC-8004 client can read them from the reputation registry, filtered to the grader&apos;s address and the tag avow-calibration or avow-skill.
       </p>
     </section>
   );

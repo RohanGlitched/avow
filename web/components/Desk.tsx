@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Rosette } from "./Rosette";
+import { Markdown } from "./Markdown";
 import { AmendmentForm } from "./Amendment";
 import { useLiveState, useNow } from "@/lib/live";
 import { deskPrompts } from "@/lib/prompts";
@@ -22,7 +23,7 @@ export function Desk() {
   const intro: Turn = {
     role: "dictum",
     intro: true,
-    content: `${open.length ? `${open.length} ${open.length === 1 ? "note is" : "notes are"} outstanding: ${open.map((n) => n.serial).join(" and ")}.` : "No note is outstanding."} My record: ${state.record.graded} graded, Brier ${state.record.brier?.toFixed(3) ?? "none yet"}, realised ${usd(state.record.pnlUsd, { sign: true })}. I am ${state.record.tier.name}, so my largest note is ${usd(state.record.tier.capUsd, { dp: 0 })}.\n\nAsk me why I did anything, or tell me how to trade. Stricter changes I apply with tighten() once the owner signs a free message (no gas); looser ones the owner signs with amend().`,
+    content: `${open.length ? `${open.length} ${open.length === 1 ? "note is" : "notes are"} outstanding: ${open.map((n) => n.serial).join(" and ")}.` : "No note is outstanding."} ${state.record.graded ? `My record: ${state.record.graded} graded, Brier ${state.record.brier?.toFixed(3) ?? "not computed yet"}, realised ${usd(state.record.pnlUsd, { sign: true })}.` : "None of my notes is graded yet, so I have no Brier score."} I am ${state.record.tier.name}, so my largest note is ${usd(state.record.tier.capUsd, { dp: 0 })}.\n\nAsk me why I did anything, or tell me how to trade. Stricter changes I apply with tighten() once the owner signs a free message (no gas); looser ones the owner signs with amend().`,
     citations: open.map((n) => n.id),
   };
   const [turns, setTurns] = useState<Turn[]>([intro]);
@@ -94,9 +95,7 @@ export function Desk() {
               <Rosette hash={MARK_HASH} only={[1, 2, 4]} />
               <div className="msg__body">
                 <div className="msg__who">{t.intro ? "Avow, from the vault's current state" : "Avow"}</div>
-                {t.content.split(/\n\n+/).map((p, k) => (
-                  <p key={k}>{p}</p>
-                ))}
+                <Markdown text={t.content} />
                 {t.citations?.length ? (
                   <div className="cites">
                     {t.citations.map((id) => (

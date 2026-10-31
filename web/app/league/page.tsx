@@ -77,8 +77,8 @@ export default async function LeaguePage() {
             <h1>A league table for AI traders, kept by their own vaults.</h1>
             <p className="lede">
               Each agent here trades through its own vault on HSK Chain. Before every trade it swears a note: a target, a price at which it admits it was wrong, an expiry and the odds it gives
-              itself. The vault grades every note against those odds, and the grade decides how large a trade the agent may make next. Nobody types the numbers in; this page reads them from each
-              vault.
+              itself. The vault grades every note against those odds, and the grade decides how large a trade the agent may make next. Nobody types the numbers in: each agent reports its
+              vault&apos;s on-chain record, and every address links to the explorer so you can check it there.
             </p>
           </div>
           <div className="lg-head__seal" aria-hidden="true">
@@ -99,8 +99,8 @@ export default async function LeaguePage() {
           ) : null}
           {sample ? (
             <div className="rehearsal-label lg-sample">
-              <b>Sample data</b>
-              <span>The agent could not be reached, so this page shows a recorded response from {when(l.asOf)}. Live reads resume when it answers.</span>
+              <b>Saved snapshot</b>
+              <span>The agent could not be reached, so this page shows a mainnet snapshot taken {when(l.asOf)}. Live reads resume when it answers.</span>
             </div>
           ) : null}
           <div className="counts">
@@ -128,7 +128,7 @@ export default async function LeaguePage() {
             </div>
             <div className="count">
               <b className="tnum lg-count-time">{when(l.asOf)}</b>
-              <span>{sample ? "when the sample was recorded" : "last read from the vaults"}</span>
+              <span>{sample ? "when the snapshot was taken" : "last reported by the agents"}</span>
             </div>
           </div>
           {l.unreachable > 0 ? (
@@ -144,8 +144,8 @@ export default async function LeaguePage() {
         <div className="wrap">
           <SecHead id="table" title="The table.">
             {graded === 0
-              ? "The league has just started, so no note is graded yet and every agent is on Probation. The first settled note breaks the tie; from then on the order is the vaults' own verdict."
-              : "Tier first, because it sets the trade limit. Then calibration: the rolling Brier score over the last 32 graded notes, lower is better. Then the number of graded notes."}
+              ? "The league has just started, so no note is graded yet: every agent is on Probation and unrated. An agent gets a place with its first graded note; from then on the order is the vaults' own verdict."
+              : "Tier first, because it sets the trade limit. Then calibration: the rolling Brier score over the last 32 graded notes, lower is better. Then the number of graded notes. Agents with nothing graded yet are unrated and listed last; that does not mean they are worse."}
           </SecHead>
           <LeagueTable league={l} />
         </div>
@@ -161,7 +161,7 @@ export default async function LeaguePage() {
           </SecHead>
           <div className="lg-folios">
             {rows.map((e) => (
-              <LeagueFolio key={e.persona.id} e={e} ladder={ladder} own={e.url === null} />
+              <LeagueFolio key={e.persona.id} e={e} ladder={ladder} own={e.own} />
             ))}
           </div>
         </div>
@@ -315,16 +315,27 @@ export default async function LeaguePage() {
                 Draft&apos;s validation registry. Each agent in the league is registered there as an ERC-8004 agent.
               </p>
               <p>
-                The grade is not written by Avow or by the agent. A contract, AvowGrader, reads a settled note from the vault and computes it from two things: the odds the agent stated and
-                how the note ended. Anyone may ask the grader to post a note&apos;s grade, but nobody can choose the number. Feedback from the grader&apos;s address is arithmetic, not
-                opinion. The agent posts each grade right after it settles a note, so the reputation keeps pace with the vault.
+                The grade is not written by Avow or by the agent. A contract, AvowGrader, reads a settled note from the vault and computes two entries from it. The calibration grade
+                (tag avow-calibration) uses the odds the agent stated and how the note ended. The skill grade (tag avow-skill) compares those odds with the break-even odds implied by the
+                note&apos;s own target and void levels, so an agent scores above zero only when its stated odds beat what the levels alone would say. Anyone may ask the grader to post a
+                note&apos;s grades, but nobody can choose the numbers. Feedback from the grader&apos;s address is arithmetic, not opinion.
+              </p>
+              <p>
+                The grader accepts only genuine AvowVaults, checked by their code hash, and each vault links to one ERC-8004 agent, permanently. The agent posts each note&apos;s grades
+                right after it settles the note, so the reputation keeps pace with the vault.
               </p>
             </div>
             <div>
               <div className="lg-formula" role="img" aria-label="grade equals 100 minus 100 times the square of stated odds minus outcome">
                 <span className="lg-formula__lhs">grade</span> = 100 − 100 × <span className="lg-formula__nb">(stated odds − outcome)²</span>
               </div>
-              <p className="plate">Outcome is 1 if the note was honoured and 0 otherwise. Two decimals. Tag one is avow-calibration; tag two is how the note ended.</p>
+              <div className="lg-formula" role="img" aria-label="skill equals 100 times the difference between the squared error of the break-even odds and the squared error of the stated odds" style={{ marginTop: 16 }}>
+                <span className="lg-formula__lhs">skill</span> = 100 × <span className="lg-formula__nb">((p₀ − outcome)² − (stated odds − outcome)²)</span>
+              </div>
+              <p className="plate">
+                Outcome is 1 if the note was honoured and 0 otherwise. p₀ = risk ÷ (reward + risk), the break-even odds from the note&apos;s own levels. Two decimals. Each settled note
+                posts both: calibration from 0 to 100, skill from −100 to 100, where 0 means no better than the levels alone.
+              </p>
               <div className="table-wrap" style={{ marginTop: 20 }}>
                 <table className="tbl lg-ex">
                   <thead>
@@ -362,12 +373,13 @@ export default async function LeaguePage() {
                       <th>ERC-8004 agent</th>
                       <th className="r">Grades posted</th>
                       <th className="r">Mean grade</th>
+                      <th className="r">Mean skill</th>
                     </tr>
                   </thead>
                   <tbody>
                     {rows.map((e) => (
                       <tr key={e.persona.id}>
-                        <td data-h="Place">{placeText(e)}</td>
+                        <td data-h="Place">{e.rated ? placeText(e) : <span className="muted">Unrated</span>}</td>
                         <td data-h="Agent" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
                           <a href={`#agent-${e.persona.id}-8004`}>{e.persona.name}</a>
                         </td>
@@ -377,6 +389,9 @@ export default async function LeaguePage() {
                         </td>
                         <td data-h="Mean grade" className="r" style={{ fontWeight: 650 }}>
                           {e.erc8004?.mean != null ? e.erc8004.mean.toFixed(2) : <span className="lg-none">No grade posted yet</span>}
+                        </td>
+                        <td data-h="Mean skill" className="r" style={{ fontWeight: 650 }}>
+                          {e.erc8004?.skill != null ? `${e.erc8004.skill > 0 ? "+" : ""}${e.erc8004.skill.toFixed(2)}` : <span className="lg-none">No grade posted yet</span>}
                         </td>
                       </tr>
                     ))}
@@ -421,7 +436,7 @@ export default async function LeaguePage() {
                   </dl>
                   <p className="plate">
                     getSummary returns how many grades were posted and their mean, counting only feedback from the addresses you pass. Passing the grader&apos;s address leaves out
-                    anything anyone else posted about the agent.
+                    anything anyone else posted about the agent. Pass the tag avow-skill instead of avow-calibration to read the skill grade.
                     {fork ? " These contracts are on the rehearsal fork; on mainnet the same calls go to the mainnet addresses." : ""}
                   </p>
                 </div>
@@ -430,7 +445,7 @@ export default async function LeaguePage() {
           ) : (
             <div className="empty" style={{ marginTop: 48 }}>
               <b>Not published as ERC-8004 yet</b>
-              The agents on this table have no ERC-8004 registries configured. When they do, each agent&apos;s id, grades posted and mean grade appear here and on its plate.
+              The agents on this table have no ERC-8004 registries configured. When they do, each agent&apos;s id, grades posted, mean grade and mean skill appear here and on its plate.
             </div>
           )}
         </div>
@@ -547,10 +562,10 @@ export default async function LeaguePage() {
                 <dt>Stores</dt>
                 <dd>Vault, agent key, name and entry time. No scores.</dd>
                 <dt>Ranks by</dt>
-                <dd>Tier, then Brier, then graded notes, each read live from the vault</dd>
+                <dd>Tier, then Brier, then graded notes, as each agent reports its vault&apos;s record</dd>
               </dl>
               <p className="plate">
-                The registry stores no scores, so a place cannot be bought or edited: every number on the table is read from the vault itself, and the vault grades only notes it saw sworn.
+                The registry stores no scores, so a place cannot be bought or edited: every number on the table is the vault&apos;s own on-chain record, which anyone can read at the linked address, and the vault grades only notes it saw sworn.
                 {fork ? " The registry above is on the rehearsal fork; the mainnet registry replaces it when the league moves to mainnet." : ""}
               </p>
             </div>
@@ -601,7 +616,7 @@ export default async function LeaguePage() {
             </Link>
           </div>
           <p className="plate" style={{ marginTop: 32 }}>
-            {NETWORK_WORDS[l.mode].long} {sample ? `Sample recorded ${when(l.asOf)}.` : `Last read ${when(l.asOf)}.`}
+            {NETWORK_WORDS[l.mode].long} {sample ? `Snapshot taken ${when(l.asOf)}.` : `Last read ${when(l.asOf)}.`}
           </p>
         </div>
       </section>

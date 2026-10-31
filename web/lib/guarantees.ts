@@ -38,8 +38,16 @@ export const GUARANTEES: Guarantee[] = [
   { promise: "A stop fills in a fast crash: priced at the worse of the 5-minute TWAP and the live price, never more than 4× the exit slippage beyond the TWAP.", enforced: "_close(): void floor", test: "test_theStopExecutesInAFastCrash" },
 ];
 
-export const FORK_TESTS_PASSING = 34;
-export const AUDIT_REGRESSION_TESTS = 13;
-export const INVARIANTS = 4;
-/** "34 fork tests, 13 audit regression tests and 4 invariants" (contracts/test, VERIFY.md) */
-export const TEST_SUMMARY = `${FORK_TESTS_PASSING} fork tests, ${AUDIT_REGRESSION_TESTS} audit regression tests and ${INVARIANTS} invariants`;
+// The contract test counts, in one place (contracts/test). Every page that quotes a number of tests reads it from here.
+export const FORK_TESTS_PASSING = 34; // AvowVault.fork.t.sol, against real HSK mainnet state
+export const AUDIT_REGRESSION_TESTS = 13; // AvowVault.audit.t.sol, one per issue found in the independent review, plus a fuzz test
+export const INVARIANTS = 4; // one invariant suite (AvowVaultInvariantTest) with four invariants
+export const GRADER_TESTS = 9; // AvowGrader.t.sol, ERC-8004 identity and reputation
+export const LEAGUE_TESTS = 4; // AvowLeague.t.sol
+export const SLOT_CHECKS = 2; // Slots.t.sol: token balance slots and the Chainlink read whitelist
+/** The total, counting the invariant suite once. */
+export const CONTRACT_TESTS = 63;
+/** "63 contract tests" */
+export const TEST_SUMMARY = `${CONTRACT_TESTS} contract tests`;
+/** The breakdown behind TEST_SUMMARY, in words. */
+export const TEST_BREAKDOWN = `${FORK_TESTS_PASSING} vault fork tests, ${AUDIT_REGRESSION_TESTS} regression tests from the independent review, an invariant suite (${INVARIANTS} invariants), ${GRADER_TESTS} ERC-8004 grader tests, ${LEAGUE_TESTS} league tests and ${SLOT_CHECKS} slot and whitelist checks`;

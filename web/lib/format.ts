@@ -115,10 +115,10 @@ export const STATUS_WORD: Record<NoteStatus, string> = {
 };
 
 export const STATUS_EXPLAIN: Record<NoteStatus, string> = {
-  outstanding: "Open. Anyone may settle it once both the 5-minute TWAP and the live price are past a level, or once it expires.",
+  outstanding: "Open. Anyone may settle it once both the 5-minute TWAP and the live price are past a level, or after the expiry once the pool is calm.",
   honoured: "Both the HSKSwap 5-minute TWAP and the live price reached the target before the void level and the expiry. Graded 1.",
   void: "Both the 5-minute TWAP and the live price crossed the void level first. The stop closed the position. Graded 0.",
-  lapsed: "Neither level was reached before the expiry. Closed at the expiry price. Graded 0.",
+  lapsed: "Neither level was reached before the expiry. Anyone may then settle it, once the live price is within the note's spot-deviation bound of the TWAP. Graded 0.",
   retracted: "Avow closed the note early. Retreating is graded as a miss, so it never improves the record.",
   revoked: "The owner closed the note. A revoked note is graded as a miss, so the owner cannot launder a loss.",
 };

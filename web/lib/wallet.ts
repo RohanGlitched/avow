@@ -53,7 +53,7 @@ async function current(): Promise<State> {
 
 async function connect(s: State) {
   if (s.network.mode !== "mainnet" || !s.contracts.vault || !s.contracts.owner) {
-    throw new WalletUnavailable("This is the rehearsal vault on a private fork of HSK mainnet: no wallet can reach it. Amendments are signed here once the mainnet vault is live.");
+    throw new WalletUnavailable("This is the rehearsal vault on a private fork of HSK mainnet: no wallet can reach it. Amendments to the live vault are signed on the mainnet site.");
   }
   const eth = (globalThis as { ethereum?: EIP1193Provider }).ethereum;
   if (!eth) throw new WalletUnavailable("No browser wallet found. Open this page in a browser with MetaMask, Rabby or OKX Wallet.");

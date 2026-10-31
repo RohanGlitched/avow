@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./pagerail.css";
 import { archivo, bodoni } from "./fonts";
 import { getState } from "@/lib/data";
 import { LiveProvider } from "@/lib/live";
@@ -8,6 +9,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SITE } from "@/lib/site";
 import { HeroField } from "@/components/Hero";
+import { PageRail } from "@/components/PageRail";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -38,7 +40,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <LiveProvider initial={state}>
           <StatusStrip />
           <SiteHeader />
-          <main id="main">{children}</main>
+          <main id="main" tabIndex={-1}>{children}</main>
+          <PageRail />
           <SiteFooter state={state} />
         </LiveProvider>
       </body>

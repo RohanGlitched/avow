@@ -128,7 +128,7 @@ export function Unrealised({ note }: { note: Note }) {
 export function Freshness() {
   const { state, status, updatedAt } = useLiveState();
   const now = useNow();
-  if (state.source === "fixture") return <span suppressHydrationWarning>Sample snapshot taken {new Date(state.asOf * 1000).toLocaleString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", hour12: false })} IST</span>;
+  if (state.source === "fixture") return <span suppressHydrationWarning>Saved snapshot taken {new Date(state.asOf * 1000).toLocaleString("en-GB", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", hour12: false })} IST</span>;
   if (status === "error") return <span className="neg">Live reads failing; showing the last good numbers</span>;
   return <span suppressHydrationWarning>Read {ago(now - updatedAt / 1000)}{status === "stale" ? ", retrying" : ""}</span>;
 }

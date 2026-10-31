@@ -4,73 +4,210 @@ import { getState } from "@/lib/data";
 import { LeagueTable } from "@/components/League";
 import { getLeague } from "@/lib/league";
 import { SecHead, Divider } from "@/components/Bits";
-import { MandateRosette, Rosette } from "@/components/Rosette";
+import { Rosette } from "@/components/Rosette";
 import { Crossing } from "@/components/Stamps";
 import { seedHash } from "@/lib/rosette";
 import { day, usd } from "@/lib/format";
-import { GUARANTEES, TEST_SUMMARY } from "@/lib/guarantees";
 import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Business",
-  description: "Avow sells autonomy you can audit: vaults that hold AI agents to a written mandate on chain, grade every trade and let size grow only with a graded record.",
+  description:
+    "Avow is the credit score for AI traders: every trade's stated confidence is graded on HSK Chain and published as ERC-8004 reputation, so any allocator, exchange or vault can size an agent by whether its confidence has ever meant anything.",
 };
 
 // Measured on HSK Chain mainnet, Oct 2026: 500 gwei gas, HSK ≈ $0.087.
 const GAS_GWEI = 500;
 const HSK_USD = 0.087;
-const NOTE_GAS = 540_000;
-const noteUsd = NOTE_GAS * GAS_GWEI * 1e-9 * HSK_USD;
+const gasUsd = (gas: number) => gas * GAS_GWEI * 1e-9 * HSK_USD;
+const NOTE_GAS = 540_000; // the swap, the stored note and the full statement
+const GRADE_GAS = 150_000; // AvowGrader posting one grade to the ERC-8004 reputation registry
+const noteUsd = gasUsd(NOTE_GAS);
+const gradeUsd = gasUsd(GRADE_GAS);
 const SETTLE_USD = 0.015;
-const MODEL_USD = 0.001;
+
+// ---- the problem
 
 const PROBLEMS = [
-  { t: "Track records are screenshots", d: "An agent's past returns arrive as an image or a spreadsheet. Nothing ties them to trades that really happened, at the size claimed, before the outcome was known." },
-  { t: "Risk limits live in code you cannot see", d: "Position caps and stops sit inside the bot's own software. The person whose money it is has no way to check they exist, or that they held on a bad day." },
-  { t: "A prompt can talk a bot into anything", d: "A language model told to be careful can be told the opposite. Rules written in a prompt are suggestions; an injected instruction or a bad day undoes them." },
+  {
+    t: "Confidence is a word nobody checks",
+    d: "An AI trader says it is 80% sure. Nothing records that number before the trade, and nothing compares it with what happened, so 80% from one agent and 80% from another mean nothing.",
+  },
+  {
+    t: "P&L rewards luck",
+    d: "A few lucky trades in a rising market look the same as skill. A small sample of returns cannot tell an allocator whether the agent knew anything.",
+  },
+  {
+    t: "Leaderboards show the survivors",
+    d: "Agents that lose are switched off or relaunched under a new name. The ones left on the board are the lucky ones, and the screenshots come from them.",
+  },
 ];
 
-const SELLS = [
-  { t: "Held to a written mandate", d: "Assets, size, stop distance, slippage, horizon, daily loss and drawdown, checked by the vault contract before every swap." },
-  { t: "Every trade sworn before it happens", d: "A falsifiable note in the same transaction as the swap: what will happen, by when, and at what price the agent admits it was wrong." },
+// ---- what Avow sells (planned)
+
+const READERS = [
   {
-    t: "Every note graded on chain",
-    d: "Settled by anyone, scored against the confidence the agent stated. The agent cannot swear a note that loses at the odds it publicly states; overstated odds are punished by the Brier grade and keep it on Probation. Retreat counts as a miss; nothing is deleted.",
+    who: "Allocators and funds",
+    reads: "Graded records and attestations through an API: every note, its stated odds, its grade and its size.",
+    why: "To size an agent by evidence before handing it capital, and to keep checking it after.",
+    price: "A data subscription, priced in the first pilots",
+    lead: true,
   },
-  { t: "Size earned, never granted", d: "The largest note an agent may write grows only with its graded record, and shrinks when it is wrong or overconfident." },
+  {
+    who: "Copy-trade platforms",
+    reads: "The grade beside every agent their users can follow.",
+    why: "Followers choose by a number the agent cannot edit, not by a P&L screenshot.",
+    price: "A fee per listed agent",
+  },
+  {
+    who: "Launchpads for AI agents",
+    reads: "An agent's graded record before and after it launches.",
+    why: "A launch with a record nobody can rewrite is easier to back.",
+    price: "A fee per graded launch",
+  },
+  {
+    who: "Exchange agent listings",
+    reads: "Grades for the agents an exchange lists or lets trade through sub-accounts, for example HashKey Global agent listings (planned).",
+    why: "A listing standard they can point to, read from a public registry.",
+    price: "A data licence",
+  },
+  {
+    who: "Licensed managers",
+    reads: "Audit reports for AI-run mandates: what the agent claimed, what the vault allowed, and what happened.",
+    why: "Reports they can put in front of clients and the regulator.",
+    price: "From $500 a month",
+  },
 ];
 
-const CUSTOMERS = [
+// ---- how the grade resists gaming
+
+const ENFORCED = [
   {
-    n: "I",
-    who: "Agent builders and quant teams raising capital",
-    get: "A track record nobody can fake: notes sworn before the outcome, graded by the contract. They open their own Avow vault with the open SDK.",
-    pay: "A monthly subscription per agent vault, for mandate enforcement, grading and the record, plus a small fee per sworn note. Neither depends on whether the agent makes money.",
+    t: "Sworn before the trade",
+    d: "The note is written in the same transaction as the swap; the vault has no other route to the router. Its terms are fixed when it is sworn, and no note can be fulfilled by its own trade.",
   },
   {
-    n: "II",
-    who: "Funds, family offices and institutions in the HashKey ecosystem",
-    get: "Mandate compliance and an audit trail for AI-run strategies: which clause was checked, which attempt was refused, when, and by which rule.",
-    pay: "A compliance and reporting subscription.",
+    t: "Settled by anyone, on TWAP and spot",
+    d: "Settlement is public and needs no keeper. A stop or target counts only when both the 5-minute TWAP and the live price are past it, so a single spike settles nothing.",
   },
   {
-    n: "III",
-    who: "People who want an AI trader with hard, visible limits",
-    get: "A vault they own, a mandate they wrote, every decision in the open, and a stop anyone can trigger.",
-    pay: "Through a licensed partner: 25 bps a year on mandated capital, or a 10% performance fee on realised profit above the high-water mark.",
+    t: "Retreat is graded as a miss",
+    d: "A note the agent retracts, or the owner revokes, is graded 0, and so is one that runs out of time. Nothing is deleted; there is no way to leave a bad call off a vault's record.",
+  },
+  {
+    t: "No negative-expectancy notes",
+    d: "The vault refuses any note that would lose at its own stated odds after the 0.60% round-trip pool fee. Odds must be between 50% and 99%.",
   },
 ];
+
+const OPEN_ISSUES = [
+  {
+    issue: "An owner can open new vaults and enter only the good ones",
+    why: "Cherry-picking: ten vaults, enter the one that got lucky.",
+    fix: "A per-owner history across every vault an owner deploys, and league entries that stay for good once made.",
+  },
+  {
+    issue: "A thin pool can be pushed past a level",
+    why: "On small HSKSwap pools, a large enough trade could settle a note in the agent's favour.",
+    fix: "An independent price reference beside the pool's TWAP, and a dispute window before a grade is final.",
+  },
+  {
+    issue: "Easy targets earn a good grade without skill",
+    why: "A target very close to the price is likely to be hit; stating high odds on it is calibrated but tells you little.",
+    fix: "A skill score against the probability the stop and target levels already imply, published beside the plain grade.",
+  },
+  {
+    issue: "A $1 note counts as much as a large one",
+    why: "An agent could build a record on tiny notes and then trade big.",
+    fix: "Notional-weighted grades, so the record reflects the size the agent actually traded.",
+  },
+];
+
+// ---- competition
+
+const ALTERNATIVES = [
+  {
+    name: "Guardrail agents in this hackathon",
+    sub: "Vyuh, KAVACH, Sentinel, Guarded Trade Agent, PolicyRebalancer, VeriQuant",
+    what: "On-chain limits on what an AI trader may do: spend caps, allow-lists and policy checks before a trade.",
+    gap: "Limits say what an agent may not do, not whether its confidence means anything. Avow has limits too, and sizes them by the grade.",
+  },
+  {
+    name: "Recall Network",
+    sub: "Reportedly about $42M raised",
+    what: "On-chain trading competitions and leaderboards for AI agents, ranked by results, with staking on agents.",
+    gap: "Ranks results in time-boxed contests, where a lucky run and a skilled run look alike. Avow grades the stated odds of every trade, in a live vault.",
+  },
+  {
+    name: "Taoshi and Vanta",
+    sub: "Bittensor subnet 8",
+    what: "Scores trading signals on risk-adjusted returns and rewards the best of them.",
+    gap: "Scores returns, not stated confidence, and the score lives inside the subnet's own incentives rather than in a standard other clients read.",
+  },
+  {
+    name: "P&L leaderboards",
+    sub: "Hyperliquid vaults and similar",
+    what: "Public vaults with a visible track record and P&L.",
+    gap: "Nothing is claimed before a trade, so nothing can be graded, and closed vaults drop off the board.",
+  },
+  {
+    name: "Enzyme, dHEDGE",
+    sub: "Policy vaults",
+    what: "A manager trades within on-chain limits and asset allow-lists.",
+    gap: "Limits, but no falsifiable claim before a trade and no grade after it.",
+  },
+  {
+    name: "Numerai",
+    sub: "Staked predictions",
+    what: "Data scientists stake on their predictions and are paid on performance.",
+    gap: "Models and predictions live off chain; the stake is on a signal, not on a trade the stake executes.",
+  },
+  {
+    name: "ERC-8004",
+    sub: "A standard, not a competitor",
+    what: "The draft Ethereum standard for agent identity and reputation.",
+    gap: "It defines where reputation lives, not how to earn it. Avow is a reputation writer for it, posting calibration under the tag avow-calibration.",
+  },
+];
+
+// ---- moat
+
+const MOAT = [
+  {
+    t: "A neutral grader",
+    d: "Anyone can settle a note and post its grade; nobody chooses the number. The grader reads the vault and applies one formula, so there is no one at Avow to lobby for a better score.",
+  },
+  {
+    t: "Depth of record",
+    d: "A record is sworn before each outcome and pinned to the block it settled in. A rival can copy the contracts in a day; it cannot copy months of graded notes.",
+  },
+  {
+    t: "The default calibration tag on HSK Chain",
+    d: "Avow deployed the first ERC-8004 registries on HSK Chain. If avow-calibration becomes the tag clients filter by, every new agent there is graded on the same terms.",
+  },
+];
+
+// ---- why HSK Chain
 
 const HSK = [
-  { t: "Compliance first", d: "HSK Chain comes from a licensed financial group. The customers who most need an audited AI trader are already in its ecosystem." },
-  { t: "HSKSwap liquidity", d: "Real pools for ETH, BTC and HSK against USDT, with a TWAP oracle the vault settles notes by." },
-  { t: "Better prices for everyone", d: "When Avow does trade, its catch-up trades pull HSKSwap prices toward HashKey Global's. Every convergence note makes the DEX a little more accurate." },
-  { t: "HSP for the next step", d: "HashKey's agent payment rail lets agents pay each other for sealed notes: agent-to-agent settlement of verified calls." },
+  {
+    t: "A licensed ecosystem",
+    d: "HSK Chain comes from a licensed Hong Kong financial group. The managers, platforms and exchanges that most need a graded record for AI traders are already in its ecosystem.",
+  },
+  {
+    t: "Audit trails for AI-run mandates",
+    d: "A licensed manager running an AI strategy will need to show what the agent claimed, what it was allowed and what happened. The graded record is that trail, written before the outcome.",
+  },
+  {
+    t: "HSKSwap liquidity and a TWAP to settle by",
+    d: "Real pools for ETH, BTC and HSK against USDT, with a TWAP oracle the vault settles notes by. About $530k of USDT sits in the three pools today: small, but enough to prove the mechanism with real money.",
+  },
+  {
+    t: "The first ERC-8004 registries there",
+    d: "There was no ERC-8004 deployment on HSK Chain, so Avow deployed the identity and reputation registries. Every agent on the chain can now carry a reputation any client can read.",
+  },
 ];
-
-
-// ---- Regulation, pricing, team and market (HashKey Capital is the reader; nothing here is an invented statistic)
 
 const REG_MAP = [
   {
@@ -79,12 +216,17 @@ const REG_MAP = [
     how: "Nothing is tailored to a reader, and every page carries the disclaimer that notes are records, not advice.",
   },
   {
-    act: "The Avow Index",
+    act: "Graded records and attestations",
     treat: "Data about agents' graded records. Using it to advise clients is advising on securities (Type 4) or asset management (Type 9).",
-    how: "Licensed as data to SFC Type 4 and Type 9 holders for their own advisory use. Avow itself advises no one.",
+    how: "Licensed as data to SFC Type 4 and Type 9 holders for their own advisory use. Avow grades agents; it advises no one and recommends no agent.",
   },
   {
-    act: "Performance-fee vaults for third parties",
+    act: "Exchange agent listings, planned",
+    treat: "Data supplied to a licensed platform about the agents it chooses to list.",
+    how: "The platform holds the licence and decides what to list. Avow supplies the grade and the method, the same to every reader.",
+  },
+  {
+    act: "Vaults for third-party capital",
     treat: "Managing other people's money: asset management (Type 9).",
     how: "Offered only through licensed partners. Avow supplies the vault, the mandate and the record; the partner holds the licence and the client.",
   },
@@ -95,122 +237,55 @@ const REG_MAP = [
   },
 ];
 
-// planned prices
-const VAULT_SUB_LO = 49;
-const VAULT_SUB_HI = 199;
-const NOTE_FEE = 0.05;
-const PERF_FEE = 0.1;
-const AUM_FEE = 0.0025;
-const ANNUAL_RETURN = 0.1;
-const SUB_MONTH = 500;
-const NOTES_PER_DAY = 10;
+// ---- milestones, team, ask
 
-const PRICING = [
+const MILESTONES = [
   {
-    stream: "Vault subscription",
-    lead: true,
-    who: "Anyone running an AI agent in an Avow vault",
-    price: `${"$"}${VAULT_SUB_LO}–${"$"}${VAULT_SUB_HI} per agent vault a month`,
-    how: "The lead stream. Mandate enforcement, on-chain grading and the public record for one agent; the tier depends on the venues and the reporting it needs. Paid whether the agent wins or loses.",
+    when: "By Demo Day, Nov 4",
+    tag: "Targets",
+    items: ["Graded notes from all three agents, each posted as ERC-8004 reputation", "At least one outside agent entered in the league (planned)"],
   },
-  { stream: "Note fee", who: "The same vaults, per sworn note", price: `${"$"}${NOTE_FEE.toFixed(2)} per sworn note`, how: "A minor line: taken by the vault when a note is sworn and routed to a treasury." },
-  { stream: "Compliance and reporting", who: "Funds, family offices and institutions", price: `from ${"$"}${SUB_MONTH}/month`, how: "Mandate-compliance reports and an audit trail read from the vaults they use." },
   {
-    stream: "Mandated capital",
-    who: "Third-party capital, only through licensed partners",
-    price: `${AUM_FEE * 1e4} bps a year, or ${PERF_FEE * 100}% above the high-water mark`,
-    how: "Charged by the partner's vault: a small fee on capital under mandate, or a performance fee on realised profit only, never on losses or on recovering them.",
+    when: "Next 90 days",
+    tag: "Targets",
+    items: [
+      "10 outside agents graded in the league",
+      "3 allocators or platforms reading graded records in a pilot",
+      "Notional-weighted grades and an independent price reference, live on mainnet",
+    ],
   },
-];
-
-const SCALES = [
-  { name: "Pilot", agents: 20, aum: 1_000_000, inst: 2 },
-  { name: "Growing", agents: 100, aum: 10_000_000, inst: 10 },
-  { name: "Established", agents: 500, aum: 50_000_000, inst: 30 },
-];
-const earn = (sc: (typeof SCALES)[number]) => {
-  const vaultLo = sc.agents * VAULT_SUB_LO * 12;
-  const vaultHi = sc.agents * VAULT_SUB_HI * 12;
-  const notes = sc.agents * NOTES_PER_DAY * 365 * NOTE_FEE;
-  const subs = sc.inst * SUB_MONTH * 12;
-  const aum = sc.aum * AUM_FEE;
-  const perf = sc.aum * ANNUAL_RETURN * PERF_FEE;
-  const steadyLo = vaultLo + notes + subs;
-  const steadyHi = vaultHi + notes + subs;
-  return { vaultLo, vaultHi, notes, subs, aum, perf, steadyLo, steadyHi, totalLo: steadyLo + aum, totalHi: steadyHi + aum };
-};
-const money = (v: number) => (v >= 1_000_000 ? `$${(v / 1_000_000).toFixed(v % 1_000_000 ? 2 : 0)}M` : `$${Math.round(v).toLocaleString("en-US")}`);
-const span2 = (a: number, b: number) => `${money(a)}–${money(b)}`;
-
-const ALTERNATIVES = [
-  { name: "Enzyme, dHEDGE", what: "Policy vaults: a manager trades within on-chain limits and asset allow-lists.", gap: "Limits, but no falsifiable claim before a trade and no grading after it." },
-  { name: "Hyperliquid vaults", what: "Public vaults with a visible track record and P&L.", gap: "Discretionary trading; nothing is claimed before a trade, so nothing can be graded." },
-  { name: "Recall agent competitions", what: "Rank AI agents by P&L in time-boxed trading contests.", gap: "A leaderboard in a contest, not graded promises inside a live vault with a mandate." },
-  { name: "Numerai", what: "Data scientists stake on their predictions and are paid on performance.", gap: "Models and predictions live off chain; the stake is on a signal, not on a trade the stake executes." },
-  { name: "Giza, Almanak", what: "Frameworks for building and running autonomous on-chain agents.", gap: "They execute; they do not grade the agent's claims on chain. Avow can sit under such an agent as its vault." },
+  {
+    when: "Hiring",
+    tag: "Planned",
+    items: ["A business development and compliance lead, to work with licensed managers, platforms and exchanges", "An external audit before any third-party capital"],
+  },
 ];
 
 const BUILT = [
-  `A vault contract with ${GUARANTEES.length} guarantees, each with the test that proves it`,
-  `${TEST_SUMMARY}, run on a fork of HSK mainnet`,
-  "An autonomous agent running on Google Cloud, with a public journal, a desk and an MCP server",
-  "Built Oct 31 to Nov 1, 2026",
+  "Three vaults live on HSK Chain mainnet: Avow, a Gemini model agent, and Bold and Fade, two rule baselines; $5 mandate caps and $1 Probation notes",
+  "The AvowLeague registry, open to any vault owner; it stores no scores",
+  "ERC-8004 identity and reputation registries on HSK Chain, the first there, with agents #1 to #3 registered",
+  "AvowGrader, posting each settled note's grade as ERC-8004 feedback",
+  "61 contract tests; an independent review, not an external audit, found 1 high, 3 medium and 4 low issues, all fixed",
+  "A 30-day HSKSwap study, and a replay where one-sided strategies lost after fees",
+  "About $26 in all to put it on mainnet",
 ];
 
 const REPO = "https://github.com/RohanGlitched/avow";
-const APPLY = `${REPO}/issues/new?title=${encodeURIComponent("Apply for an Avow vault")}`;
 
 const USE_OF_FUNDS = [
-  { t: "Audit", d: "An external audit of the vault contract before any third-party capital" },
-  { t: "A quant and DeFi engineer", d: "Strategy research, venue adapters and the grading pipeline" },
-  { t: "Partnerships", d: "HashKey-licensed managers and agent teams, the route to mandated capital" },
-  { t: "SDK and Index", d: "The open SDK any agent can use, and the Avow Index allocators read" },
-];
-
-const TARGETS = [
-  { when: "Q1 2027", n: "SDK + 5", what: "the open SDK, and 5 external agent vaults", note: "agents built by other teams, each with its own mandate" },
-  { when: "Q2 2027", n: "$250k", what: "mandated, and the Avow Index live", note: "capital under mandate in Avow vaults, through licensed partners" },
-  { when: "Q4 2027", n: "20 · $1M · 5,000", what: "vaults, mandated capital, graded notes", note: "settled and graded on HSK Chain mainnet, across all vaults" },
-];
-
-const REACH = [
-  {
-    t: "HSKSwap, today",
-    tag: "Reference implementation",
-    d: "The vault on this site: the mandate enforced by the contract, every trade sworn in the same transaction, graded by the pool's own TWAP. Everything else is built from it.",
-  },
-  {
-    t: "Any EVM DEX",
-    tag: "Planned",
-    d: "The same vault contract, pointed at another router and its oracle. Mandate, notes and grading carry over unchanged.",
-  },
-  {
-    t: "HashKey Global and HashKey Exchange",
-    tag: "Planned",
-    d: "AI agents trading through API sub-accounts: the mandate attested on HSK Chain and held by the sub-account's permissions, each order preceded by a sworn note and graded against the venue's own prices.",
-  },
-  {
-    t: "Licensed asset managers",
-    tag: "Planned",
-    d: "Managers running AI strategies for clients get mandate attestation and a graded record they can put in front of clients and regulators, without handing custody to anyone.",
-  },
-];
-
-const ROADMAP = [
-  { when: "Nov 2026", what: "Mainnet vault live on HSK Chain", detail: "The agent you see on this site trades real funds under its mandate. HSK Chain Horizon Hackathon." },
-  { when: "Q1 2027", what: "Open SDK and the first external vaults", detail: "Any agent can open an Avow vault on a monthly subscription. Target: 5 external vaults." },
-  { when: "Q2 2027", what: "The Avow Index and an allocator dashboard", detail: "Agents ranked by calibration and realised P&L, read straight from their vaults. Target: $250k mandated through licensed partners." },
-  { when: "Q4 2027", what: "Beyond HSKSwap", detail: "Mandate attestation for agents on HashKey exchange sub-accounts and other EVM DEXs. Target: 20 vaults, $1M mandated, 5,000 graded notes." },
-  { when: "Then", what: "Sealed notes over HSP", detail: "Agents sell their sworn notes to each other before they settle; payment and settlement on HashKey's rail." },
+  { t: "Audit", d: "An external audit of the vault, league and grader contracts before any third-party capital" },
+  { t: "Business development and compliance", d: "One hire to bring in outside agents, allocators and licensed partners" },
+  { t: "Grading", d: "Notional-weighted grades, a skill score, an independent price reference and a dispute window" },
+  { t: "Read API and SDK", d: "The API allocators and platforms pay for, and the open SDK any agent uses to be graded" },
 ];
 
 export default async function BusinessPage() {
   const [s, league] = await Promise.all([getState(), getLeague()]);
-  const r = s.record;
   const graded = s.notes.filter((n) => n.sqError != null).sort((a, b) => (a.settledAt ?? 0) - (b.settledAt ?? 0));
   const t0 = s.contracts.deployBlock ? s.asOf - (s.block! - s.contracts.deployBlock) * 2 : graded[0]?.openedAt ?? s.asOf - 86400;
   const span = s.asOf - t0 || 1;
-  const perTrade = noteUsd + SETTLE_USD + MODEL_USD;
+  const perTrade = noteUsd + gradeUsd + SETTLE_USD;
 
   return (
     <>
@@ -222,21 +297,49 @@ export default async function BusinessPage() {
         </div>
         <div className="wrap hero__top" style={{ marginBottom: 0, alignItems: "start" }}>
           <div>
-            <h1>Autonomy you can audit.</h1>
+            <h1>The credit score for AI traders.</h1>
           </div>
           <div>
             <p className="lede">
-              AI agents are starting to manage money, and nobody can verify whether they are any good. Avow is the track record: each agent swears every trade as a falsifiable note on
-              HSK Chain before it happens, every note is graded against the odds it stated, and the league ranks agents by that record. Allocators read it before they hand an agent
-              capital; agents earn bigger limits only by building it.
+              Every trade&apos;s stated confidence is graded on HSK Chain and published as ERC-8004 reputation, so any allocator, exchange or vault can size an agent by whether its
+              confidence has ever meant anything.
+            </p>
+            <p className="biz-live">
+              <i aria-hidden="true" />
+              Live on HSK Chain mainnet: three graded vaults, an open league registry, and the first ERC-8004 registries on the chain.
             </p>
             <div className="actions">
-              <a href="#ask" className="btn">
+              <Link href="/league" className="btn">
+                See the league
+              </Link>
+              <a href="#ask" className="btn btn--ghost">
                 Read the ask
               </a>
-              <Link href="/" className="btn btn--ghost">
-                See the live vault
-              </Link>
+            </div>
+          </div>
+        </div>
+        <div className="wrap">
+          <div className="figures">
+            <div className="figure">
+              <div className="figure__label">Vaults on mainnet</div>
+              <div className="figure__value">
+                3<small>$5 caps, $1 Probation notes</small>
+              </div>
+              <p className="figure__note">Avow, a Gemini model agent, and Bold and Fade, two rule baselines it is ranked against.</p>
+            </div>
+            <div className="figure">
+              <div className="figure__label">ERC-8004 agents</div>
+              <div className="figure__value">
+                #1–3<small>registered</small>
+              </div>
+              <p className="figure__note">Each settled note&apos;s grade is posted to the reputation registry under the tag avow-calibration.</p>
+            </div>
+            <div className="figure">
+              <div className="figure__label">Revenue, customers, outside agents</div>
+              <div className="figure__value">
+                None yet<small>said plainly</small>
+              </div>
+              <p className="figure__note">Everything below marked planned is a plan. What is live is the mechanism, on real funds.</p>
             </div>
           </div>
         </div>
@@ -244,8 +347,8 @@ export default async function BusinessPage() {
 
       <section className="sec sec--tint" aria-labelledby="problem">
         <div className="wrap">
-          <SecHead id="problem" title="Three things nobody can verify today.">
-            Every one of them is a promise made in a medium that cannot hold a promise: an image, private code, a prompt.
+          <SecHead id="problem" title="Allocators cannot tell whether an AI trader's confidence means anything.">
+            More money is being handed to agents that say how sure they are. None of the evidence on offer can show whether that sureness has ever been right.
           </SecHead>
           <div className="slips">
             {PROBLEMS.map((p) => (
@@ -253,7 +356,7 @@ export default async function BusinessPage() {
                 <h3>{p.t}</h3>
                 <p>{p.d}</p>
                 <div style={{ position: "absolute", left: 0, right: 0, bottom: 14, height: 30 }}>
-                  <Crossing text="Not verifiable" />
+                  <Crossing text="Not graded" />
                 </div>
               </article>
             ))}
@@ -262,336 +365,209 @@ export default async function BusinessPage() {
       </section>
 
       <section className="sec" aria-labelledby="sells">
-        <div className="wrap grid-2" style={{ alignItems: "center" }}>
-          <div>
-            <h2 id="sells">What Avow sells.</h2>
-            <p className="lede" style={{ marginTop: 14 }}>
-              A vault, not a bot. Any agent can sit behind it; the vault decides what the agent may do and keeps the record no one can rewrite.
-            </p>
-            <ol className="clauses" style={{ marginTop: 18 }}>
-              {SELLS.map((x, i) => (
-                <li key={x.t} className="clause" style={{ gridTemplateColumns: "44px minmax(0,1fr)", padding: "16px 0" }}>
-                  <span className="clause__n" style={{ fontSize: 22 }}>
-                    {["I", "II", "III", "IV"][i]}
-                  </span>
-                  <div>
-                    <span className="clause__text" style={{ fontSize: 20, display: "block" }}>
-                      {x.t}
-                    </span>
-                    <p className="muted" style={{ fontSize: 15.5, marginTop: 4 }}>
-                      {x.d}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div style={{ maxWidth: 440, width: "100%", justifySelf: "center" }}>
-            <MandateRosette mandate={s.mandate} defer label="The live vault's mandate rosette" />
-            <p className="plate" style={{ textAlign: "center" }}>
-              Plate. The live vault&apos;s mandate, drawn from its clauses. Every customer&apos;s vault prints its own.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <Divider seed="business-customers" />
-
-      <section className="sec" aria-labelledby="customers">
         <div className="wrap">
-          <SecHead id="customers" title="Who pays, and for what.">
-            Three customers, one product. Each pays for the same thing in a different form: a promise that can be checked.
+          <SecHead id="sells" title="Being graded is free. Reading the grades is paid.">
+            If agents paid to be graded, the grader would have a customer to please. So agents pay only gas, and the people who rely on the grade pay to read it. None of the pricing
+            below is live; it is the plan.
           </SecHead>
-          <div className="bonds">
-            {CUSTOMERS.map((c) => (
-              <article className="bond" key={c.n}>
-                <div className="tiernote__band" aria-hidden="true" />
-                <div className="bond__top">
-                  <span className="bond__n">{c.n}</span>
-                  <Rosette hash={seedHash("customer" + c.n)} defer only={[1, 2, 4]} />
+          <div className="biz-free">
+            <div className="biz-free__head">
+              <h3>Free to be graded</h3>
+              <p className="muted">
+                Any agent can open a vault, swear its trades and be graded. No subscription, no fee per note. These are measured costs on HSK Chain mainnet, at {GAS_GWEI} gwei and HSK at $
+                {HSK_USD}.
+              </p>
+            </div>
+            <div className="figures" style={{ marginTop: 0, borderBottom: 0 }}>
+              <div className="figure">
+                <div className="figure__label">Swearing a note</div>
+                <div className="figure__value">
+                  ≈ {usd(noteUsd, { dp: 3 })}
+                  <small>0.54M gas</small>
                 </div>
-                <h3>{c.who}</h3>
-                <dl>
-                  <dt>What they get</dt>
-                  <dd>{c.get}</dd>
-                  <dt>How they pay</dt>
-                  <dd>{c.pay}</dd>
-                </dl>
-              </article>
-            ))}
+                <p className="figure__note">The swap, the stored note and the full statement in one transaction.</p>
+              </div>
+              <div className="figure">
+                <div className="figure__label">Posting its grade</div>
+                <div className="figure__value">
+                  ≈ {usd(gradeUsd, { dp: 3 })}
+                  <small>0.15M gas</small>
+                </div>
+                <p className="figure__note">AvowGrader writes the grade to the ERC-8004 reputation registry.</p>
+              </div>
+              <div className="figure">
+                <div className="figure__label">Settling it</div>
+                <div className="figure__value">
+                  ≈ {usd(SETTLE_USD, { dp: 3 })}
+                  <small>paid by whoever settles</small>
+                </div>
+                <p className="figure__note">
+                  About <b>{usd(perTrade, { dp: 2 })}</b> in all to make one trade graded and public, end to end.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
 
-      <section className="sec sec--tint" aria-labelledby="regulation">
-        <div className="wrap">
-          <SecHead id="regulation" title="Regulatory map.">
-            Avow enforces a mandate; the vault itself keeps the record. Avow does not take custody and it does not manage anyone&apos;s money, which is what lets it plug into licensed firms rather than
-            compete with them. How each activity is likely to be treated under Hong Kong SFC rules, and what Avow does about it:
-          </SecHead>
+          <h3 style={{ marginTop: 44, marginBottom: 14 }}>Paid to read, planned</h3>
           <div className="table-wrap">
             <table className="tbl tbl--stack">
               <thead>
                 <tr>
-                  <th>Activity</th>
-                  <th>Likely treatment under Hong Kong SFC rules</th>
-                  <th>How Avow handles it</th>
-                </tr>
-              </thead>
-              <tbody>
-                {REG_MAP.map((x) => (
-                  <tr key={x.act}>
-                    <td data-h="Activity" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
-                      {x.act}
-                    </td>
-                    <td data-h="Likely treatment">{x.treat}</td>
-                    <td data-h="How Avow handles it" className="muted">
-                      {x.how}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="plate">Not legal advice: a working map to take to counsel and to licensed partners, not a legal opinion.</p>
-        </div>
-      </section>
-
-      <section className="sec" aria-labelledby="pricing">
-        <div className="wrap">
-          <SecHead id="pricing" title="Pricing, planned.">
-            Led by a monthly subscription per agent vault; none of it is live yet. The vault subscription, the note fee and compliance reporting do not depend on any agent&apos;s trading
-            returns. The second table is arithmetic on those prices at three sizes, not a forecast.
-          </SecHead>
-          <div className="table-wrap">
-            <table className="tbl tbl--stack">
-              <thead>
-                <tr>
-                  <th>Stream</th>
-                  <th>Who pays</th>
+                  <th>Reader</th>
+                  <th>What they read</th>
+                  <th>Why they pay</th>
                   <th>Planned price</th>
-                  <th>How it is collected</th>
                 </tr>
               </thead>
               <tbody>
-                {PRICING.map((x) => (
-                  <tr key={x.stream} className={"lead" in x && x.lead ? "price-lead" : undefined}>
-                    <td data-h="Stream" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
-                      {x.stream}
-                      {"lead" in x && x.lead ? <span className="sub price-lead__cap">Lead stream, planned</span> : null}
+                {READERS.map((x) => (
+                  <tr key={x.who} className={x.lead ? "price-lead" : undefined}>
+                    <td data-h="Reader" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
+                      {x.who}
+                      {x.lead ? <span className="sub price-lead__cap">First to build, planned</span> : null}
                     </td>
-                    <td data-h="Who pays">{x.who}</td>
-                    <td data-h="Planned price" style={{ fontWeight: 650, whiteSpace: "nowrap" }}>
+                    <td data-h="What they read">{x.reads}</td>
+                    <td data-h="Why they pay" className="muted">
+                      {x.why}
+                    </td>
+                    <td data-h="Planned price" style={{ fontWeight: 650 }}>
                       {x.price}
                     </td>
-                    <td data-h="How it is collected" className="muted">
-                      {x.how}
-                    </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-          <p className="illus">
-            <span>Illustrative arithmetic:</span> at 20 agent vaults × ${VAULT_SUB_LO}–${VAULT_SUB_HI} a month, the subscription is {span2(20 * VAULT_SUB_LO * 12, 20 * VAULT_SUB_HI * 12)} a year;
-            at 500 vaults it is {span2(500 * VAULT_SUB_LO * 12, 500 * VAULT_SUB_HI * 12)}. The note fee adds {money(20 * NOTES_PER_DAY * 365 * NOTE_FEE)} a year at 20 vaults.
-          </p>
-          <h3 style={{ marginTop: 40, marginBottom: 14 }}>What each would earn in a year, at three sizes</h3>
-          <div className="table-wrap">
-            <table className="tbl tbl--stack earn">
-              <thead>
-                <tr>
-                  <th>Illustrative</th>
-                  {SCALES.map((sc) => (
-                    <th key={sc.name} className="r">
-                      {sc.name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td data-h="Stream">Vault subscriptions</td>
-                  {SCALES.map((sc) => (
-                    <td key={sc.name} data-h={sc.name} className="r">
-                      <b>{span2(earn(sc).vaultLo, earn(sc).vaultHi)}</b>
-                      <span className="sub">
-                        {sc.agents.toLocaleString("en-US")} vaults × ${VAULT_SUB_LO}–${VAULT_SUB_HI} × 12
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td data-h="Stream">Note fee</td>
-                  {SCALES.map((sc) => (
-                    <td key={sc.name} data-h={sc.name} className="r">
-                      <b>{money(earn(sc).notes)}</b>
-                      <span className="sub">
-                        {sc.agents.toLocaleString("en-US")} vaults × {NOTES_PER_DAY} notes a day × 365 × ${NOTE_FEE.toFixed(2)}
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td data-h="Stream">Compliance subscriptions</td>
-                  {SCALES.map((sc) => (
-                    <td key={sc.name} data-h={sc.name} className="r">
-                      <b>{money(earn(sc).subs)}</b>
-                      <span className="sub">
-                        {sc.inst} institutions × ${SUB_MONTH} × 12
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-                <tr className="earn__total">
-                  <td data-h="Stream">Independent of trading returns</td>
-                  {SCALES.map((sc) => (
-                    <td key={sc.name} data-h={sc.name} className="r">
-                      <b>{span2(earn(sc).steadyLo, earn(sc).steadyHi)}</b>
-                    </td>
-                  ))}
-                </tr>
-                <tr>
-                  <td data-h="Stream">Mandated capital, via partners</td>
-                  {SCALES.map((sc) => (
-                    <td key={sc.name} data-h={sc.name} className="r">
-                      <b>{money(earn(sc).aum)}</b>
-                      <span className="sub">
-                        {money(sc.aum)} × {AUM_FEE * 1e4} bps; or {money(earn(sc).perf)} as a {PERF_FEE * 100}% performance fee on a {ANNUAL_RETURN * 100}% year
-                      </span>
-                    </td>
-                  ))}
-                </tr>
-                <tr className="earn__total">
-                  <td data-h="Stream">In all, per year, at 25 bps</td>
-                  {SCALES.map((sc) => (
-                    <td key={sc.name} data-h={sc.name} className="r">
-                      <b>{span2(earn(sc).totalLo, earn(sc).totalHi)}</b>
-                    </td>
-                  ))}
-                </tr>
               </tbody>
             </table>
           </div>
           <p className="plate">
-            Illustrative arithmetic only: the prices are planned, the sizes are chosen to show scale, and fees on mandated capital are gross, before any licensed partner&apos;s share. None of it is
-            revenue today.
+            Planned, not live: no reader pays today, and no price has been tested with a customer. The grade is the same for every reader; paying buys access and reports, never a
+            different number.
           </p>
         </div>
       </section>
 
-      <section className="sec sec--tint" aria-labelledby="index">
+      <section className="sec sec--tint" aria-labelledby="league">
         <div className="wrap">
-          <SecHead id="index" title="The league is the product.">
-            A public ranking of agents by calibration and realised P&amp;L, read straight from their vaults: the record allocators check before they hand an agent capital. It is
-            live now with three house agents, and the AvowLeague registry is open to any vault&apos;s owner.
+          <SecHead id="league" title="The league is the product.">
+            Three agents on mainnet today, ranked by tier, then Brier score, then graded notes. The AvowLeague registry is open: any vault owner can enter. It stores no scores; every
+            figure is read from the agent&apos;s own vault.
           </SecHead>
+          <div className="biz-grade">
+            <div className="lg-formula" role="img" aria-label="grade equals 100 minus 100 times the square of stated odds minus outcome">
+              <span className="lg-formula__lhs">grade</span> = 100 − 100 × <span className="lg-formula__nb">(stated odds − outcome)²</span>
+            </div>
+            <p className="muted">
+              Posted by AvowGrader as ERC-8004 feedback for each settled note, tag avow-calibration. An agent&apos;s mean grade is 100 × (1 − Brier). An agent that says 90% and is
+              right scores 99; one that says 90% and is wrong scores 19. <Link href="/league#erc8004">How any ERC-8004 client reads it</Link>.
+            </p>
+          </div>
           <LeagueTable league={league} compact />
         </div>
       </section>
 
-      <section className="sec" aria-labelledby="hsk">
+      <section className="sec" aria-labelledby="gaming">
         <div className="wrap">
-          <SecHead id="hsk" title="Why HSK Chain.">
-            The customers, the liquidity and the payment rail are already here.
+          <SecHead id="gaming" title="How the grade resists gaming, and where it does not yet.">
+            A credit score is only worth what it costs to fake. Four things are enforced by the contracts today. Four known gaps are open, each with a planned fix.
           </SecHead>
-          <div className="grid-2" style={{ gap: "32px 56px" }}>
-            {HSK.map((x) => (
-              <div key={x.t} style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
-                <h3>{x.t}</h3>
-                <p style={{ color: "var(--muted)", marginTop: 8, fontSize: 16 }}>{x.d}</p>
-              </div>
+          <h3 style={{ marginBottom: 14 }}>Enforced on chain today</h3>
+          <div className="biz-enforced">
+            {ENFORCED.map((x, i) => (
+              <article key={x.t}>
+                <span className="clause__n">{["I", "II", "III", "IV"][i]}</span>
+                <div>
+                  <h4>{x.t}</h4>
+                  <p>{x.d}</p>
+                </div>
+              </article>
             ))}
           </div>
+          <h3 style={{ marginTop: 44, marginBottom: 14 }}>Known open issues, and the planned fix</h3>
+          <div className="table-wrap">
+            <table className="tbl tbl--stack">
+              <thead>
+                <tr>
+                  <th>Open issue</th>
+                  <th>Why it matters</th>
+                  <th>Planned fix</th>
+                </tr>
+              </thead>
+              <tbody>
+                {OPEN_ISSUES.map((x) => (
+                  <tr key={x.issue}>
+                    <td data-h="Open issue" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
+                      {x.issue}
+                    </td>
+                    <td data-h="Why it matters" className="muted">
+                      {x.why}
+                    </td>
+                    <td data-h="Planned fix">{x.fix}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="plate">
+            Our own research points the same way: in a <Link href="/record#replay">replay over 30 days of real HSKSwap swaps</Link>, one-sided strategies lost after fees. That is why the
+            vault refuses notes that lose at their own odds, and why Avow trades rarely.
+          </p>
         </div>
       </section>
 
       <section className="sec sec--tint" aria-labelledby="alternatives">
         <div className="wrap">
-          <SecHead id="alternatives" title="Market and alternatives.">
-            The honest beachhead is small. HSKSwap&apos;s three USDT pools hold about <strong>$530k</strong> of USDT today: about $436k in the WHSK pool, $48k in WETH and $50k in WBTC. That
-            is enough to prove the mechanism with real money; the product is the vault and the record, which travel to larger venues.
+          <SecHead id="alternatives" title="Competition.">
+            Others limit what an agent may do, or rank what it earned. None of them grade what it said it would do, at the odds it said it, before it did it.
           </SecHead>
           <div className="table-wrap">
             <table className="tbl tbl--stack">
               <thead>
                 <tr>
-                  <th>Alternative</th>
-                  <th>What it does well</th>
-                  <th>What it does not do</th>
+                  <th>Who</th>
+                  <th>What it does</th>
+                  <th>Where Avow differs</th>
                 </tr>
               </thead>
               <tbody>
                 {ALTERNATIVES.map((x) => (
                   <tr key={x.name}>
-                    <td data-h="Alternative" style={{ fontFamily: "var(--serif)", fontSize: 19, whiteSpace: "nowrap" }}>
+                    <td data-h="Who" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
                       {x.name}
+                      <span className="sub">{x.sub}</span>
                     </td>
-                    <td data-h="What it does well">{x.what}</td>
-                    <td data-h="What it does not do" className="muted">
+                    <td data-h="What it does">{x.what}</td>
+                    <td data-h="Where Avow differs" className="muted">
                       {x.gap}
                     </td>
                   </tr>
                 ))}
                 <tr className="earn__total">
-                  <td data-h="Alternative" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
+                  <td data-h="Who" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
                     Avow
+                    <span className="sub">Live on HSK Chain mainnet</span>
                   </td>
-                  <td data-h="What it does well">A falsifiable note sworn in the same transaction as every trade, inside a vault that enforces the owner&apos;s mandate.</td>
-                  <td data-h="What it does not do" className="muted">
-                    Each note is graded on chain against its stated odds, and the trade limit grows only with that graded record.
+                  <td data-h="What it does">Grades the stated confidence of every trade, sworn before the trade and settled by anyone.</td>
+                  <td data-h="Where Avow differs" className="muted">
+                    Binds each agent&apos;s trade limit to that grade inside its vault, and publishes the grade as ERC-8004 reputation any client can read.
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <p className="plate">Descriptions of others are from their public material and may be out of date; funding figures are as reported, not verified by us.</p>
         </div>
       </section>
 
-      <section className="sec" aria-labelledby="reach">
-        <div className="wrap">
-          <SecHead id="reach" title="Where this goes.">
-            HSKSwap is where the mechanism is proven, not where it stops. The opportunity is mandate attestation and graded records for AI agents trading wherever HashKey operates: HashKey
-            Global and HashKey Exchange API sub-accounts, licensed asset managers running AI strategies, and any EVM DEX. The HSKSwap vault is the reference implementation every other venue is built
-            from. The same customer pays the same subscription whichever venue its agent trades on.
-          </SecHead>
-          <div className="reach">
-            {REACH.map((x, i) => (
-              <article key={x.t} className={`reach__item${i === 0 ? " reach__item--now" : ""}`}>
-                <span className="reach__tag">{x.tag}</span>
-                <h3>{x.t}</h3>
-                <p>{x.d}</p>
-              </article>
-            ))}
-          </div>
-          <p className="plate">Plans, not traction: only the HSKSwap vault exists today. No market size is claimed here; the venues are named so the reader can size them.</p>
-        </div>
-      </section>
-
-      <section className="sec sec--tint" aria-labelledby="moat">
+      <section className="sec" aria-labelledby="moat">
         <div className="wrap grid-2" style={{ alignItems: "start" }}>
           <div>
-            <h2 id="moat">The moat is the format, and where the record lives.</h2>
+            <h2 id="moat">The moat is trust in the grader, not lock-in.</h2>
             <p className="lede" style={{ marginTop: 14 }}>
-              A competitor can copy the contracts in a day. What is hard to copy is being the format everyone already reads, inside the reports they already send, with records that cannot
-              be moved.
+              The records are public and readable by any ERC-8004 client; an agent can take its history anywhere. Avow wins by being the grade everyone already reads, because nobody can
+              bend it.
             </p>
           </div>
           <ol className="clauses" style={{ marginTop: 0 }}>
-            {[
-              {
-                t: "The standard mandate and grading format on HSK Chain",
-                d: "One way to write a mandate and one way to grade an agent, so allocators compare every agent on the same terms.",
-              },
-              {
-                t: "Inside licensed managers' reporting",
-                d: "Mandate compliance and graded records flow into the reports HashKey-licensed managers already produce for their clients and regulators.",
-              },
-              {
-                t: "Switching costs",
-                d: "A graded record lives only in its vault, sworn before each outcome. An agent that leaves Avow starts again at Probation.",
-              },
-            ].map((x, i) => (
+            {MOAT.map((x, i) => (
               <li key={x.t} className="clause" style={{ gridTemplateColumns: "44px minmax(0,1fr)", padding: "16px 0" }}>
                 <span className="clause__n" style={{ fontSize: 22 }}>
                   {["I", "II", "III"][i]}
@@ -637,68 +613,88 @@ export default async function BusinessPage() {
                 </text>
               </svg>
               <figcaption className="plate">
-                Plate. This vault&apos;s {graded.length} graded {graded.length === 1 ? "note" : "notes"}, each pinned to the block it was settled in. Gilt: honoured. Red: missed. None can be moved
-                to another vault.
+                Plate. The Avow vault&apos;s {graded.length} graded {graded.length === 1 ? "note" : "notes"}, each pinned to the block it was settled in. Gilt: honoured. Red: missed. The depth
+                of a record is the one thing a newcomer cannot copy.
               </figcaption>
             </figure>
           </div>
         ) : null}
       </section>
 
-      <section className="sec" aria-labelledby="roadmap">
+      <section className="sec sec--tint" aria-labelledby="hsk">
         <div className="wrap">
-          <SecHead id="roadmap" title="Roadmap.">
-            In order, with nothing promised that is not already being built.
+          <SecHead id="hsk" title="Why HSK Chain.">
+            The firms that will need a graded record for AI-run money are licensed, and many of them are here.
           </SecHead>
-          <ol className="timeline">
-            {ROADMAP.map((x, i) => (
-              <li key={x.when} className={i === 0 ? "is-now" : undefined}>
-                <span className="timeline__when">{x.when}</span>
-                <h3>{x.what}</h3>
-                <p>{x.detail}</p>
-              </li>
+          <div className="grid-2" style={{ gap: "32px 56px" }}>
+            {HSK.map((x) => (
+              <div key={x.t} style={{ borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+                <h3>{x.t}</h3>
+                <p style={{ color: "var(--muted)", marginTop: 8, fontSize: 16 }}>{x.d}</p>
+              </div>
             ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="sec sec--tint" aria-labelledby="economics">
-        <div className="wrap">
-          <SecHead id="economics" title="Verification is cheap enough to run on every trade.">
-            Current measurements on HSK Chain mainnet, not projections: gas at {GAS_GWEI} gwei and HSK at ${HSK_USD}.
-          </SecHead>
-          <div className="figures" style={{ marginTop: 0 }}>
-            <div className="figure">
-              <div className="figure__label">Swearing a note</div>
-              <div className="figure__value">
-                ≈ {usd(noteUsd, { dp: 3 })}
-                <small>0.54M gas</small>
-              </div>
-              <p className="figure__note">The swap, the stored note and the full statement in one transaction.</p>
-            </div>
-            <div className="figure">
-              <div className="figure__label">Settling and grading it</div>
-              <div className="figure__value">
-                ≈ {usd(SETTLE_USD, { dp: 3 })}
-                <small>paid by whoever settles</small>
-              </div>
-              <p className="figure__note">The closing swap, the outcome and the Brier update.</p>
-            </div>
-            <div className="figure">
-              <div className="figure__label">One model decision</div>
-              <div className="figure__value">
-                ≈ {usd(MODEL_USD, { dp: 3 })}
-                <small>Gemini 3.5 Flash</small>
-              </div>
-              <p className="figure__note">
-                About <b>{usd(perTrade, { dp: 2 })}</b> in all to make one trade verifiable end to end.
-              </p>
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="sec" aria-labelledby="team">
+      <section className="sec" aria-labelledby="regulation">
+        <div className="wrap">
+          <SecHead id="regulation" title="Regulatory map.">
+            Avow grades agents and publishes the grade. It does not take custody, advise anyone or manage anyone&apos;s money, which is what lets it plug into licensed firms rather than
+            compete with them. How each activity is likely to be treated under Hong Kong SFC rules, and what Avow does about it:
+          </SecHead>
+          <div className="table-wrap">
+            <table className="tbl tbl--stack">
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Likely treatment under Hong Kong SFC rules</th>
+                  <th>How Avow handles it</th>
+                </tr>
+              </thead>
+              <tbody>
+                {REG_MAP.map((x) => (
+                  <tr key={x.act}>
+                    <td data-h="Activity" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
+                      {x.act}
+                    </td>
+                    <td data-h="Likely treatment">{x.treat}</td>
+                    <td data-h="How Avow handles it" className="muted">
+                      {x.how}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="plate">Not legal advice: a working map to take to counsel and to licensed partners, not a legal opinion.</p>
+        </div>
+      </section>
+
+      <Divider seed="business-milestones" />
+
+      <section className="sec" aria-labelledby="milestones">
+        <div className="wrap">
+          <SecHead id="milestones" title="Milestones.">
+            Targets, not traction. Today there are three house agents and no outside ones; these are the numbers to hold Avow to.
+          </SecHead>
+          <div className="biz-miles">
+            {MILESTONES.map((m, i) => (
+              <article key={m.when} className={i === 0 ? "biz-miles--now" : undefined}>
+                <span className="biz-miles__tag">{m.tag}</span>
+                <h3>{m.when}</h3>
+                <ul>
+                  {m.items.map((x) => (
+                    <li key={x}>{x}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sec sec--tint" aria-labelledby="team">
         <div className="wrap grid-2" style={{ alignItems: "start" }}>
           <div>
             <h2 id="team">Who builds Avow.</h2>
@@ -712,7 +708,7 @@ export default async function BusinessPage() {
             </div>
           </div>
           <div>
-            <h3 style={{ marginBottom: 12 }}>This week, on the record</h3>
+            <h3 style={{ marginBottom: 12 }}>On the record, as of Oct 31, 2026</h3>
             <ul className="built">
               {BUILT.map((b) => (
                 <li key={b}>{b}</li>
@@ -722,14 +718,15 @@ export default async function BusinessPage() {
         </div>
       </section>
 
-      <section className="sec sec--tint" aria-labelledby="ask">
+      <section className="sec" aria-labelledby="ask">
         <div className="wrap">
           <div className="charter" style={{ padding: "56px clamp(20px, 5vw, 64px) 52px" }}>
             <div className="grid-2" style={{ alignItems: "start" }}>
               <div>
                 <h2 id="ask">The ask.</h2>
                 <p className="lede" style={{ marginTop: 14 }}>
-                  <strong>Pre-seed, $150–250k for 18 months</strong> (to be agreed with HashKey Capital), and incubation with HSK Chain engineering.
+                  <strong>Pre-seed, $150–250k for 18 months</strong> (to be agreed with HashKey Capital), and incubation with HSK Chain engineering: introductions to agent teams,
+                  licensed managers and exchange listings that would read the grade.
                 </p>
                 <h3 style={{ marginTop: 26, fontSize: 20 }}>Use of funds, planned</h3>
                 <ul className="uses">
@@ -749,8 +746,8 @@ export default async function BusinessPage() {
                   <a href={SITE.url}>{SITE.url.replace("https://", "")}</a>
                 </p>
                 <div className="actions" style={{ justifyContent: "center", marginTop: 18 }}>
-                  <Link href="/" className="btn">
-                    See the live vault
+                  <Link href="/league" className="btn">
+                    See the league
                   </Link>
                   <Link href="/how#verify" className="btn btn--ghost">
                     Verify it yourself
@@ -758,22 +755,11 @@ export default async function BusinessPage() {
                 </div>
               </div>
             </div>
-            <h3 style={{ marginTop: 36, fontSize: 20 }}>Milestones, as targets</h3>
-            <div className="targets">
-              {TARGETS.map((t) => (
-                <div className="target" key={t.what}>
-                  <span className="target__cap">Target · {t.when}</span>
-                  <b>{t.n}</b>
-                  <span style={{ color: "var(--ink)", fontWeight: 600 }}>{t.what}</span>
-                  <span>{t.note}</span>
-                </div>
-              ))}
-            </div>
-            <p className="plate">Targets, not traction: today there is one vault, this one, and its mainnet record starts on Nov 1.</p>
             <div className="partners">
-              <h3>Design partners: open</h3>
+              <h3>Outside agents: open</h3>
               <p>
-                We are speaking with HSK Chain agent teams at the Horizon hackathon. If you build an agent and want a record nobody can fake, <a href={APPLY} target="_blank" rel="noreferrer">apply for a vault</a>; it starts on Probation, like every agent.
+                Any agent on HSK Chain can be graded for the cost of gas. If you build one, <Link href="/league#enter">enter it in the league</Link>; it starts on Probation, like every
+                agent, and its grade is posted as ERC-8004 reputation from its first settled note.
               </p>
             </div>
           </div>

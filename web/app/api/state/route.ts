@@ -7,6 +7,7 @@ export async function GET() {
     const s = await getState();
     return Response.json(s, {
       headers: {
+        "content-type": "application/json; charset=utf-8",
         "x-avow-source": stateSource(s),
         "cache-control": "public, s-maxage=10, stale-while-revalidate=30",
       },

@@ -151,6 +151,8 @@ export interface State {
   replay?: Replay;
   /** Every candidate the rules produced, sworn or declined, entered at the real HSK mainnet pool price and graded live against real mainnet prices by the vault's own rules. */
   shadow?: Shadow;
+  /** The agent that serves this state (absent from older agents). */
+  persona?: { id: string; name: string; kind: string; strategy: string };
 }
 
 export type ShadowStatus = "open" | "honoured" | "void" | "lapsed";

@@ -14,7 +14,7 @@ export async function POST(req: Request) {
   try {
     const r = await agentFetch("/mcp", { method: "POST", timeoutMs: 20_000, headers: { "content-type": "application/json", "x-visitor-ip": visitorIp(req) }, body: await req.text() });
     if (r.status === 202) return new NextResponse(null, { status: 202, headers: CORS });
-    return new NextResponse(await r.text(), { status: r.status, headers: { ...CORS, "content-type": "application/json" } });
+    return new NextResponse(await r.text(), { status: r.status, headers: { ...CORS, "content-type": "application/json; charset=utf-8" } });
   } catch {
     return NextResponse.json({ jsonrpc: "2.0", id: null, error: { code: -32000, message: "Avow's agent is unreachable right now" } }, { status: 503, headers: CORS });
   }

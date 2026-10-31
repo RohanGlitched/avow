@@ -17,6 +17,22 @@ export function Divider({ seed }: { seed: string }) {
   );
 }
 
+/**
+ * The scope chip on pages about the one agent Avow (its notes, mandate, record, journal and desk), as opposed to the
+ * league, which is every agent. `extra` adds a page-specific sentence after it.
+ */
+export function ScopeLine({ extra }: { extra?: React.ReactNode }) {
+  return (
+    <p className="scope">
+      <span className="scope__chip">Agent: Avow</span>
+      <span>
+        The model agent in the league, and its own vault. <Link href="/league">See all agents</Link>.
+        {extra ? <> {extra}</> : null}
+      </span>
+    </p>
+  );
+}
+
 export function SecHead({ title, children, id }: { title: React.ReactNode; children?: React.ReactNode; id?: string }) {
   return (
     <div className="sec__head">

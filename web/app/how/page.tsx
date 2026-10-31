@@ -4,9 +4,9 @@ import { getState, specimenNote } from "@/lib/data";
 import { Guide } from "@/components/Guide";
 import { SecHead, Divider } from "@/components/Bits";
 import { ArchitectureDiagram, GuaranteeTable, AddressTable } from "@/components/HowParts";
-import { TEST_SUMMARY, GUARANTEES } from "@/lib/guarantees";
+import { TEST_BREAKDOWN, TEST_SUMMARY, GUARANTEES } from "@/lib/guarantees";
 import { verifyCommands } from "@/lib/verify";
-import { MAINNET_LAUNCH, NETWORK_WORDS, rehearsalSentence } from "@/lib/chain";
+import { NETWORK_WORDS, gasDominates, liveNoteUsd, rehearsalSentence, roundTripGasUsd, roundTripWords } from "@/lib/chain";
 import { ReplaySummary } from "@/components/Replay";
 import { bps, duration, px } from "@/lib/format";
 
@@ -17,7 +17,7 @@ const RULES = [
   { name: "swear(note)", who: "Agent only", what: "Checks every mandate clause and standing clause, swaps through HSKSwap, records the note and emits the full statement. One transaction; if anything fails, nothing happens." },
   { name: "settle(id): Honoured", who: "Anyone", what: "Both the 5-minute TWAP and the live price are at or past the target. Closes the position with an exit slippage bound. Graded 1." },
   { name: "settle(id): Void", who: "Anyone", what: "Both the TWAP and the live price are at or past the void level. This is the permissionless stop-loss. Graded 0." },
-  { name: "settle(id): Lapsed", who: "Anyone", what: "The expiry has passed. Always settles, whatever the price. Graded 0." },
+  { name: "settle(id): Lapsed", who: "Anyone", what: "The expiry has passed and the pool is calm: the live price is within the note's spot-deviation bound of the 5-minute TWAP. Until then it waits, so nobody can settle into a spike. Graded 0." },
   { name: "retract(id)", who: "Agent only", what: "Closes a note early. Graded 0, so retreating never improves the record." },
   { name: "tightenStop(id, void)", who: "Agent only", what: "Moves the void level toward the entry. Never away from it." },
   { name: "tighten(mandate)", who: "Agent only", what: "Every field equal or stricter, assets a subset. How the desk applies 'be more careful'." },
@@ -97,8 +97,8 @@ export default async function HowPage() {
           <SecHead id="anatomy" title="Anatomy of a note.">
             {!own ? (
               <>
-                This is a specimen from the sample data, not a note of this vault, which has not sworn its first note yet. It went void: the hidden VOID pantograph surfaced in red, the
-                stop closed the position, and the miss was graded.
+                This is a specimen from the fork rehearsal, not a note of any live vault: Avow has not sworn its first mainnet note yet. It went void: the hidden VOID pantograph surfaced
+                in red, the stop closed the position, and the miss was graded.
               </>
             ) : example.status === "void" ? (
               <>
@@ -188,7 +188,8 @@ export default async function HowPage() {
       <section className="sec" aria-labelledby="guarantees">
         <div className="wrap">
           <SecHead id="guarantees" title="Guarantees, where they are enforced, and the test that proves each.">
-            {TEST_SUMMARY} pass against real HSK Chain mainnet state: the real HSKSwap pools, tokens and prices, with the vault deployed on a local fork.
+            {TEST_SUMMARY} pass: {TEST_BREAKDOWN}. The vault tests run against real HSK Chain mainnet state: the real HSKSwap pools, tokens and prices, with the vault deployed on a
+            local fork.
           </SecHead>
           <GuaranteeTable />
         </div>
@@ -301,7 +302,7 @@ export default async function HowPage() {
                 One line for Claude Code <span>Streamable HTTP, no key needed to read</span>
               </div>
               <pre>
-                <code>claude mcp add --transport http avow https://avow-world.vercel.app/api/mcp</code>
+                <code>claude mcp add --transport http avow https://avow.world/api/mcp</code>
               </pre>
             </div>
           </div>
@@ -340,13 +341,16 @@ export default async function HowPage() {
               { t: "Thin pools", d: "HSKSwap pools trade every few hours. A 5-minute TWAP on a quiet pool can be moved by one large swap; requiring the live price to agree limits that, and notes stay small." },
               { t: "Oracle depth", d: "The WBTC pool keeps a single price observation until someone raises its cardinality. The vault refuses a TWAP it cannot read." },
               { t: "The model can be wrong", d: "That is the point. Every wrong note is graded, visible and costs Avow denomination. The contract does not trust the model; it bounds it." },
-              { t: "Fees dominate small notes", d: "A round trip pays 0.60% in pool fees plus gas (about 0.68% on a $50 note), so most premiums are declined and realised P&L is measured in cents at Probation size." },
+              {
+                t: "Costs dominate small notes",
+                d: `A round trip pays 0.60% in pool fees plus about $${roundTripGasUsd(s).toFixed(2)} of gas, so its cost depends on the note's size: ${roundTripWords(s, liveNoteUsd(s))} at ${s.record.tier.name}${gasDominates(s, liveNoteUsd(s)) ? ", where gas is most of it," : ""} against ${roundTripWords(s, s.mandate.maxNotionalUsd)} at the mandate's cap. Most premiums are declined, and realised P&L is measured in cents at this size.`,
+              },
               { t: "Off-chain reasons", d: "The rationale lives in the journal; only its hash is on chain. The statement itself, with every level, is on chain in full." },
               {
                 t: "Rehearsal first",
                 d:
                   s.network.mode === "fork-rehearsal"
-                    ? `The numbers on this site come from the rehearsal described at the top of this page. The same contracts and agent move to mainnet on ${MAINNET_LAUNCH} with the owner's funds.`
+                    ? "The numbers on this server come from the fork rehearsal described at the top of this page, not from the live mainnet vault."
                     : "The contracts and agent were rehearsed on a private fork of HSK mainnet before going live; the rehearsal numbers are not part of this record.",
               },
             ].map((x) => (

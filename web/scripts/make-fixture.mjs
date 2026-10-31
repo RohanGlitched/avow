@@ -1,4 +1,6 @@
-// Builds data/fixture.json: a realistic development snapshot of `State` (lib/types.ts).
+// Builds data/specimen.json: the SPECIMEN notes the explainers use when no vault has sworn yet (lib/data.ts
+// specimenNote). It no longer writes data/fixture.json, which is a saved mainnet snapshot of /api/state.
+// Development snapshot of `State` (lib/types.ts), of which only the notes are kept.
 // Market levels come from the measurements in DESIGN.md §2 (Oct 31 2026, HSK mainnet).
 // Prices are a seeded random walk anchored at every note's entry and exit, so every
 // note's outcome is consistent with the price path drawn under it.
@@ -6,7 +8,7 @@ import { createHash } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-const OUT = fileURLToPath(new URL("../data/fixture.json", import.meta.url));
+const OUT = fileURLToPath(new URL("../data/specimen.json", import.meta.url));
 
 // 31 Oct 2026 12:00 IST
 const AS_OF = Date.UTC(2026, 9, 31, 6, 30) / 1000;
@@ -378,5 +380,5 @@ const state = {
   },
 };
 
-writeFileSync(OUT, JSON.stringify(state, null, 1));
+writeFileSync(OUT, JSON.stringify({ about: "SPECIMEN notes for explainers only (specimenNote in lib/data.ts); never shown as a note of any live vault.", notes: state.notes }, null, 1));
 console.log(`wrote ${OUT}: ${notes.length} notes, ${journal.length} journal entries, brier ${record.brier}, pnl ${record.pnlUsd}`);

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getState } from "@/lib/data";
 import { MandateRosette } from "@/components/Rosette";
 import { MandateEditor } from "@/components/MandateEditor";
-import { SecHead, Divider } from "@/components/Bits";
+import { SecHead, Divider, ScopeLine } from "@/components/Bits";
 import { CLAUSES, STANDING_CLAUSES, blockedFor, clauseUsage } from "@/lib/mandate";
 import { ASSET_LABEL, time, day } from "@/lib/format";
 
@@ -24,6 +24,7 @@ export default async function MandatePage() {
           <div className="crumbs">
             <Link href="/">Avow</Link> / Mandate
           </div>
+          <ScopeLine />
           <h1>The mandate, as the vault enforces it.</h1>
           <p className="lede">
             The owner writes these rules once; the contract checks every one of them inside <code>swear()</code>, before any swap. Avow may make them stricter on its own. Only the owner&apos;s

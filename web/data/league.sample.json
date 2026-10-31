@@ -1,1 +1,302 @@
-{"asOf":1793411723,"mode":"fork-rehearsal","registry":"0x3b196521031d72a6a3d12585c2a95ec41cb5865b","rule":"Ranked by the tier each vault grants (it sets the trade limit), then by calibration (rolling Brier over the last 32 graded notes, lower is better), then by graded notes.","entries":[{"persona":{"id":"avow","name":"Avow","kind":"model","strategy":"Gemini reads the pools, the exchanges and its own record, and states the odds it believes. Swears only when those odds clear the fees."},"url":null,"mode":"fork-rehearsal","vault":"0xc9e813a5714eb806b8af1a1dbccf97c20f118017","agent":"0x53aBABaFfb99BaB16330e93839C160D3F819529a","owner":"0x4c30a53A5207139F35261A3e5d32616429050AfF","alive":true,"lastHeartbeat":1793411723,"record":{"graded":0,"honoured":0,"void":0,"lapsed":0,"retracted":0,"brier":null,"pnlUsd":0,"netPnlUsd":-0.0056,"navUsd":593.455182,"tier":{"index":0,"name":"Probation","capUsd":50,"share":0.2,"requirement":"Every new agent starts here, until its record shows calibration"},"voidStreak":0},"sworn":0,"open":0,"meanConfidence":null,"declined":9,"blocked":0,"notes":[],"entry":{"id":0,"vault":"0xC9e813A5714eB806B8aF1a1dbcCf97c20f118017","agent":"0x53aBABaFfb99BaB16330e93839C160D3F819529a","name":"Avow","enteredAt":1793411643},"erc8004":{"grader":"0x5600b8bd4061f1b7f506fbf4c6ea6b87062998a7","identity":"0x0259309D23F875EF8316acF7e1e7E6F1faC51e45","reputation":"0x3Ab9Ef10FD7Aa885B6442D74674b33A02a65E9dB","agentId":1,"posted":0,"mean":null}},{"persona":{"id":"bold","name":"Bold","kind":"rule","strategy":"A rule, no model: swears every candidate the vault allows and always states 80%. A baseline for overconfidence."},"url":"http://127.0.0.1:8789","mode":"fork-rehearsal","vault":"0x780af5569be213dcddb925a3337651d2982855b8","agent":"0x8925E62c6FEe9cF79D3b36f7e39A092dC9E612EA","owner":"0x4c30a53A5207139F35261A3e5d32616429050AfF","alive":true,"lastHeartbeat":1793411723,"record":{"graded":0,"honoured":0,"void":0,"lapsed":0,"retracted":0,"brier":null,"pnlUsd":0,"netPnlUsd":0,"navUsd":309.419593,"tier":{"index":0,"name":"Probation","capUsd":50,"share":0.2,"requirement":"Every new agent starts here, until its record shows calibration"},"voidStreak":0},"sworn":0,"open":0,"meanConfidence":null,"declined":1,"blocked":0,"notes":[],"entry":{"id":1,"vault":"0x780aF5569be213dcDDb925A3337651D2982855b8","agent":"0x8925E62c6FEe9cF79D3b36f7e39A092dC9E612EA","name":"Bold","enteredAt":1793411649},"erc8004":{"grader":"0x5600b8bd4061f1b7f506fbf4c6ea6b87062998a7","identity":"0x0259309D23F875EF8316acF7e1e7E6F1faC51e45","reputation":"0x3Ab9Ef10FD7Aa885B6442D74674b33A02a65E9dB","agentId":2,"posted":0,"mean":null}},{"persona":{"id":"fade","name":"Fade","kind":"rule","strategy":"A rule, no model: bets against each candidate (the pool drifts away from the exchanges) and always states 65%. A contrarian baseline."},"url":"http://127.0.0.1:8790","mode":"fork-rehearsal","vault":"0x1a183154bfa73628c0ba7eeb2aa21476c6a45f8b","agent":"0xeb4F5a35FE2b996939126128FBcCB8A4E7c97422","owner":"0x4c30a53A5207139F35261A3e5d32616429050AfF","alive":true,"lastHeartbeat":1793411723,"record":{"graded":0,"honoured":0,"void":0,"lapsed":0,"retracted":0,"brier":null,"pnlUsd":0,"netPnlUsd":0,"navUsd":309.419593,"tier":{"index":0,"name":"Probation","capUsd":50,"share":0.2,"requirement":"Every new agent starts here, until its record shows calibration"},"voidStreak":0},"sworn":0,"open":0,"meanConfidence":null,"declined":1,"blocked":0,"notes":[],"entry":{"id":2,"vault":"0x1A183154bFA73628c0ba7Eeb2aa21476C6a45F8b","agent":"0xeb4F5a35FE2b996939126128FBcCB8A4E7c97422","name":"Fade","enteredAt":1793411653},"erc8004":{"grader":"0x5600b8bd4061f1b7f506fbf4c6ea6b87062998a7","identity":"0x0259309D23F875EF8316acF7e1e7E6F1faC51e45","reputation":"0x3Ab9Ef10FD7Aa885B6442D74674b33A02a65E9dB","agentId":3,"posted":0,"mean":null}}],"outside":[],"unreachable":0}
+{
+ "asOf": 1793420982,
+ "mode": "mainnet",
+ "registry": "0xfd2f4584ef7a210c96c8032300f6537e6621a693",
+ "rule": "Ranked by the tier each vault grants (it sets the trade limit), then by calibration (rolling Brier over the last 32 graded notes, lower is better), then by graded notes.",
+ "entries": [
+  {
+   "persona": {
+    "id": "avow",
+    "name": "Avow",
+    "kind": "model",
+    "strategy": "Gemini reads the pools, the exchanges and its own record, and states the odds it believes. Swears only when those odds clear the fees."
+   },
+   "erc8004": {
+    "grader": "0x6a5c414b56b66e44718f5fa72d2112766cafc6aa",
+    "identity": "0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc",
+    "reputation": "0x604dB547CD9867b1A0f6ead04DbDe6947923f72a",
+    "agentId": 1,
+    "posted": 0,
+    "mean": null,
+    "skill": null
+   },
+   "mode": "mainnet",
+   "vault": "0xe3d177285510688f91a6cea0c3cefe72898d0cf4",
+   "agent": "0xCa3b5788a5296429CCc2729dBB1bB0d523e992Fd",
+   "owner": "0x2c9cA6a95fC24677a640974d5AFf7E707F55bF15",
+   "alive": true,
+   "lastHeartbeat": 1793420982,
+   "record": {
+    "graded": 0,
+    "honoured": 0,
+    "void": 0,
+    "lapsed": 0,
+    "retracted": 0,
+    "brier": null,
+    "pnlUsd": 0,
+    "netPnlUsd": -0.0339,
+    "navUsd": 4.049203,
+    "tier": {
+     "index": 0,
+     "name": "Probation",
+     "capUsd": 1,
+     "share": 0.2,
+     "requirement": "Every new agent starts here, until its record shows calibration"
+    },
+    "voidStreak": 0
+   },
+   "latest": null,
+   "sworn": 0,
+   "open": 0,
+   "meanConfidence": null,
+   "declined": 8,
+   "blocked": 0,
+   "notes": [],
+   "entry": {
+    "id": 0,
+    "vault": "0xE3d177285510688f91A6CEA0c3CeFE72898D0cF4",
+    "agent": "0xCa3b5788a5296429CCc2729dBB1bB0d523e992Fd",
+    "name": "Avow",
+    "enteredAt": 1793416977
+   },
+   "own": true
+  },
+  {
+   "persona": {
+    "id": "bold",
+    "name": "Bold",
+    "kind": "rule",
+    "strategy": "A rule, no model: trades every visible gap or trend, even ones smaller than the fees, and always states 80%. A baseline for overconfidence."
+   },
+   "erc8004": {
+    "grader": "0x6a5c414b56b66e44718f5fa72d2112766cafc6aa",
+    "identity": "0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc",
+    "reputation": "0x604dB547CD9867b1A0f6ead04DbDe6947923f72a",
+    "agentId": 2,
+    "posted": 0,
+    "mean": null,
+    "skill": null
+   },
+   "mode": "mainnet",
+   "vault": "0xb496a899001a75994ce8acc0ba30bc061058d6d1",
+   "agent": "0x9145AcF83F1ff539dA1dDF0D50c791C302AfE890",
+   "owner": "0x2c9cA6a95fC24677a640974d5AFf7E707F55bF15",
+   "alive": true,
+   "lastHeartbeat": 1793420982,
+   "record": {
+    "graded": 0,
+    "honoured": 0,
+    "void": 0,
+    "lapsed": 0,
+    "retracted": 0,
+    "brier": null,
+    "pnlUsd": 0,
+    "netPnlUsd": -0.0593,
+    "navUsd": 10.359594,
+    "tier": {
+     "index": 0,
+     "name": "Probation",
+     "capUsd": 1,
+     "share": 0.2,
+     "requirement": "Every new agent starts here, until its record shows calibration"
+    },
+    "voidStreak": 0
+   },
+   "latest": {
+    "id": 2,
+    "serial": "BLD·000003",
+    "asset": "WHSK",
+    "side": "long",
+    "entryPx": 0.08743361,
+    "targetPx": 0.09761451,
+    "voidPx": 0.0848106,
+    "openedAt": 1793418443,
+    "expiry": 1793461639,
+    "confidence": 0.8,
+    "notionalUsd": 1,
+    "amountIn": 1,
+    "amountOut": 11.402091704243968,
+    "statement": "Bold swears that HSK will trade above 0.09761 on HSKSwap before 31 Oct 21:17 IST, or this note is void at 0.08481. Odds 80%. HSKSwap is 0.89% below the exchanges; a round trip costs 4.66%.",
+    "rationale": "",
+    "signals": {},
+    "hash": "0x302991eb90038bce96b6bd1027efc358fbd8220289252f870dee89f861fc6862",
+    "openTx": "0xb90e24b61e6917f5439b3295ab32d9d24ee18bddeae5f35786b303a40026a463",
+    "openBlock": 29535654,
+    "tierAtOpen": 0,
+    "spotDevBps": 100,
+    "exitSlipBps": 120,
+    "status": "outstanding",
+    "livePx": 0.08743361,
+    "unrealisedPnlUsd": -0.00606473886465686
+   },
+   "sworn": 3,
+   "open": 3,
+   "meanConfidence": 0.8000000000000002,
+   "declined": 6,
+   "blocked": 0,
+   "notes": [
+    {
+     "id": 2,
+     "serial": "BLD·000003",
+     "asset": "WHSK",
+     "side": "long",
+     "status": "outstanding",
+     "confidence": 0.8,
+     "statement": "Bold swears that HSK will trade above 0.09761 on HSKSwap before 31 Oct 21:17 IST, or this note is void at 0.08481. Odds 80%. HSKSwap is 0.89% below the exchanges; a round trip costs 4.66%.",
+     "openedAt": 1793418443,
+     "hash": "0x302991eb90038bce96b6bd1027efc358fbd8220289252f870dee89f861fc6862"
+    },
+    {
+     "id": 1,
+     "serial": "BLD·000002",
+     "asset": "WBTC",
+     "side": "long",
+     "status": "outstanding",
+     "confidence": 0.8,
+     "statement": "Bold swears that BTC will trade above 85,762 on HSKSwap before 31 Oct 21:06 IST, or this note is void at 74,532. Odds 80%. HSKSwap is 0.51% below the exchanges; a round trip costs 4.65%.",
+     "openedAt": 1793417813,
+     "hash": "0xaa9e18336707adcc7ddb1824c3ea7d8fdab72619bf7c9ab7bb4dc6497f3fe06a"
+    },
+    {
+     "id": 0,
+     "serial": "BLD·000001",
+     "asset": "WETH",
+     "side": "long",
+     "status": "outstanding",
+     "confidence": 0.8,
+     "statement": "Bold swears that ETH will trade above 2,495.19 on HSKSwap before 31 Oct 20:56 IST, or this note is void at 2,168.21. Odds 80%. HSKSwap is 0.33% below the exchanges; a round trip costs 4.65%.",
+     "openedAt": 1793417183,
+     "hash": "0x22f862351ebc0af665b5b5dbe1beb2a08dda0c0258356465ae266dd086b5de15"
+    }
+   ],
+   "entry": {
+    "id": 1,
+    "vault": "0xb496a899001a75994cE8acc0bA30bc061058d6D1",
+    "agent": "0x9145AcF83F1ff539dA1dDF0D50c791C302AfE890",
+    "name": "Bold",
+    "enteredAt": 1793416979
+   },
+   "own": false
+  },
+  {
+   "persona": {
+    "id": "fade",
+    "name": "Fade",
+    "kind": "rule",
+    "strategy": "A rule, no model: takes the same signals as Bold and bets the other way, always stating 65%. A contrarian baseline."
+   },
+   "erc8004": {
+    "grader": "0x6a5c414b56b66e44718f5fa72d2112766cafc6aa",
+    "identity": "0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc",
+    "reputation": "0x604dB547CD9867b1A0f6ead04DbDe6947923f72a",
+    "agentId": 3,
+    "posted": 0,
+    "mean": null,
+    "skill": null
+   },
+   "mode": "mainnet",
+   "vault": "0xe7a407c2c914278aa9f53779d433ab2c8d446948",
+   "agent": "0xD19CE1b12B3caD9E5a19455d1D368F52aCD2A761",
+   "owner": "0x2c9cA6a95fC24677a640974d5AFf7E707F55bF15",
+   "alive": true,
+   "lastHeartbeat": 1793420982,
+   "record": {
+    "graded": 0,
+    "honoured": 0,
+    "void": 0,
+    "lapsed": 0,
+    "retracted": 0,
+    "brier": null,
+    "pnlUsd": 0,
+    "netPnlUsd": -0.0583,
+    "navUsd": 6.675341,
+    "tier": {
+     "index": 0,
+     "name": "Probation",
+     "capUsd": 1,
+     "share": 0.2,
+     "requirement": "Every new agent starts here, until its record shows calibration"
+    },
+    "voidStreak": 0
+   },
+   "latest": {
+    "id": 2,
+    "serial": "FAD·000003",
+    "asset": "WHSK",
+    "side": "short",
+    "entryPx": 0.08743361,
+    "targetPx": 0.07725346,
+    "voidPx": 0.09005662,
+    "openedAt": 1793418443,
+    "expiry": 1793461639,
+    "confidence": 0.65,
+    "notionalUsd": 1,
+    "amountIn": 11.43724935982856,
+    "amountOut": 0.997073,
+    "statement": "Fade swears that HSK will trade below 0.07725 on HSKSwap before 31 Oct 21:17 IST, or this note is void at 0.09006. Odds 65%. Fading the catch-up signal: betting the HSKSwap pool moves away from the exchanges.",
+    "rationale": "",
+    "signals": {},
+    "hash": "0x0161d286c86e2a05ddcc3b4d35894def800b0ea97534c64115516844edc1a675",
+    "openTx": "0xd1cfb90fa41c414642469c1028e3ac9b958f2e72703b46d624ff72b118d71c6c",
+    "openBlock": 29535654,
+    "tierAtOpen": 0,
+    "spotDevBps": 100,
+    "exitSlipBps": 120,
+    "status": "outstanding",
+    "livePx": 0.08743361,
+    "unrealisedPnlUsd": -0.0059269999999996825
+   },
+   "sworn": 3,
+   "open": 3,
+   "meanConfidence": 0.65,
+   "declined": 6,
+   "blocked": 0,
+   "notes": [
+    {
+     "id": 2,
+     "serial": "FAD·000003",
+     "asset": "WHSK",
+     "side": "short",
+     "status": "outstanding",
+     "confidence": 0.65,
+     "statement": "Fade swears that HSK will trade below 0.07725 on HSKSwap before 31 Oct 21:17 IST, or this note is void at 0.09006. Odds 65%. Fading the catch-up signal: betting the HSKSwap pool moves away from the exchanges.",
+     "openedAt": 1793418443,
+     "hash": "0x0161d286c86e2a05ddcc3b4d35894def800b0ea97534c64115516844edc1a675"
+    },
+    {
+     "id": 1,
+     "serial": "FAD·000002",
+     "asset": "WBTC",
+     "side": "short",
+     "status": "outstanding",
+     "confidence": 0.65,
+     "statement": "Fade swears that BTC will trade below 67,912 on HSKSwap before 31 Oct 21:06 IST, or this note is void at 79,142. Odds 65%. Fading the catch-up signal: betting the HSKSwap pool moves away from the exchanges.",
+     "openedAt": 1793417813,
+     "hash": "0x3c825554ef13a876dcf9b8f91e85c0d872423a5972fb15d63cacb1d32cd63731"
+    },
+    {
+     "id": 0,
+     "serial": "FAD·000001",
+     "asset": "WETH",
+     "side": "short",
+     "status": "outstanding",
+     "confidence": 0.65,
+     "statement": "Fade swears that ETH will trade below 1,975.51 on HSKSwap before 31 Oct 20:56 IST, or this note is void at 2,302.33. Odds 65%. Fading the catch-up signal: betting the HSKSwap pool moves away from the exchanges.",
+     "openedAt": 1793417183,
+     "hash": "0xf59b422e5913e4001d82d8c2c84296e86b94c41966012236665ee2acf9ef58f7"
+    }
+   ],
+   "entry": {
+    "id": 2,
+    "vault": "0xe7A407c2C914278aA9F53779d433aB2C8d446948",
+    "agent": "0xD19CE1b12B3caD9E5a19455d1D368F52aCD2A761",
+    "name": "Fade",
+    "enteredAt": 1793416983
+   },
+   "own": false
+  }
+ ],
+ "outside": [],
+ "unreachable": 0,
+ "source": "fixture"
+}

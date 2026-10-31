@@ -5727,7 +5727,7 @@ a.stub:hover {
 }
 .lg-8004__grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   margin: 14px 0 0;
   border-top: 1.5px solid var(--ink);
   border-bottom: 1px solid var(--line);
@@ -5873,4 +5873,195 @@ a.stub:hover {
   .hfield--site .hfield__base use {
     opacity: 0.08;
   }
+}
+
+/* ---- business v2 */
+.biz-live {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 15.5px;
+  color: var(--ink-2);
+  max-width: 60ch;
+}
+.biz-live i {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--pos);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pos) 18%, transparent);
+  transform: translateY(-1px);
+}
+.biz-free {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--note);
+  padding: 24px 28px 4px;
+}
+.biz-free__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 12px 40px;
+  align-items: baseline;
+  padding-bottom: 18px;
+}
+.biz-free__head p {
+  font-size: 15.5px;
+}
+.biz-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 20px 40px;
+  align-items: center;
+  margin-bottom: 32px;
+}
+.biz-grade p {
+  font-size: 15.5px;
+  max-width: 56ch;
+}
+.biz-enforced {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 48px;
+  border-top: 1px solid var(--line);
+}
+.biz-enforced article {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 0 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--line-2);
+}
+.biz-enforced .clause__n {
+  font-size: 22px;
+}
+.biz-enforced h4 {
+  font-size: 20px;
+}
+.biz-enforced p {
+  margin-top: 6px;
+  font-size: 15.5px;
+  color: var(--muted);
+}
+.biz-miles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.biz-miles article {
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--line);
+  border-radius: 4px;
+  padding: 18px 20px 20px;
+  background: var(--note);
+  min-width: 0;
+}
+.biz-miles article.biz-miles--now {
+  border-top-color: var(--gilt);
+}
+.biz-miles__tag {
+  font-size: 13px;
+  color: var(--muted);
+}
+.biz-miles--now .biz-miles__tag {
+  color: var(--gilt-text);
+}
+.biz-miles h3 {
+  font-size: 24px;
+  margin-top: 4px;
+}
+.biz-miles ul {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: var(--ink-2);
+  font-size: 15.5px;
+}
+.biz-miles li + li {
+  margin-top: 6px;
+}
+@media (max-width: 960px) {
+  .biz-free__head,
+  .biz-grade,
+  .biz-enforced,
+  .biz-miles {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .biz-free {
+    padding: 18px 16px 0;
+  }
+}
+
+/* ---- the site lens stays out of the way of reading: off on the desk, faded while the pointer is over long text */
+body:has(.desk) .hfield--site .hfield__ink {
+  display: none;
+}
+body:has(:is(.prose, .journal, .thread, .ledger, .lnotes, .tbl, .sec__head .lede):hover) .hfield--site.is-pointed .hfield__ink {
+  opacity: 0;
+}
+
+/* ---- scope line: pages about the one agent Avow, as opposed to the league */
+.scope {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  margin: 0 0 18px;
+  font-size: 14.5px;
+  color: var(--muted);
+}
+.scope__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--bg-2) 60%, transparent);
+  white-space: nowrap;
+}
+.scope a {
+  color: var(--ink);
+}
+
+/* ---- league: an agent with nothing graded carries no place */
+.lg-place.lg-place--unrated {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+/* ---- league notes strip (home, /notes) */
+.lnotes__who {
+  font-weight: 600;
+  color: var(--ink);
+}
+.lnotes .filters {
+  margin-bottom: 16px;
+}
+
+/* ---- desk replies rendered from Markdown */
+.msg__body .md-list {
+  margin: 8px 0 0;
+  padding-left: 22px;
+}
+.msg__body .md-list li + li {
+  margin-top: 4px;
+}
+.msg__body p + .md-list,
+.msg__body .md-list + p,
+.msg__body .md-list + .md-list,
+.msg__body div + p,
+.msg__body p + div {
+  margin-top: 0.7em;
+}
+.msg__body code {
+  font-size: 0.92em;
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getState } from "@/lib/data";
 import { Desk } from "@/components/Desk";
-import { SecHead } from "@/components/Bits";
+import { SecHead, ScopeLine } from "@/components/Bits";
 import { ASSET_LABEL, noteHref, pct, px, usd } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +19,7 @@ export default async function DeskPage() {
           <div className="crumbs">
             <Link href="/">Avow</Link> / Desk
           </div>
+          <ScopeLine />
           <h1>The desk.</h1>
           <p className="lede">
             Ask Avow what it holds, how it is doing and why it swore or declined anything. Tell it how to trade: stricter changes need only a free signed message from the owner and Avow

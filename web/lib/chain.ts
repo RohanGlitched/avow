@@ -53,13 +53,13 @@ export const NETWORK_WORDS: Record<State["network"]["mode"], { short: string; lo
   },
 };
 
-/** The day the mainnet vault launches. */
-export const MAINNET_LAUNCH = "Nov 1";
-
-/** The short chip the status strip carries in a rehearsal. Null on mainnet (and testnet). */
+/**
+ * The short chip the status strip carries in a rehearsal. Null on mainnet (and testnet). Worded so it stays true after
+ * the mainnet launch: a local server pointed at the rehearsal agent says so, and points to the live site.
+ */
 export function rehearsalChip(s: Pick<State, "network">): string | null {
   if (s.network.mode !== "fork-rehearsal") return null;
-  return `Rehearsal on an HSK mainnet fork · mainnet vault launches ${MAINNET_LAUNCH}`;
+  return "Rehearsal on an HSK mainnet fork, not the live mainnet vault";
 }
 
 /** One short line where rehearsal outcomes are shown (the record, a note). */
@@ -77,11 +77,36 @@ export function rehearsalSentence(s: Pick<State, "network" | "simulatedOutsideTr
     s.simulatedOutsideTraders === false
       ? "no outside traders take part on the fork"
       : "outside traders on the fork are simulated at the measured mainnet swap rates and pool-side arbitrage share";
-  return `This is a rehearsal on a private fork of HSK mainnet: ${traders}, so its outcomes are not evidence. The mainnet vault launches on ${MAINNET_LAUNCH}, and its record starts empty.`;
+  return `This is a rehearsal on a private fork of HSK mainnet: ${traders}, so its outcomes are not evidence. The live vault is on HSK Chain mainnet, and its record is kept separately from the rehearsal's.`;
 }
 
-/** The break-even a premium must clear: two 0.30% pool fees plus gas on a $50 note, in basis points. */
-export const ROUND_TRIP_BPS = 68;
+/** Two 0.30% pool fees, in basis points: the part of a round trip that does not depend on the note's size. */
+export const POOL_FEES_BPS = 60;
+/** Gas for one round trip in HSK: swear ≈ 0.54M + settle ≈ 0.38M gas at 500 gwei (agent/src/signals.ts). */
+export const ROUND_TRIP_GAS_HSK = 920_000 * 500e-9;
+
+/** Gas for one round trip in US dollars at the HSK price in the state (the agent's own fallback price otherwise). */
+export function roundTripGasUsd(s: Pick<State, "market">): number {
+  const h = s.market.find((m) => m.asset === "WHSK");
+  return ROUND_TRIP_GAS_HSK * (h?.cexPx ?? h?.dexPx ?? 0.087);
+}
+
+/** The break-even a premium must clear on a note of `notionalUsd`: two pool fees plus gas, in basis points. */
+export function roundTripBps(s: Pick<State, "market">, notionalUsd: number): number {
+  return POOL_FEES_BPS + (notionalUsd > 0 ? (roundTripGasUsd(s) / notionalUsd) * 1e4 : 0);
+}
+
+/** The note size the live vault can swear now: its tier's trade limit, capped by the mandate. */
+export const liveNoteUsd = (s: Pick<State, "record" | "mandate">) => Math.min(s.record.tier.capUsd, s.mandate.maxNotionalUsd);
+
+/** True when gas costs more than the two pool fees on a note of this size (small notes, such as $1 at Probation). */
+export const gasDominates = (s: Pick<State, "market">, notionalUsd: number) => roundTripBps(s, notionalUsd) - POOL_FEES_BPS > POOL_FEES_BPS;
+
+/** "about 4.6% on a $1 note": a round-trip cost always tied to the note size it applies to. */
+export function roundTripWords(s: Pick<State, "market">, notionalUsd: number): string {
+  const size = Number.isInteger(notionalUsd) ? `$${notionalUsd.toFixed(0)}` : `$${notionalUsd.toFixed(2)}`;
+  return `about ${(roundTripBps(s, notionalUsd) / 100).toFixed(1)}% on a ${size} note`;
+}
 
 /**
  * The gap the agent would trade on: the pool its vault swaps in (the fork during a rehearsal) against the exchanges'

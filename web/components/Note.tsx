@@ -12,7 +12,7 @@ import type { Note as NoteT, State } from "@/lib/types";
 
 export interface NoteProps {
   note: NoteT;
-  state: Pick<State, "network" | "contracts">;
+  state: Pick<State, "network" | "contracts" | "persona">;
   /** Play the one-time printing sequence (hero only). */
   print?: boolean;
   /** Show lettered callouts for the "know your note" guide. */
@@ -61,8 +61,10 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
   const L = ASSET_LABEL[note.asset];
   const d = denom(note.notionalUsd);
   const fork = state.network.mode === "fork-rehearsal";
-  const txHref = ownLink(state, "tx", note.openTx);
-  const settleHref = ownLink(state, "tx", note.settleTx);
+  // a specimen (lib/data.ts specimenNote) keeps its rehearsal hashes for the print, but never links them to the explorer
+  const specimen = note.serial === "SPECIMEN";
+  const txHref = specimen ? null : ownLink(state, "tx", note.openTx);
+  const settleHref = specimen ? null : ownLink(state, "tx", note.settleTx);
   const micro = `${note.statement} Statement hash ${note.hash}. Sworn in transaction ${note.openTx} at block ${note.openBlock}. ${note.serial}. `;
   const { oath: statement, rest: because } = splitStatement(note.statement);
   const words = statement.split(" ");
@@ -124,7 +126,7 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
             </p>
             {because && <p className="note__because">{because}</p>}
             <p className="note__terms">
-              Payable to the record. Anyone may settle this note once the HSKSwap 5-minute TWAP and the live price are both past a level, or at expiry. Graded against the stated{" "}
+              Payable to the record. Anyone may settle this note once the HSKSwap 5-minute TWAP and the live price are both past a level, or after the expiry once the pool is calm. Graded against the stated{" "}
               {pct(note.confidence)}.
             </p>
             <Callout k="D" on={annotate} />
@@ -197,7 +199,7 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
             </div>
             <div className="note__sign">
               <span className="note__sig" aria-hidden="true">
-                Avow
+                {state.persona?.name ?? "Avow"}
               </span>
               <span className="note__sigline">
                 Agent <Hex value={state.contracts.agent} href={ownLink(state, "address", state.contracts.agent)} head={6} tail={4} />

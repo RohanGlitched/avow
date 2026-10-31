@@ -15,7 +15,7 @@ const LABEL: Record<string, string> = {
   hitRate: "hit rate",
   meanPMin: "break-even",
   pnlUsd: "P&L",
-  pnlPerNoteUsd: "per $50 note",
+  pnlPerNoteUsd: "per $50 replay note",
 };
 const ORDER = ["notes", "hitRate", "meanPMin", "pnlPerNoteUsd", "pnlUsd"];
 
@@ -157,7 +157,7 @@ export function ReplaySummary({ replay, title = "Why Avow trades so rarely" }: {
         {t.notes ? (
           <>
             The naive bot&apos;s trades came good <b>{fmtStat("hitRate", t.hitRate)}</b> of the time against a break-even of {fmtStat("meanPMin", t.breakEven)}, or {fmtStat("pnlPerNoteUsd", t.perNote)}{" "}
-            per $50 note.{" "}
+            per $50 replay note.{" "}
           </>
         ) : null}
         {replay.chosen
@@ -240,7 +240,7 @@ export function ReplaySection({ replay }: { replay: Replay }) {
           <>
             {" "}
             fire <b>{num(t.notes)}</b> times, come good <b>{fmtStat("hitRate", t.hitRate)}</b> of the time against a mean break-even of <b>{fmtStat("meanPMin", t.breakEven)}</b>, and give{" "}
-            <b>{fmtStat("pnlPerNoteUsd", t.perNote)}</b> per $50 note after fees, impact and gas.
+            <b>{fmtStat("pnlPerNoteUsd", t.perNote)}</b> per $50 replay note after fees, impact and gas.
           </>
         ) : (
           " never fire."
@@ -257,7 +257,7 @@ export function ReplaySection({ replay }: { replay: Replay }) {
               <th className="r">Notes</th>
               <th className="r">Honoured, void, lapsed</th>
               <th className="r">Hit rate vs break-even</th>
-              <th className="r">Naive bot, per $50 note</th>
+              <th className="r">Naive bot, per $50 replay note</th>
               <th className="r">Naive bot, in all</th>
               <th>First {t.fitDays} days (fitted)</th>
               <th>Last {t.testDays} days (tested once)</th>
@@ -282,7 +282,7 @@ export function ReplaySection({ replay }: { replay: Replay }) {
                   <b className={c.hitRate != null && c.meanPMin != null && c.hitRate >= c.meanPMin ? "pos" : undefined}>{fmtStat("hitRate", c.hitRate)}</b>
                   <span className="sub">break-even {fmtStat("meanPMin", c.meanPMin)}</span>
                 </td>
-                <td data-h="Naive bot, per $50 note" className="r">
+                <td data-h="Naive bot, per $50 replay note" className="r">
                   <b className={(c.pnlPerNoteUsd ?? 0) > 0 ? "pos" : undefined}>{fmtStat("pnlPerNoteUsd", c.pnlPerNoteUsd)}</b>
                   {c.feeUsdPerNote != null ? (
                     <span className="sub">

@@ -247,10 +247,10 @@ export default async function NotePage({ params }: { params: Promise<{ id: strin
               <div className="prose">
                 <p>
                   This note is outstanding. The contract settles it when both the HSKSwap 5-minute TWAP and the live price are past the target ({px(n.asset, n.targetPx)}) or the void
-                  level ({px(n.asset, n.voidPx)}), or when it expires at {when(n.expiry)}. The agent&apos;s keeper checks every minute, but anyone may call <code>settle({n.id})</code> first.
+                  level ({px(n.asset, n.voidPx)}), or after it expires at {when(n.expiry)}, once the live price is back near the TWAP. The agent&apos;s keeper checks every minute, but anyone may call <code>settle({n.id})</code> first.
                 </p>
                 <p>
-                  If it is honoured it is graded 1; void, lapsed or retracted it is graded 0. The squared gap to {n.confidence.toFixed(2)} joins the rolling Brier score.
+                  If it is honoured it is graded 1; void, lapsed, retracted or revoked it is graded 0. The squared gap to {n.confidence.toFixed(2)} joins the rolling Brier score.
                 </p>
                 <dl className="kv" style={{ marginTop: 20 }}>
                   <dt>Now</dt>

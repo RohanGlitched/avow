@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getState } from "@/lib/data";
-import { SecHead, Divider, NetPnl } from "@/components/Bits";
+import { SecHead, Divider, NetPnl, ScopeLine } from "@/components/Bits";
 import { Term } from "@/components/Term";
 import { StudyTable } from "@/components/Study";
 import { BrierHistory, BrierScale, PnlCurve, Reliability, TierLadder } from "@/components/Record";
 import { TIER_RULES } from "@/lib/tiers";
 import { StatusMark } from "@/components/NoteStub";
-import { NETWORK_WORDS, rehearsalShort } from "@/lib/chain";
+import { NETWORK_WORDS, gasDominates, liveNoteUsd, rehearsalShort, roundTripWords } from "@/lib/chain";
 import { ReplaySection } from "@/components/Replay";
 import { ShadowLedger } from "@/components/Shadow";
 import { noteHref, pct, realisedDrawdown, usd, when } from "@/lib/format";
@@ -35,6 +35,7 @@ export default async function RecordPage() {
           <div className="crumbs">
             <Link href="/">Avow</Link> / Record
           </div>
+          <ScopeLine />
           <h1>The record decides how much Avow may risk.</h1>
           <p className="lede">
             Every settled note is graded on chain: 1 if honoured, 0 otherwise, against the confidence Avow stated when it swore. The squared gap is the <Term k="brier" />. A coin flip scores
@@ -193,7 +194,8 @@ export default async function RecordPage() {
             <h2 id="pnl">Money, small on purpose.</h2>
             <p className="lede" style={{ marginTop: 14 }}>
               Realised on chain {usd(r.pnlUsd, { sign: true })} on {settled} settled notes, after pool fees. <NetPnl r={r} /> Notes stay small until the record earns more; every round
-              trip pays 0.60% in pool fees plus gas (about 0.68% on a $50 note), which is why most premiums are declined.
+              trip pays 0.60% in pool fees plus gas, {roundTripWords(s, liveNoteUsd(s))} at {r.tier.name}
+              {gasDominates(s, liveNoteUsd(s)) ? ", where gas is most of the cost" : ""}. That is why most premiums are declined.
             </p>
             <dl className="kv" style={{ marginTop: 24 }}>
               <dt>Vault value</dt>

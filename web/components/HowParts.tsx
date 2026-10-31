@@ -140,15 +140,25 @@ export function GuaranteeTable({ only }: { only?: "home" }) {
   );
 }
 
-export function AddressTable({ state, compact }: { state: State; compact?: boolean }) {
+export interface AddressGroup {
+  group: string;
+  items: { label: string; v: string | null; href: string | null; note: string }[];
+}
+
+/**
+ * Every address, grouped. `extra` groups (the league's other vaults, say) follow Avow's own. `slim` (the home page)
+ * shows only the `extra` groups and the HSKSwap router and pools.
+ */
+export function AddressTable({ state, compact, extra = [], slim }: { state: State; compact?: boolean; extra?: AddressGroup[]; slim?: boolean }) {
   const c = state.contracts;
   const fork = state.network.mode === "fork-rehearsal";
   const own = (label: string, v: string | null, note: string) => ({ label, v, href: ownLink(state, "address", v), note: fork ? `${note}. Fork address, not on the explorer yet` : note });
-  const rows: { group: string; items: { label: string; v: string | null; href: string | null; note: string }[] }[] = [
+  const rows: AddressGroup[] = [
     {
       group: "Avow",
       items: [own("Avow vault", c.vault, "holds the funds, the mandate and every note"), own("Agent", c.agent, "may only swear, retract, tighten and settle"), own("Owner", c.owner, "the human: deposits, amends, revokes")],
     },
+    ...extra,
     {
       group: "HSKSwap (Uniswap v3)",
       items: [
@@ -172,6 +182,15 @@ export function AddressTable({ state, compact }: { state: State; compact?: boole
       items: (Object.entries(FEEDS) as [string, string][]).slice(0, compact ? 3 : 5).map(([k, v]) => ({ label: k, v, href: addrUrl(v), note: "read-whitelisted; an off-chain seatbelt, not a contract input" })),
     },
   ];
+  const shown: AddressGroup[] = slim
+    ? [
+        ...extra,
+        {
+          group: "HSKSwap (Uniswap v3)",
+          items: rows.find((g) => g.group.startsWith("HSKSwap"))!.items.filter((it) => it.label === "SwapRouter02" || it.label.endsWith("pool")),
+        },
+      ]
+    : rows;
   return (
     <div className="table-wrap">
       <table className="tbl tbl--stack">
@@ -182,7 +201,7 @@ export function AddressTable({ state, compact }: { state: State; compact?: boole
             <th>Role</th>
           </tr>
         </thead>
-        {rows.map((g) => (
+        {shown.map((g) => (
           <tbody key={g.group}>
             <tr>
               <td colSpan={3} style={{ fontFamily: "var(--serif)", fontSize: 19, paddingTop: 22 }}>

@@ -3,7 +3,7 @@
 // break-even; every source figure sits in a collapsed "Sources" row.
 import { IntaglioChart } from "./IntaglioChart";
 import { useLiveState } from "@/lib/live";
-import { ROUND_TRIP_BPS, tradeGapBps } from "@/lib/chain";
+import { liveNoteUsd, roundTripBps, tradeGapBps } from "@/lib/chain";
 import { ASSET_LABEL, ASSET_NAME, bps, duration, num, px } from "@/lib/format";
 import type { MarketRow } from "@/lib/types";
 
@@ -18,12 +18,12 @@ const agoTxt = (s: number | null | undefined) => (s != null ? `${duration(s)} ag
 const pctTxt = (b: number) => `${(b / 100).toFixed(2)}%`;
 
 /** The gap as a bar against the break-even line. */
-function GapBar({ gapBps, label }: { gapBps: number | null; label: string }) {
+function GapBar({ gapBps, label, beBps, size }: { gapBps: number | null; label: string; beBps: number; size: string }) {
   const g = gapBps == null ? null : Math.abs(gapBps);
-  const max = Math.max(ROUND_TRIP_BPS * 2, (g ?? 0) * 1.15);
-  const be = (ROUND_TRIP_BPS / max) * 100;
+  const max = Math.max(beBps * 1.4, (g ?? 0) * 1.15);
+  const be = (beBps / max) * 100;
   const fill = g == null ? 0 : Math.min(100, (g / max) * 100);
-  const above = g != null && g > ROUND_TRIP_BPS;
+  const above = g != null && g > beBps;
   return (
     <div className={`gapbar${above ? " gapbar--above" : ""}`}>
       {g != null ? (
@@ -31,14 +31,14 @@ function GapBar({ gapBps, label }: { gapBps: number | null; label: string }) {
           <span style={{ left: `${Math.max(9, Math.min(91, fill))}%` }}>gap {pctTxt(g)}</span>
         </div>
       ) : null}
-      <div className="gapbar__track" role="img" aria-label={g == null ? `${label}: no price` : `${label}: gap ${pctTxt(g)} against a ${pctTxt(ROUND_TRIP_BPS)} round-trip break-even`}>
+      <div className="gapbar__track" role="img" aria-label={g == null ? `${label}: no price` : `${label}: gap ${pctTxt(g)} against a ${pctTxt(beBps)} round-trip break-even on a ${size} note`}>
         <div className="gapbar__fill" style={{ width: `${fill}%` }} />
         <div className="gapbar__be" style={{ left: `${be}%` }} />
       </div>
       <div className="gapbar__labels" aria-hidden="true">
         {be > 34 ? <span>0</span> : null}
         <span className="gapbar__belab" style={{ left: `${be}%`, transform: be > 34 ? "translateX(-50%)" : "translateX(-6px)" }}>
-          {pctTxt(ROUND_TRIP_BPS)} round-trip break-even
+          {pctTxt(beBps)} round-trip break-even, {size} note
         </span>
       </div>
     </div>
@@ -48,6 +48,10 @@ function GapBar({ gapBps, label }: { gapBps: number | null; label: string }) {
 export function MarketBoard({ withCharts = true }: { withCharts?: boolean }) {
   const { state } = useLiveState();
   const rehearsal = state.network.mode === "fork-rehearsal";
+  // the break-even at the note size the vault may swear now: at $1 Probation notes, gas dominates the two pool fees
+  const noteUsd = liveNoteUsd(state);
+  const beBps = roundTripBps(state, noteUsd);
+  const size = `$${Number.isInteger(noteUsd) ? noteUsd.toFixed(0) : noteUsd.toFixed(2)}`;
   const span = (r: MarketRow) => (r.history.length > 1 ? duration(r.history.at(-1)!.t - r.history[0].t) : null);
   return (
     <div className="market">
@@ -57,7 +61,7 @@ export function MarketBoard({ withCharts = true }: { withCharts?: boolean }) {
         const g = gap == null ? null : Math.abs(gap);
         const stale = r.chainlinkAgeSec == null || r.chainlinkAgeSec > CL_MAX_AGE;
         const dev = clDev(r.dexPx, r);
-        const above = g != null && g > ROUND_TRIP_BPS;
+        const above = g != null && g > beBps;
         const verdict =
           g == null
             ? { cls: "", words: "No price read yet" }
@@ -89,7 +93,7 @@ export function MarketBoard({ withCharts = true }: { withCharts?: boolean }) {
                 </>
               )}
             </div>
-            <GapBar gapBps={gap} label={`${r.label} gap`} />
+            <GapBar gapBps={gap} label={`${r.label} gap`} beBps={beBps} size={size} />
             <p className={`mkt__verdict ${verdict.cls}`}>{verdict.words}</p>
             {withCharts && (
               <div style={{ marginTop: 10 }}>

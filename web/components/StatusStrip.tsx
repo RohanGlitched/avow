@@ -35,8 +35,8 @@ export function StatusStrip() {
           </span>
         )}
         {state.source === "fixture" ? (
-          <span className="strip__item sample" title="Development snapshot. The live reader replaces it.">
-            Sample data
+          <span className="strip__item sample" title="The agent did not answer, so this is a saved mainnet snapshot. Live reads resume when it answers.">
+            Saved snapshot
           </span>
         ) : null}
         <span className="strip__item strip__item--grow">
