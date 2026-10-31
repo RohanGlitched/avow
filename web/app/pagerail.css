@@ -1,0 +1,261 @@
+/* "On this page" rail, the narrow-screen sections sheet, and the back-to-top seal (components/PageRail.tsx). */
+
+.prail {
+  position: fixed;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: stretch;
+}
+.prail ol {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  position: relative;
+}
+/* the engraved line behind the diamonds, filled with colour-shifting ink as the page is read */
+.prail__line {
+  position: absolute;
+  right: 6px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--line);
+}
+.prail__ink {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: calc(var(--p, 0) * 100%);
+  background: linear-gradient(var(--ovi-a), var(--ovi-b) 60%, var(--gilt));
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ovi-b) 50%, transparent);
+}
+.prail li {
+  position: relative;
+}
+.prail a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-height: 24px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.prail__mark {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-right: 2px;
+  transform: rotate(45deg);
+  border: 1.5px solid var(--muted);
+  background: var(--bg);
+  transition: transform 0.25s, border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+.prail li.is-active .prail__mark {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--ovi-a), var(--ovi-b) 55%, var(--gilt));
+  transform: rotate(45deg) scale(1.35);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ovi-b) 22%, transparent);
+}
+.prail a:hover .prail__mark,
+.prail a:focus-visible .prail__mark {
+  border-color: var(--gilt);
+  transform: rotate(45deg) scale(1.25);
+}
+/* the section's name slides out to the left, like a plate caption */
+.prail__label {
+  pointer-events: none;
+  position: absolute;
+  right: 26px;
+  white-space: nowrap;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--ink);
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.2s, transform 0.2s;
+  box-shadow: var(--shadow);
+}
+.prail a:hover .prail__label,
+.prail a:focus-visible .prail__label {
+  opacity: 1;
+  transform: none;
+}
+.prail a:focus-visible {
+  outline: none;
+}
+.prail a:focus-visible .prail__mark {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+/* narrow screens: a "Sections" button and a list sheet instead of the rail */
+.psheet {
+  display: none;
+}
+@media (max-width: 1180px) {
+  .prail {
+    display: none;
+  }
+  .psheet {
+    display: block;
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 40;
+  }
+}
+.psheet__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.psheet__glyph {
+  width: 9px;
+  height: 9px;
+  transform: rotate(45deg);
+  background: linear-gradient(135deg, var(--ovi-a), var(--ovi-b) 55%, var(--gilt));
+}
+.psheet__where {
+  font-weight: 400;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.psheet__list {
+  list-style: none;
+  position: absolute;
+  left: 0;
+  bottom: 54px;
+  width: min(340px, calc(100vw - 32px));
+  max-height: min(60vh, 460px);
+  overflow: auto;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.psheet__list a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 15px;
+  line-height: 1.35;
+}
+.psheet__list a:hover {
+  background: var(--bg-2);
+}
+.psheet__list li.is-active a {
+  background: var(--bg-2);
+  box-shadow: inset 3px 0 0 var(--ovi-b);
+}
+
+/* the back-to-top seal: its ring fills as the page is read */
+.ptop {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 41;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(12px) scale(0.9);
+  pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s, border-color 0.2s;
+}
+.ptop.is-shown {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.ptop:hover {
+  border-color: var(--gilt);
+}
+.ptop svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.ptop__track {
+  fill: none;
+  stroke: var(--line-2);
+  stroke-width: 2;
+}
+.ptop__ring {
+  fill: none;
+  stroke: var(--ovi-b);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 24px 24px;
+  transition: stroke-dashoffset 0.1s linear;
+}
+.ptop__arrow {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s;
+}
+.ptop:hover .ptop__arrow {
+  transform: translateY(-2px);
+}
+@media (max-width: 720px) {
+  .ptop {
+    right: 16px;
+    bottom: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .prail__mark,
+  .prail__label,
+  .ptop,
+  .ptop__ring,
+  .ptop__arrow {
+    transition: none;
+  }
+}
+@media print {
+  .prail,
+  .psheet,
+  .ptop {
+    display: none;
+  }
+}
+
+/* main takes focus after "back to top" so keyboard users land at the start; it needs no ring */
+main:focus {
+  outline: none;
+}
