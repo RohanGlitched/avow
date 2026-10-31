@@ -16,10 +16,17 @@ const snap = (sym: string, twap: number, fair: number, extra: Record<string, unk
 const market = (eth: [number, number]) => [snap("WETH", eth[0], eth[1]), snap("WBTC", 76_000, 76_000), snap("WHSK", 0.087, 0.087)];
 
 describe("candidate rules", () => {
-  it("finds no edge when the gap is inside the round-trip cost", () => {
-    const { list, passes } = candidates(market([2235, 2235 * 1.005]) as never, vault());
+  it("sets the target past the full round trip even when the gap is inside it, so the cost lands in pMin", () => {
+    const { list } = candidates(market([2235, 2235 * 1.005]) as never, vault());
+    const c = list.find((x) => x.key === "WETH:long:catch-up")!;
+    expect(c).toBeTruthy();
+    expect(c.rewardBps).toBeGreaterThanOrEqual(c.costBps * 2.5 - 1e-9); // aims past the cost, not at the gap
+    expect(c.pMin).toBeCloseTo((c.riskBps + c.costBps) / (c.rewardBps + c.riskBps), 6);
+  });
+  it("passes when there is no visible gap or trend", () => {
+    const { list, passes } = candidates(market([2235, 2235 * 1.0005]) as never, vault());
     expect(list.filter((c) => c.sym === "WETH")).toHaveLength(0);
-    expect(passes.find((p) => p.sym === "WETH")!.reason).toMatch(/round trip costs/);
+    expect(passes.find((p) => p.sym === "WETH")).toBeTruthy();
   });
   it("offers a catch-up long when HSKSwap is well below the exchanges, with costs in pMin", () => {
     const { list } = candidates(market([2235, 2235 * 1.012]) as never, vault());

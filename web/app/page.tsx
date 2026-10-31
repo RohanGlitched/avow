@@ -29,7 +29,15 @@ export const dynamic = "force-dynamic";
 export default async function Home() {
   const [s, league] = await Promise.all([getState(), getLeague()]);
   const open = s.notes.filter((n) => n.status === "outstanding");
-  const hero = open[0] ?? s.notes[0]; // undefined on a fresh vault
+  // this vault's newest note; if it has none yet, the newest real note in the league, shown with its own vault and agent
+  const leagueLatest = league.entries
+    .filter((e) => e.url && e.latest)
+    .map((e) => ({ e, n: e.latest! }))
+    .sort((a, b) => b.n.openedAt - a.n.openedAt)[0];
+  const own = open[0] ?? s.notes[0];
+  const hero = own ?? leagueLatest?.n; // undefined only when no agent in the league has sworn
+  const heroState = own || !leagueLatest ? s : { ...s, contracts: { ...s.contracts, vault: (leagueLatest.e.vault ?? s.contracts.vault) as `0x${string}`, agent: (leagueLatest.e.agent ?? s.contracts.agent) as `0x${string}`, owner: (leagueLatest.e.owner ?? s.contracts.owner) as `0x${string}` } };
+  const heroBy = !own && leagueLatest ? leagueLatest.e.persona : null;
   const r = s.record;
   const settled = s.notes.filter((n) => n.status !== "outstanding");
   const ownGuide = s.notes.find((n) => n.status === "honoured") ?? hero;
@@ -93,12 +101,13 @@ export default async function Home() {
         </div>
 
         <div className="wrap">
-          <HeroStage>{hero ? <Note note={hero} state={s} print /> : <Note note={specimenNote("outstanding")} state={s} print />}</HeroStage>
+          <HeroStage>{hero ? <Note note={hero} state={heroState} print /> : <Note note={specimenNote("outstanding")} state={s} print />}</HeroStage>
           <div className="plate hero__plate">
             <span>
               {hero ? (
                 <>
-                  Plate. <b>{hero.serial}</b>,{" "}
+                  Plate. <b>{hero.serial}</b>
+                  {heroBy ? `, sworn by ${heroBy.name} (${heroBy.kind === "rule" ? "a rule baseline" : "a model agent"} in the league; Avow has not sworn yet)` : ""},{" "}
                   {hero.status === "outstanding" ? "outstanding: the needle is the HSKSwap 5-minute " : `${hero.status}: the marker shows where the closing swap filled; settlement reads the HSKSwap 5-minute `}
                   <Term k="twap" /> for {ASSET_LABEL[hero.asset]}.
                 </>

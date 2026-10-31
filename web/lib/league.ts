@@ -2,6 +2,7 @@
 // GET /league on the Avow agent returns `League`. The registry contract (AvowLeague) only records who entered which
 // vault under what name; every number here is read live from each vault. If the agent cannot be reached, pages fall
 // back to a recorded response (source "fixture"), labelled as a sample, rather than an error page.
+import type { Note } from "./types";
 import { cache } from "react";
 import sample from "@/data/league.sample.json";
 import { agentFetch } from "./agent";
@@ -89,6 +90,8 @@ export interface LeagueEntry {
   blocked: number;
   /** the five most recent notes, newest first */
   notes: LeagueNote[];
+  /** the newest note in full (absent from older agents) */
+  latest?: Note | null;
   /** the registry row for this vault, or null if its owner has not entered it */
   entry: RegistryEntry | null;
   /** ERC-8004 identity and reputation; null (or absent, from older agents) when not configured */

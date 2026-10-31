@@ -31,6 +31,7 @@ export function entry(st: State, url: string | null) {
       tier: st.record.tier,
       voidStreak: st.record.voidStreak,
     },
+    latest: st.notes[0] ?? null, // the full newest note, so the site can show a real league note when its own vault has none
     sworn: st.notes.length,
     open: st.notes.filter((n) => n.status === "outstanding").length,
     meanConfidence: st.notes.length ? st.notes.reduce((s, n) => s + n.confidence, 0) / st.notes.length : null,
