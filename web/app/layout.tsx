@@ -7,6 +7,7 @@ import { StatusStrip } from "@/components/StatusStrip";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SITE } from "@/lib/site";
+import { HeroField } from "@/components/Hero";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -33,6 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <a href="#main" className="skip">
           Skip to content
         </a>
+        <HeroField variant="site" />
         <LiveProvider initial={state}>
           <StatusStrip />
           <SiteHeader />

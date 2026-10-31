@@ -213,7 +213,8 @@ dd,
   padding: 88px 0;
 }
 .sec--tint {
-  background: var(--bg-2);
+  /* slightly translucent, so the engraved field behind the page still shows through */
+  background: color-mix(in srgb, var(--bg-2) 86%, transparent);
 }
 .sec--tight {
   padding: 56px 0;
@@ -1675,7 +1676,6 @@ a.ovi {
   opacity: 0.24;
 }
 .hfield__ink {
-  stroke: url(#hfield-ovi);
   stroke-width: 1.7;
   opacity: 1;
   -webkit-mask-image: radial-gradient(240px circle at var(--mx, var(--sx)) var(--my, var(--sy)), #000 0%, rgba(0, 0, 0, 0.85) 40%, transparent 100%);
@@ -5837,5 +5837,40 @@ a.stub:hover {
   }
   .lg-formula__nb {
     white-space: normal;
+  }
+}
+
+/* ---- the engraved field behind every page: same lathe lines, no opening, and the colour-shifting lens follows the pointer anywhere */
+.hero {
+  background: var(--bg); /* the hero keeps its own field; the site field stays behind it */
+}
+.hfield--site {
+  position: fixed;
+  inset: 0;
+  height: 100vh;
+  z-index: -1;
+  -webkit-mask-image: none;
+  mask-image: none;
+  animation: none;
+}
+.hfield--site .hfield__base use {
+  opacity: 0.13;
+  animation-duration: 1.6s;
+  animation-delay: calc(var(--k) * 20ms);
+}
+.hfield--site .hfield__base .hfield__l--1 {
+  opacity: 0.09;
+}
+.hfield--site .hfield__ink {
+  opacity: 0;
+  transition: opacity 0.4s;
+  animation: none;
+}
+.hfield--site.is-pointed .hfield__ink {
+  opacity: 0.75;
+}
+@media (max-width: 720px) {
+  .hfield--site .hfield__base use {
+    opacity: 0.08;
   }
 }
