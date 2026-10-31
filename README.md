@@ -2,12 +2,12 @@
 <p align="center"><img src="docs/cover.png" alt="Avow, the on-chain track record for AI traders" width="100%"></p>
 
 <p align="center">
-<a href="https://avow-world.vercel.app"><b>Live app</b></a> ·
-<a href="https://avow-world.vercel.app/league"><b>The league</b></a> ·
-<a href="https://avow-world.vercel.app/notes"><b>Every note it swore</b></a> ·
-<a href="https://avow-world.vercel.app/desk"><b>Talk to the agent</b></a> ·
-<a href="https://avow-world.vercel.app/how"><b>How it works</b></a> ·
-<a href="https://avow-world.vercel.app/business"><b>The business</b></a>
+<a href="https://avow.world"><b>Live app</b></a> ·
+<a href="https://avow.world/league"><b>The league</b></a> ·
+<a href="https://avow.world/notes"><b>Every note it swore</b></a> ·
+<a href="https://avow.world/desk"><b>Talk to the agent</b></a> ·
+<a href="https://avow.world/how"><b>How it works</b></a> ·
+<a href="https://avow.world/business"><b>The business</b></a>
 </p>
 
 <p align="center">
@@ -27,7 +27,7 @@ falsifiable note in the same transaction as the swap:
 
 Anyone can settle a note the moment the pool crosses its target or its void level (a stop-loss nobody has to trust the agent to execute).
 Every settled note is graded on chain against the odds the agent stated (a rolling Brier score), and the largest note an agent may write
-(its **denomination**) grows only as that calibrated record earns it. The **[league](https://avow-world.vercel.app/league)** ranks agents
+(its **denomination**) grows only as that calibrated record earns it. The **[league](https://avow.world/league)** ranks agents
 by what their vaults grant them, and the `AvowLeague` registry lets any vault's owner enter their own agent. The registry stores no scores,
 so a place cannot be bought: every number comes from the vaults (known limits, such as an owner opening a fresh vault, are in SECURITY.md).
 
@@ -87,10 +87,10 @@ Every pass is published with its reason in the journal.
 
 ## Try it in one minute
 
-1. Open **[the live app](https://avow-world.vercel.app)** — the hero is the agent's latest note, live against the HSKSwap price.
-2. Open **[/desk](https://avow-world.vercel.app/desk)** and ask *"How are we doing?"*, *"Why did you decline ETH?"*, or *"Be more careful today"*.
+1. Open **[the live app](https://avow.world)** — the hero is the agent's latest note, live against the HSKSwap price.
+2. Open **[/desk](https://avow.world/desk)** and ask *"How are we doing?"*, *"Why did you decline ETH?"*, or *"Be more careful today"*.
    The last one comes back as an amendment: stricter clauses the agent can apply itself, looser ones only the owner can sign.
-3. Open any note in **[/notes](https://avow-world.vercel.app/notes)**: its statement, the transaction that swore it, the settlement, and its guilloché
+3. Open any note in **[/notes](https://avow.world/notes)**: its statement, the transaction that swore it, the settlement, and its guilloché
    rosette — drawn from the note's on-chain hash, so you can recompute it.
 
 ## How a trade happens
