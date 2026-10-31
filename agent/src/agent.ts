@@ -1,6 +1,6 @@
 import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { BaseError, ContractFunctionRevertedError, createWalletClient, http, keccak256, toHex, type Hex } from "viem";
+import { BaseError, ContractFunctionRevertedError, createWalletClient, decodeEventLog, http, keccak256, toHex, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { AGENT_KEY_FILE, ASSETS, DATA_DIR, ERC8004_GRADER, MODE, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
 import { graderAbi } from "./erc8004Contract.js";
@@ -61,7 +61,7 @@ async function send(fn: "swear" | "settle" | "tighten" | "retract" | "tightenSto
   const hash = await wallet.writeContract({ ...sim.request, gas: (gas * 125n) / 100n });
   const rc = await chain.waitForTransactionReceipt({ hash, timeout: 120_000 });
   if (rc.status !== "success") throw new Error(`transaction ${hash} reverted`);
-  return { hash, gasUsed: rc.gasUsed, effectiveGasPrice: rc.effectiveGasPrice };
+  return { hash, gasUsed: rc.gasUsed, effectiveGasPrice: rc.effectiveGasPrice, logs: rc.logs };
 }
 
 const NL = String.fromCharCode(10);
@@ -211,8 +211,9 @@ async function swearNote(c: Candidate, confidence: number, d: { rationale: strin
   try {
     const tx = await send("swear", args);
     logGas(tx);
-    const v2 = await readVault();
-    const id = v2.noteCount - 1;
+    // the id comes from the receipt's NoteSworn event: a re-read of noteCount can hit an RPC node a block behind
+    const ev = tx.logs.map((l) => { try { return decodeEventLog({ abi: vaultAbi, data: l.data, topics: l.topics }); } catch { return null; } }).find((e) => e?.eventName === "NoteSworn");
+    const id = ev ? Number((ev.args as { id: bigint }).id) : (await readVault()).noteCount - 1;
     mark(c.sym, c.kind, "sworn");
     journal.add({ kind: "sworn", asset: c.sym, noteId: id, tx: tx.hash, title: `Swore ${serial(id)}: ${ASSETS[c.assetId].label} ${c.side}, $${c.notionalUsd.toFixed(2)} at ${Math.round(p * 100)}%`, detail: d.rationale + (bad.length ? ` (The published reason was replaced by the rule's own line because it quoted ${bad.join(", ")}, which is not in the facts.)` : ""), model: d.model, tokens: d.tokens });
     try {

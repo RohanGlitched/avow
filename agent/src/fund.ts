@@ -25,15 +25,38 @@ const HSK_USD = n("DICTUM_FUND_HSK_USD", 8);
 const AGENT_GAS = n("DICTUM_AGENT_GAS_HSK", 3);
 const KEEP_GAS = n("DICTUM_KEEP_GAS_HSK", 2);
 
-async function tx(p: Promise<Hex>, what: string) {
-  const h = await p;
+/** Send, retrying only failures before broadcast (gas estimation on a load-balanced RPC node that has not seen the previous tx yet). */
+async function tx(send: () => Promise<Hex>, what: string) {
+  let h: Hex | undefined;
+  for (let i = 0; ; i++) {
+    try {
+      h = await send();
+      break;
+    } catch (e) {
+      if (i >= 6) throw e;
+      await new Promise((r) => setTimeout(r, 3000));
+    }
+  }
   const r = await chain.waitForTransactionReceipt({ hash: h, timeout: 180_000 });
   if (r.status !== "success") throw new Error(`${what} reverted ${h}`);
   console.log(what, h, "gas", r.gasUsed);
 }
 
+/** Deposit everything the setup key holds into the vault, reading balances only after the RPC has caught up. */
+async function depositAll() {
+  const WHSK = ASSETS[2].token;
+  await new Promise((r) => setTimeout(r, 8000)); // a load-balanced RPC node can lag a few blocks behind the last receipt
+  await depositAll();
+}
+
 async function main() {
   const WHSK = ASSETS[2].token;
+  // deposit-only: wrap a little HSK as inventory if asked, then deposit what the setup key holds
+  if (process.env.DICTUM_FUND_DEPOSIT_ONLY) {
+    const wrap = Number(process.env.DICTUM_FUND_WRAP_HSK ?? 0);
+    if (wrap > 0) await tx(() => w.writeContract({ address: WHSK, abi: erc20, functionName: "deposit", value: parseEther(wrap.toFixed(6)) }), "wrap HSK");
+    return depositAll();
+  }
   const px = async (id: number) => Number(await chain.readContract({ address: VAULT, abi: vaultAbi, functionName: "twapPx", args: [id] })) / 1e8;
   const [ethPx, btcPx, hskPx] = [await px(0), await px(1), await px(2)];
   const needHsk = (USDT_TARGET + ETH_USD + BTC_USD) / hskPx * 1.02 + HSK_USD / hskPx;
@@ -42,18 +65,18 @@ async function main() {
   console.log({ setup: setup.address, hsk: bal, needHsk: Math.ceil(needHsk + AGENT_GAS + KEEP_GAS), prices: { ethPx, btcPx, hskPx } });
   if (bal < needHsk + KEEP_GAS + Math.max(0, AGENT_GAS - agentBal)) throw new Error(`setup key holds ${bal.toFixed(2)} HSK; needs ${(needHsk + KEEP_GAS + AGENT_GAS).toFixed(0)}`);
 
-  if (agentBal < AGENT_GAS) await tx(w.sendTransaction({ to: agentAddr, value: parseEther((AGENT_GAS - agentBal).toFixed(6)) }), "gas → agent");
-  await tx(w.writeContract({ address: WHSK, abi: erc20, functionName: "deposit", value: parseEther(needHsk.toFixed(6)) }), "wrap HSK");
-  for (const t of [WHSK, USDT] as Address[]) await tx(w.writeContract({ address: t, abi: erc20, functionName: "approve", args: [ROUTER, 2n ** 255n] }), "approve router");
+  if (agentBal < AGENT_GAS) await tx(() => w.sendTransaction({ to: agentAddr, value: parseEther((AGENT_GAS - agentBal).toFixed(6)) }), "gas → agent");
+  await tx(() => w.writeContract({ address: WHSK, abi: erc20, functionName: "deposit", value: parseEther(needHsk.toFixed(6)) }), "wrap HSK");
+  for (const t of [WHSK, USDT] as Address[]) await tx(() => w.writeContract({ address: t, abi: erc20, functionName: "approve", args: [ROUTER, 2n ** 255n] }), "approve router");
 
   // WHSK → exactly the USDT we need (USDT target + what the WETH and WBTC buys will spend)
   const usdtOut = BigInt(Math.round((USDT_TARGET + ETH_USD + BTC_USD) * 1e6));
   const maxIn = parseEther((((USDT_TARGET + ETH_USD + BTC_USD) / hskPx) * 1.015).toFixed(6));
-  await tx(w.writeContract({ address: ROUTER, abi: router, functionName: "exactOutputSingle", args: [{ tokenIn: WHSK, tokenOut: USDT, fee: 3000, recipient: setup.address, amountOut: usdtOut, amountInMaximum: maxIn, sqrtPriceLimitX96: 0n }] }), "WHSK → USDT");
+  await tx(() => w.writeContract({ address: ROUTER, abi: router, functionName: "exactOutputSingle", args: [{ tokenIn: WHSK, tokenOut: USDT, fee: 3000, recipient: setup.address, amountOut: usdtOut, amountInMaximum: maxIn, sqrtPriceLimitX96: 0n }] }), "WHSK → USDT");
   const buy = async (id: number, usd: number, assetPx: number) => {
     const a = ASSETS[id];
     const minOut = BigInt(Math.floor((usd / assetPx) * 0.985 * 10 ** a.decimals));
-    await tx(w.writeContract({ address: ROUTER, abi: router, functionName: "exactInputSingle", args: [{ tokenIn: USDT, tokenOut: a.token, fee: 3000, recipient: setup.address, amountIn: BigInt(Math.round(usd * 1e6)), amountOutMinimum: minOut, sqrtPriceLimitX96: 0n }] }), `USDT → ${a.label}`);
+    await tx(() => w.writeContract({ address: ROUTER, abi: router, functionName: "exactInputSingle", args: [{ tokenIn: USDT, tokenOut: a.token, fee: 3000, recipient: setup.address, amountIn: BigInt(Math.round(usd * 1e6)), amountOutMinimum: minOut, sqrtPriceLimitX96: 0n }] }), `USDT → ${a.label}`);
   };
   if (ETH_USD > 0) await buy(0, ETH_USD, ethPx);
   if (BTC_USD > 0) await buy(1, BTC_USD, btcPx);
@@ -61,8 +84,8 @@ async function main() {
   for (const t of [USDT, ASSETS[0].token, ASSETS[1].token, WHSK] as Address[]) {
     const b = await chain.readContract({ address: t, abi: erc20, functionName: "balanceOf", args: [setup.address] });
     if (b === 0n) continue;
-    await tx(w.writeContract({ address: t, abi: erc20, functionName: "approve", args: [VAULT, b] }), "approve vault");
-    await tx(w.writeContract({ address: VAULT, abi: vaultAbi, functionName: "deposit", args: [t, b] }), `deposit ${t}`);
+    await tx(() => w.writeContract({ address: t, abi: erc20, functionName: "approve", args: [VAULT, b] }), "approve vault");
+    await tx(() => w.writeContract({ address: VAULT, abi: vaultAbi, functionName: "deposit", args: [t, b] }), `deposit ${t}`);
   }
   const nav = await chain.readContract({ address: VAULT, abi: vaultAbi, functionName: "nav" });
   console.log("vault NAV $", Number(nav) / 1e6);

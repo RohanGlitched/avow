@@ -10,6 +10,15 @@ import { chain } from "./market.js";
 const owner = privateKeyToAccount(readFileSync(process.env.DICTUM_OWNER_KEY_FILE ?? "./.keys/deployer.key", "utf8").trim() as Hex);
 const w = createWalletClient({ account: owner, chain: hsk, transport: http(RPC) });
 
+/** The public RPC is load-balanced: a node may not see a contract for a few seconds after its receipt. */
+async function codeAt(address: Address) {
+  for (let i = 0; i < 30; i++) {
+    if (((await chain.getCode({ address }).catch(() => undefined)) ?? "0x") !== "0x") return;
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  throw new Error(`no code at ${address} after 60 s`);
+}
+
 async function main() {
   console.log("mode", MODE, "owner", owner.address);
   let registry = LEAGUE_REGISTRY;
@@ -18,6 +27,7 @@ async function main() {
     const rc = await chain.waitForTransactionReceipt({ hash, timeout: 180_000 });
     registry = rc.contractAddress! as Address;
     console.log("league", registry, "block", rc.blockNumber, "gas", rc.gasUsed);
+    await codeAt(registry);
   }
   for (const arg of process.argv.slice(2)) {
     const [vault, name] = arg.split(":") as [Address, string];
