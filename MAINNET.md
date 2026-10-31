@@ -3,9 +3,9 @@
 Every step was rehearsed on a fork of mainnet on the VM. Gas for the pool upgrades was measured against mainnet itself with
 `eth_estimateGas` on Oct 31 (research/est.mjs); everything else was measured on the fork. Mainnet gas price: 500 gwei; HSK ≈ $0.087.
 
-## What the owner does: one transfer of about 280 HSK (≈ $24)
+## What the owner does: one transfer of about 290 HSK (≈ $25)
 
-Send **≈ 280 HSK** on HSK Chain to the setup address **`0xCfDDe8CF26062229e1Bc12294c1029E531a7ac9A`** (a fresh key made for this launch
+Send **≈ 290 HSK** on HSK Chain to the setup address **`0xCfDDe8CF26062229e1Bc12294c1029E531a7ac9A`** (a fresh key made for this launch
 on the VM; backed up locally; never printed). HSK reaches HSK Chain by withdrawing from HashKey Global or Gate on the "HSK Chain" network.
 
 The launch is three small vaults, one per league agent, each with a $5 cap (Probation notes are $1), $5 open exposure and a $2 daily loss
@@ -17,11 +17,13 @@ limit. Agent keys: Avow `0xCa3b5788a5296429CCc2729dBB1bB0d523e992Fd`, Bold `0x91
 | Three vault deployments (5.80M gas each at 500 gwei) | 8.7 | 0.76 |
 | HSKSwap pools to 240 observation slots, once (15.49M gas, measured with `eth_estimateGas`; WBTC keeps only 1 today, so it has no TWAP without this) | 7.7 | 0.67 |
 | AvowLeague registry and three entries (1.15M gas) | 0.6 | 0.05 |
+| ERC-8004 Identity and Reputation registries, AvowGrader, three agents registered with on-chain registration files and linked (≈ 6.7M gas, measured on the fork) | 3.4 | 0.30 |
+| Posting each settled note's grade to ERC-8004 (≈ 0.15M gas a note, paid by the agent) | in agent gas | |
 | Funding swaps and deposits (≈ 1.3M gas per vault) | 2.0 | 0.17 |
 | Capital per vault: $3 USDT + ≈ $1.20 each of WETH, WBTC, WHSK (stays yours; withdrawable by the owner) | 3 × 77 = 231 | 20.1 |
 | Agent gas: Avow 2, Bold 5, Fade 5 (a note plus its settlement ≈ 0.46 HSK) | 12 | 1.04 |
-| Margin | ≈ 18 | 1.6 |
-| **Total** | **≈ 280** | **≈ 24** |
+| Margin | ≈ 25 | 2.2 |
+| **Total** | **≈ 290** | **≈ 25** |
 
 Why it barely trades at this size: a note and its settlement cost ≈ $0.04 of gas, 4% of a $1 note on top of the 0.6% pool fees. Avow's
 rules count that cost, so it will mostly pass; the rule baselines (Bold, Fade) aim past it and trade, which gives the full mainnet loop:
@@ -34,7 +36,8 @@ On the VM: `bash ~/dictum/launch-mainnet.sh check` (balances and plan, no transa
 Each step is skipped when already done, so a re-run resumes after a failure (agent/scripts/launch-mainnet.sh).
 
 1. Deploy the three AvowVaults (owner = the setup key until step 6) and raise the three pools' observation buffers to 240.
-2. Deploy the AvowLeague registry and enter the three vaults as Avow, Bold and Fade.
+2. Deploy the AvowLeague registry and enter the three vaults as Avow, Bold and Fade; deploy the ERC-8004 registries and AvowGrader,
+   register each agent (ERC-721 agent with a registration file) and link its vault, so every settled note's grade becomes ERC-8004 feedback.
 3. Fund each vault (wrap HSK, swap to USDT, buy a little WETH and WBTC, deposit) and give each agent its gas.
 4. Start the three agents as systemd services; the flagship (port 8788) serves the league table; point Vercel's `AVOW_AGENT_URL` at it.
 5. Verify the sources on Blockscout: `forge verify-contract <address> src/AvowVault.sol:AvowVault --chain-id 177 --verifier blockscout

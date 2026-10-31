@@ -1,4 +1,5 @@
 import { PERSONA } from "./personas.js";
+import { current as currentErc8004 } from "./erc8004.js";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { ASSETS, DATA_DIR, DEPLOY_BLOCK, MODE, VAULT } from "./config.js";
@@ -140,6 +141,7 @@ export function buildState(snaps: Snap[], v: VaultView, agentAddr: string, mainn
     lastHeartbeat: beat || null,
     mandate: mandateWords(v.mandate),
     persona: PERSONA,
+    erc8004: currentErc8004(),
     record: {
       graded: v.ledger.graded,
       honoured: v.ledger.honoured,

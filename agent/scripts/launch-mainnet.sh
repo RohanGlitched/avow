@@ -19,7 +19,7 @@ bal() { curl -s -X POST -H 'content-type: application/json' --data "{\"jsonrpc\"
 SETUP_ADDR=$(node bin/addr.js $SETUP)
 
 if [ "${1:-check}" = "check" ]; then
-  echo "setup $SETUP_ADDR holds $(bal $SETUP_ADDR) HSK (need about 270)"
+  echo "setup $SETUP_ADDR holds $(bal $SETUP_ADDR) HSK (need about 290)"
   for a in "${AGENTS[@]}"; do set -- $a; echo "$1: agent $(node bin/addr.js $2), data $3, port $4, gas $5 HSK, deployed: $([ -f $3/deploy.json ] && grep -o '"vault": "[^"]*"' $3/deploy.json || echo no)"; done
   exit 0
 fi
@@ -44,6 +44,14 @@ if [ ! -f $M/league.json ]; then
   echo "{\"registry\": \"$(echo "$OUT" | grep DICTUM_LEAGUE_REGISTRY= | cut -d= -f2)\"}" > $M/league.json
 fi
 REG=$(grep -o '0x[0-9a-fA-F]*' $M/league.json)
+
+if [ ! -f $M/erc8004.json ]; then
+  echo "== ERC-8004 registries, agents and grader"
+  OUT=$(DICTUM_OWNER_KEY_FILE=$SETUP node bin/erc8004-setup.js $(V $M/data):Avow:avow $(V $M/league/bold/data):Bold:bold $(V $M/league/fade/data):Fade:fade)
+  echo "$OUT"
+  echo "{\"grader\": \"$(echo "$OUT" | grep DICTUM_ERC8004_GRADER= | cut -d= -f2)\"}" > $M/erc8004.json
+fi
+GRADER=$(grep -o '0x[0-9a-fA-F]*' $M/erc8004.json)
 
 for a in "${AGENTS[@]}"; do
   set -- $a
@@ -75,6 +83,7 @@ Environment=DICTUM_AGENT_KEY_FILE=$2
 Environment=DICTUM_DATA_DIR=$3
 Environment=DICTUM_PERSONA=$1
 Environment=DICTUM_LEAGUE_REGISTRY=$REG
+Environment=DICTUM_ERC8004_GRADER=$GRADER
 Environment=PORT=$4
 $EXTRA
 ExecStart=$START

@@ -64,3 +64,5 @@ export const LEAGUE_PEERS = (process.env.DICTUM_LEAGUE ?? "").split(",").map((x)
 export const MIRROR = process.env.DICTUM_MIRROR !== "0";
 /** The on-chain league registry, when deployed. */
 export const LEAGUE_REGISTRY = (process.env.DICTUM_LEAGUE_REGISTRY ?? "") as Address;
+/** AvowGrader: posts each settled note's grade as ERC-8004 reputation feedback, when deployed. */
+export const ERC8004_GRADER = (process.env.DICTUM_ERC8004_GRADER ?? "") as Address;

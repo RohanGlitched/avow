@@ -2,7 +2,9 @@ import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { BaseError, ContractFunctionRevertedError, createWalletClient, http, keccak256, toHex, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { AGENT_KEY_FILE, ASSETS, DATA_DIR, MODE, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
+import { AGENT_KEY_FILE, ASSETS, DATA_DIR, ERC8004_GRADER, MODE, RPC, THINK_EVERY_MS, VAULT, hsk } from "./config.js";
+import { graderAbi } from "./erc8004Contract.js";
+import { read as readErc8004, unposted } from "./erc8004.js";
 import { vaultAbi } from "./abi.js";
 import { chain, mainnetPool, snapshot, type MainnetPool, type Snap } from "./market.js";
 import { enter, grade, mark } from "./shadow.js";
@@ -91,6 +93,26 @@ export async function keep(v: VaultView) {
     } catch (e) {
       const w = words(e);
       journal.add({ kind: "error", asset: ASSETS[n.asset].sym, noteId: n.id, title: `Could not settle ${serial(n.id)}`, detail: w.text });
+    }
+  }
+}
+
+/** Post every settled note's grade to the ERC-8004 Reputation Registry through AvowGrader (anyone may; the agent does it so it is never behind). */
+async function postGrades(v: VaultView) {
+  if (!ERC8004_GRADER) return;
+  for (const id of await unposted(v)) {
+    try {
+      const sim = await chain.simulateContract({ account, address: ERC8004_GRADER, abi: graderAbi, functionName: "post", args: [VAULT, BigInt(id)] });
+      const hash = await wallet.writeContract(sim.request);
+      const rc = await chain.waitForTransactionReceipt({ hash, timeout: 120_000 });
+      if (rc.status !== "success") throw new Error(`transaction ${hash} reverted`);
+      logGas(rc);
+      const grade = Number(sim.result) / 100;
+      journal.add({ kind: "settled", noteId: id, tx: hash, title: `Posted ${serial(id)}'s grade to ERC-8004: ${grade.toFixed(2)} of 100`, detail: "AvowGrader computed it from the vault (100 minus 100 times the squared gap between the stated odds and the outcome) and wrote it to the ERC-8004 Reputation Registry as feedback tagged avow-calibration." });
+    } catch (e) {
+      const w = words(e);
+      if (w.name === "NotLinked") return; // the owner has not linked this vault to an ERC-8004 agent yet
+      journal.add({ kind: "error", noteId: id, title: `Could not post ${serial(id)}'s grade to ERC-8004`, detail: w.text });
     }
   }
 }
@@ -283,6 +305,8 @@ export async function tick() {
   history.push(snaps);
   journalMandateEvents();
   await keep(v).catch((e) => journal.add({ kind: "error", title: "Keeper error", detail: words(e).text }));
+  await postGrades(await readVault()).catch((e) => journal.add({ kind: "error", title: "ERC-8004 posting error", detail: words(e).text }));
+  await readErc8004();
   await review(snaps, v).catch((e) => journal.add({ kind: "error", title: "Review error", detail: words(e).text }));
   await think(snaps, v).catch((e) => journal.add({ kind: "error", title: "Think error", detail: words(e).text }));
   journal.beat();

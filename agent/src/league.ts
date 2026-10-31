@@ -10,6 +10,7 @@ export function entry(st: State, url: string | null) {
   const kinds = st.journal.reduce<Record<string, number>>((m, j) => ((m[j.kind] = (m[j.kind] ?? 0) + 1), m), {});
   return {
     persona: st.persona,
+    erc8004: st.erc8004 ?? null,
     url,
     mode: st.network.mode,
     vault: st.contracts.vault,
