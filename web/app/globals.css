@@ -1527,8 +1527,283 @@ a.ovi {
 }
 
 /* ------------------------------------------------------------------ hero */
+/* A centred hero over an engraved lathe field; the live note below it is the product shot. */
 .hero {
-  padding: 28px 0 72px;
+  position: relative;
+  isolation: isolate;
+  overflow: clip; /* not hidden: a scroll container would break the note's view() timeline */
+  padding: 0 0 72px;
+}
+.hero__intro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-top: clamp(64px, 11vh, 120px);
+  padding-bottom: clamp(48px, 7vh, 80px);
+}
+.hero h1 {
+  font-size: clamp(40px, 5.8vw, 78px);
+  line-height: 1.02;
+  letter-spacing: -0.012em;
+  max-width: 15ch;
+  margin: 26px 0 0;
+  text-wrap: balance;
+  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both;
+}
+.hero__lede {
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 58ch;
+  margin: 24px 0 0;
+  text-wrap: pretty;
+  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.22s both;
+}
+.hero__actions {
+  justify-content: center;
+  margin-top: 34px;
+  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.34s both;
+}
+.btn--lg {
+  min-height: 52px;
+  padding: 12px 26px;
+  font-size: 16px;
+}
+.hero__actions .btn--ghost {
+  background: color-mix(in srgb, var(--bg) 70%, transparent);
+  backdrop-filter: blur(6px);
+}
+.hero__actions .btn--ghost:hover {
+  background: var(--bg-2);
+}
+.hero__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  padding: 5px 16px 5px 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(6px);
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--ink);
+  text-decoration: none;
+  text-align: left;
+  transition: border-color 0.2s;
+  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.hero__pill:hover {
+  border-color: var(--gilt);
+}
+.hero__pill-tag {
+  flex: none;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.hero__points {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 32px;
+  margin: 36px 0 0;
+  padding: 0;
+  font-size: 15px;
+  color: var(--ink);
+  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.46s both;
+}
+.hero__points li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero__points li::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  flex: none;
+  transform: rotate(45deg);
+  border: 1.5px solid var(--gilt);
+}
+@keyframes hero-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* the engraved lathe field */
+@property --sx {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 30%;
+}
+@property --sy {
+  syntax: "<percentage>";
+  inherits: true;
+  initial-value: 40%;
+}
+.hfield {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(1000px, 118vh);
+  z-index: -1;
+  pointer-events: none;
+  /* fade the bottom into the page and keep the centre calm behind the words */
+  -webkit-mask-image: linear-gradient(#000 55%, transparent), radial-gradient(ellipse 30% 26% at 50% 36%, rgba(0, 0, 0, 0.2), #000 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(#000 55%, transparent), radial-gradient(ellipse 30% 26% at 50% 36%, rgba(0, 0, 0, 0.2), #000 100%);
+  mask-composite: intersect;
+  animation: hfield-drift 18s ease-in-out infinite alternate;
+}
+.hfield svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+}
+.hfield__base use {
+  stroke: var(--ink);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.34;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+  animation: ro-draw 2.4s cubic-bezier(0.45, 0.05, 0.25, 1) forwards;
+  animation-delay: calc(var(--k) * 38ms);
+}
+.hfield__base .hfield__l--1 {
+  stroke: var(--ink-2);
+  opacity: 0.24;
+}
+.hfield__ink {
+  stroke: url(#hfield-ovi);
+  stroke-width: 1.7;
+  opacity: 1;
+  -webkit-mask-image: radial-gradient(240px circle at var(--mx, var(--sx)) var(--my, var(--sy)), #000 0%, rgba(0, 0, 0, 0.85) 40%, transparent 100%);
+  mask-image: radial-gradient(240px circle at var(--mx, var(--sx)) var(--my, var(--sy)), #000 0%, rgba(0, 0, 0, 0.85) 40%, transparent 100%);
+  animation: fade-in 1s ease 1.6s both;
+}
+.hfield__ink use {
+  vector-effect: non-scaling-stroke;
+}
+.hfield.is-pointed .hfield__ink {
+  -webkit-mask-image: radial-gradient(200px circle at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.85) 40%, transparent 100%);
+  mask-image: radial-gradient(200px circle at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, 0.85) 40%, transparent 100%);
+}
+@keyframes hfield-drift {
+  0% {
+    --sx: 18%;
+    --sy: 30%;
+  }
+  50% {
+    --sx: 62%;
+    --sy: 18%;
+  }
+  100% {
+    --sx: 84%;
+    --sy: 46%;
+  }
+}
+
+/* the live note as the product shot */
+.hstage {
+  position: relative;
+  max-width: 1160px;
+  margin: 0 auto;
+  perspective: 1800px;
+}
+.hstage__glow {
+  position: absolute;
+  inset: 8% 6% -4%;
+  z-index: -1;
+  background: radial-gradient(60% 55% at 30% 40%, color-mix(in srgb, var(--ovi-a) 32%, transparent), transparent 70%),
+    radial-gradient(55% 50% at 72% 55%, color-mix(in srgb, var(--ovi-b) 30%, transparent), transparent 70%);
+  filter: blur(48px);
+  opacity: 0.7;
+}
+.hstage__rise {
+  transform-origin: 50% 0;
+}
+.hstage__tilt {
+  position: relative;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.hstage__tilt.is-tilted {
+  transition: transform 0.12s linear;
+}
+.hstage__tilt > .note {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05), 0 40px 80px -40px rgba(0, 0, 0, 0.55), 0 80px 140px -60px color-mix(in srgb, var(--ovi-b) 35%, transparent);
+}
+.hstage__sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent calc(var(--sheen, 50%) - 22%),
+    color-mix(in srgb, var(--ovi-a) 16%, transparent) calc(var(--sheen, 50%) - 8%),
+    color-mix(in srgb, var(--ovi-b) 18%, transparent) var(--sheen, 50%),
+    color-mix(in srgb, var(--gilt) 14%, transparent) calc(var(--sheen, 50%) + 8%),
+    transparent calc(var(--sheen, 50%) + 22%)
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+.hstage__tilt.is-tilted .hstage__sheen {
+  opacity: 1;
+}
+:root[data-theme="light"] .hstage__sheen {
+  mix-blend-mode: multiply;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .hstage__sheen {
+    mix-blend-mode: multiply;
+  }
+}
+@supports (animation-timeline: view()) {
+  .hstage__rise {
+    animation: hstage-rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 42%;
+  }
+}
+@keyframes hstage-rise {
+  from {
+    transform: rotateX(24deg) translateY(24px) scale(0.92);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero h1,
+  .hero__lede,
+  .hero__actions,
+  .hero__pill,
+  .hero__points,
+  .hfield,
+  .hfield__ink,
+  .hstage__rise {
+    animation: none;
+  }
+  .hfield__base use {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }
 .hero__top {
   display: grid;
@@ -1539,21 +1814,6 @@ a.ovi {
 }
 .hero__top > * {
   min-width: 0;
-}
-.hero h1 {
-  font-size: clamp(32px, 3.8vw, 46px);
-  max-width: 17ch;
-}
-.hero__lede {
-  font-size: 18px;
-  color: var(--muted);
-  max-width: 52ch;
-}
-.hero__lede + .actions {
-  margin-top: 22px;
-}
-.hero .hero__plainly {
-  margin-top: 28px;
 }
 .hero__plate {
   display: flex;
@@ -3375,7 +3635,25 @@ a.stub:hover {
     padding: 60px 0;
   }
   .hero {
-    padding: 28px 0 48px;
+    padding: 0 0 48px;
+  }
+  .hero__intro {
+    padding-top: 44px;
+  }
+  .hero__pill {
+    font-size: 13px;
+  }
+  .hfield {
+    -webkit-mask-image: linear-gradient(#000 40%, transparent), radial-gradient(ellipse 80% 34% at 50% 40%, rgba(0, 0, 0, 0.12), #000 100%);
+    mask-image: linear-gradient(#000 40%, transparent), radial-gradient(ellipse 80% 34% at 50% 40%, rgba(0, 0, 0, 0.12), #000 100%);
+  }
+  .hfield__ink {
+    display: none;
+  }
+  .hero__points {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
   .page-head {
     padding: 36px 0 24px;

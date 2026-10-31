@@ -10,6 +10,7 @@ import { TierLadder, BrierScale } from "@/components/Record";
 import { ArchitectureDiagram, GuaranteeTable, AddressTable } from "@/components/HowParts";
 import { Divider, NetPnl, SecHead, Slip } from "@/components/Bits";
 import { Freshness, LastCycle } from "@/components/Live";
+import { HeroField, HeroStage } from "@/components/Hero";
 import { Hex } from "@/components/Ovi";
 import { CLAUSES } from "@/lib/mandate";
 import { Term } from "@/components/Term";
@@ -51,51 +52,52 @@ export default async function Home() {
   // the same gap the market cards lead with: the pool the vault swaps in, against the exchanges
   const widest = [...s.market].sort((a, b) => Math.abs(tradeGapBps(b) ?? 0) - Math.abs(tradeGapBps(a) ?? 0))[0];
   const widestGap = widest ? tradeGapBps(widest) : null;
+  // the replay of the agent's exact rules: how many trades they would have made, and what they would have lost
+  const refusedTrades = s.replay?.current.reduce((a, c) => a + c.notes, 0) ?? 0;
+  const refusedLoss = s.replay?.current.reduce((a, c) => a + c.pnlUsd, 0) ?? 0;
 
   return (
     <>
       {/* ---------------------------------------------------------------- hero */}
       <section className="hero" aria-labelledby="hero-title">
-        <div className="wrap">
-          <div className="hero__top">
-            <div>
-              <h1 id="hero-title">An AI trader that has to swear before it trades.</h1>
-              <ol className="plainly hero__plainly" aria-label="Avow in three lines">
-                <li>
-                  <span aria-hidden="true">I</span>It bets in public before every trade.
-                </li>
-                <li>
-                  <span aria-hidden="true">II</span>If it&apos;s wrong, anyone can close the trade.
-                </li>
-                <li>
-                  <span aria-hidden="true">III</span>Good forecasters earn bigger limits.
-                </li>
-              </ol>
-            </div>
-            <div>
-              <p className="hero__lede">
-                Avow trades on HSKSwap only through a vault on HSK Chain. Before every swap it publishes a note: what will happen, by when, and the price at which it admits it was wrong,
-                its <span className="nowrap">stop-loss (<Term k="void">void level</Term>)</span>. Anyone can settle the note. Its record decides how much it may risk next.
-              </p>
-              <div className="actions">
-                {hero ? (
-                  <Link href={noteHref(hero.id)} className="btn">
-                    Open {hero.serial}
-                  </Link>
-                ) : (
-                  <Link href="/journal" className="btn">
-                    Watch for the first note
-                  </Link>
-                )}
-                <Link href="/desk" className="btn btn--ghost">
-                  Ask Avow how it is doing
-                </Link>
-              </div>
-              <p className="plainly__benefit">You don&apos;t have to trust the bot — the contract won&apos;t let it break its word.</p>
-            </div>
+        <HeroField />
+        <div className="wrap hero__intro">
+          {refusedTrades > 0 ? (
+            <Link href="#declined" className="hero__pill">
+              <span className="hero__pill-tag">Replay</span>
+              <span>
+                Our own rules would have made {num(refusedTrades)} trades on HSKSwap and lost {usd(Math.abs(refusedLoss))}. Avow refused them all.
+              </span>
+            </Link>
+          ) : null}
+          <h1 id="hero-title">An AI trader that has to swear before it trades.</h1>
+          <p className="hero__lede">
+            Before every swap on HSKSwap, Avow publishes a note on HSK Chain: what will happen, by when, and the price at which it admits it was wrong. Anyone can settle it, and its
+            record sets how much it may risk next.
+          </p>
+          <div className="actions hero__actions">
+            {hero ? (
+              <Link href={noteHref(hero.id)} className="btn btn--lg">
+                Open {hero.serial}
+              </Link>
+            ) : (
+              <Link href="/journal" className="btn btn--lg">
+                Watch for the first note
+              </Link>
+            )}
+            <Link href="/desk" className="btn btn--ghost btn--lg">
+              Ask Avow how it is doing
+            </Link>
           </div>
+          <ul className="hero__points" aria-label="Avow in three lines">
+            <li>It bets in public before every trade.</li>
+            <li>If it&apos;s wrong, anyone can close the trade.</li>
+            <li>Good forecasters earn bigger limits.</li>
+          </ul>
+        </div>
 
-          {hero ? <Note note={hero} state={s} print /> : <Note note={specimenNote("outstanding")} state={s} print />}
+        <div className="wrap">
+          <HeroStage>{hero ? <Note note={hero} state={s} print /> : <Note note={specimenNote("outstanding")} state={s} print />}</HeroStage>
           <div className="plate hero__plate">
             <span>
               {hero ? (
