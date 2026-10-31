@@ -1,137 +1,121 @@
 import Link from "next/link";
 import { Rosette } from "./Rosette";
-import { Hex } from "./Ovi";
-import { CHANGELOG, MARK_HASH, NAV } from "@/lib/site";
-import { FEEDS, HSKSWAP, NETWORK_WORDS, POOLS, addrUrl, ownLink } from "@/lib/chain";
-import { num, when } from "@/lib/format";
+import { MAINNET_CONTRACTS, MARK_HASH, SITE } from "@/lib/site";
+import { addrUrl } from "@/lib/chain";
+import { num, short, when } from "@/lib/format";
 import type { State } from "@/lib/types";
 
+const GROUPS: { title: string; links: { href: string; label: string; external?: boolean }[] }[] = [
+  {
+    title: "Product",
+    links: [
+      { href: "/league", label: "League" },
+      { href: "/notes", label: "Notes" },
+      { href: "/record", label: "Record" },
+      { href: "/journal", label: "Journal" },
+      { href: "/desk", label: "Talk to Avow" },
+    ],
+  },
+  {
+    title: "Learn",
+    links: [
+      { href: "/how", label: "How it works" },
+      { href: "/mandate", label: "The mandate" },
+      { href: "/how#verify", label: "Verify it yourself" },
+      { href: "/business", label: "Business" },
+      { href: `${SITE.github}/blob/main/SECURITY.md`, label: "Security and limits", external: true },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { href: SITE.github, label: "Source code", external: true },
+      { href: SITE.video, label: "Demo video", external: true },
+      { href: SITE.build, label: "Hackathon entry", external: true },
+      { href: "https://hsk.blockscout.com", label: "HSK Chain explorer", external: true },
+      { href: "https://app.hskswap.com", label: "HSKSwap", external: true },
+    ],
+  },
+];
+
+function FootLink({ href, label, external }: { href: string; label: string; external?: boolean }) {
+  return external ? (
+    <a href={href} target="_blank" rel="noreferrer">
+      {label}
+    </a>
+  ) : (
+    <Link href={href}>{label}</Link>
+  );
+}
+
 export function SiteFooter({ state }: { state: State }) {
-  const c = state.contracts;
   const micro = state.notes.map((n) => `${n.serial} ${n.statement} ${n.hash}`).join("  ");
-  const fork = state.network.mode === "fork-rehearsal";
+  const mainnet = state.network.mode === "mainnet";
   return (
-    <footer className="foot">
+    <footer className="foot sfoot">
       <div className="band" aria-hidden="true" />
       <div className="wrap">
-        <div className="foot__top">
-          <div>
-            <div className="foot__brand">
+        <div className="sfoot__top">
+          <div className="sfoot__brand">
+            <Link href="/" className="sfoot__mark" aria-label="Avow, home">
               <Rosette hash={MARK_HASH} defer />
-              <div>
-                <div className="foot__word">Avow</div>
-                <p className="foot__motto">Dictum meum pactum, my word is my bond: the old London Stock Exchange&apos;s motto. Avow holds an AI trader to it.</p>
-              </div>
-            </div>
-            <p className="foot__blurb">
-              An AI trader on HSK Chain that can only trade through a vault. Before every swap it swears a falsifiable note on chain; anyone can settle it; its record decides how large a note it may
-              write next.
+              <span>Avow</span>
+            </Link>
+            <p className="sfoot__tag">The on-chain track record for AI traders.</p>
+            <p className="sfoot__status">
+              <span className={`sfoot__dot${state.agentAlive ? "" : " sfoot__dot--off"}`} aria-hidden="true" />
+              {mainnet ? "Live on HSK Chain mainnet" : "Rehearsal on a fork of HSK Chain mainnet"}
+              {state.block ? <span className="sfoot__muted">, block {num(state.block)}</span> : null}
             </p>
-            <div className="actions">
-              <Link href="/desk" className="btn">
+            <div className="sfoot__actions">
+              <Link href="/league" className="btn">
+                See the league
+              </Link>
+              <Link href="/desk" className="btn btn--ghost">
                 Talk to Avow
               </Link>
-              <Link href="/how#verify" className="btn btn--ghost">
-                Verify it yourself
-              </Link>
             </div>
           </div>
-          <nav aria-label="Footer">
-            <h2>Pages</h2>
-            <ul>
-              <li>
-                <Link href="/">The live note</Link>
-              </li>
-              {NAV.map((n) => (
-                <li key={n.href}>
-                  <Link href={n.href}>{n.label}</Link>
+
+          {GROUPS.map((g) => (
+            <nav key={g.title} className="sfoot__col" aria-label={g.title}>
+              <h2>{g.title}</h2>
+              <ul>
+                {g.links.map((l) => (
+                  <li key={l.label}>
+                    <FootLink {...l} />
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+
+          <div className="sfoot__col">
+            <h2>On chain</h2>
+            <ul className="sfoot__chain">
+              {MAINNET_CONTRACTS.map((c) => (
+                <li key={c.address}>
+                  <a href={addrUrl(c.address)} target="_blank" rel="noreferrer">
+                    <span>{c.label}</span>
+                    <code>{short(c.address, 6, 4)}</code>
+                  </a>
                 </li>
               ))}
-              <li>
-                <Link href="/desk">Desk</Link>
-              </li>
-            </ul>
-          </nav>
-          <div>
-            <h2>Contracts{fork ? ", rehearsal fork" : ""}</h2>
-            <ul className="foot__contracts">
-              <li>
-                <span>Avow vault</span> <Hex value={c.vault} href={ownLink(state, "address", c.vault)} />
-              </li>
-              <li>
-                <span>Agent</span> <Hex value={c.agent} href={ownLink(state, "address", c.agent)} />
-              </li>
-              <li>
-                <span>Owner</span> <Hex value={c.owner} href={ownLink(state, "address", c.owner)} />
-              </li>
-              <li>
-                <span>HSKSwap router</span> <Hex value={HSKSWAP.router} href={addrUrl(HSKSWAP.router)} />
-              </li>
-              <li>
-                <span>HSKSwap factory</span> <Hex value={HSKSWAP.factory} href={addrUrl(HSKSWAP.factory)} />
-              </li>
-              <li>
-                <span>USDT / WETH pool</span> <Hex value={POOLS.WETH.address} href={addrUrl(POOLS.WETH.address)} />
-              </li>
-              <li>
-                <span>Chainlink ETH / USD</span> <Hex value={FEEDS["ETH / USD"]} href={addrUrl(FEEDS["ETH / USD"])} />
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h2>Sources</h2>
-            <ul>
-              <li>
-                <a href="https://hsk.blockscout.com" target="_blank" rel="noreferrer">
-                  HSK Chain explorer
-                </a>
-              </li>
-              <li>
-                <a href="https://api-glb.hashkey.com/quote/v1/ticker/price?symbol=ETHUSDT" target="_blank" rel="noreferrer">
-                  HashKey Global ticker
-                </a>
-              </li>
-              <li>
-                <Link href="/how#addresses">Every address Avow reads</Link>
-              </li>
-              <li>
-                <Link href="/how#verify">A cast command for each claim</Link>
-              </li>
-              <li>
-                <Link href="/journal">The agent&apos;s journal</Link>
-              </li>
             </ul>
           </div>
         </div>
-        <div className="foot__mid">
-          <div>
-            <h2>Data on this site</h2>
-            <p className="muted" style={{ fontSize: 14.5 }}>
-              {NETWORK_WORDS[state.network.mode].long} {state.source === "fixture" ? "The numbers are a development snapshot taken " : "Last read "}
-              {when(state.asOf)}
-              {state.block ? `, block ${num(state.block)}.` : "."}
-            </p>
-          </div>
-          <div>
-            <h2>Changelog</h2>
-            <ol className="changelog">
-              {CHANGELOG.map((e) => (
-                <li key={e.date + e.text}>
-                  <time dateTime={e.date}>{new Date(e.date + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" })}</time>
-                  <span>{e.text}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-        <div className="foot__bottom">
-          <span>
-            Built for <b>HSK Chain Horizon Hackathon · India</b>, Track 1: AI agent trading on HSKSwap.
-          </span>
-          <span>Every note is falsifiable. Every rule is in the contract.</span>
+
+        <div className="sfoot__bottom">
+          <p>
+            © 2026 Avow. Built for the <b>HSK Chain Horizon Hackathon, India</b>, Track 1: AI agent trading.
+          </p>
+          <p className="sfoot__muted" suppressHydrationWarning>
+            {state.source === "fixture" ? "Saved snapshot from " : "Data read "}
+            {when(state.asOf)}
+          </p>
         </div>
         <p className="foot__disclaimer">
-          Notes are records of the vault owner&apos;s own trades, published as they happen. They are not investment advice or a recommendation to anyone.
+          Notes record the vault owners&apos; own trades as they happen. Nothing here is investment advice or a recommendation to anyone.
         </p>
         <p className="foot__micro" aria-hidden="true">
           {micro}

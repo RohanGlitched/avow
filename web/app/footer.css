@@ -1,0 +1,156 @@
+/* Site footer (components/SiteFooter.tsx): a brand column, four link groups, then a bottom bar.
+   Colours come from .foot (the night plate) in globals.css. */
+
+.sfoot__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 0.8fr)) minmax(0, 1.25fr);
+  gap: 40px 36px;
+  padding: 60px 0 44px;
+}
+.sfoot__top > * {
+  min-width: 0;
+}
+
+.sfoot__mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--on-plate);
+}
+.sfoot__mark .rosette {
+  width: 44px;
+  height: 44px;
+}
+.sfoot__mark span {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 32px;
+  line-height: 1;
+}
+.sfoot__tag {
+  margin: 16px 0 0;
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.35;
+  color: var(--on-plate);
+  max-width: 26ch;
+}
+.sfoot__status {
+  margin: 14px 0 0;
+  font-size: 14px;
+  color: var(--on-plate);
+}
+.sfoot__dot {
+  display: inline-block;
+  vertical-align: 1px;
+  margin-right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #57c495;
+  box-shadow: 0 0 10px #57c495;
+}
+.sfoot__dot--off {
+  background: var(--on-plate-muted);
+  box-shadow: none;
+}
+.sfoot__muted {
+  color: var(--on-plate-muted);
+}
+.sfoot__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.sfoot__col h2 {
+  margin: 4px 0 16px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--on-plate);
+}
+.sfoot__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 14.5px;
+}
+.sfoot__col a {
+  color: var(--on-plate-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.sfoot__col a:hover {
+  color: var(--on-plate);
+}
+
+/* contract rows: name on the left, short address on the right */
+.sfoot__chain a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.sfoot__chain code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-plate-muted);
+  opacity: 0.8;
+}
+.sfoot__chain a:hover code {
+  opacity: 1;
+  color: #d2a752;
+}
+
+.sfoot__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line-2);
+  font-size: 13.5px;
+  color: var(--on-plate-muted);
+}
+.sfoot__bottom p {
+  margin: 0;
+}
+.sfoot__bottom b {
+  color: var(--on-plate);
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  .sfoot__top {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .sfoot__brand {
+    grid-column: 1 / -1;
+  }
+  .sfoot__top > .sfoot__col:last-child {
+    grid-column: span 3;
+    max-width: 460px;
+  }
+}
+@media (max-width: 640px) {
+  .sfoot__top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
+    padding: 48px 0 36px;
+  }
+  .sfoot__top > .sfoot__col:last-child {
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+}

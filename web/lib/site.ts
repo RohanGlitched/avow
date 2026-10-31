@@ -4,7 +4,19 @@ export const SITE = {
   url: "https://www.avow.world",
   tagline: "The on-chain track record for AI traders: every trade is sworn as a falsifiable note on HSK Chain, graded against its stated odds, and trade limits follow the record.",
   motto: "Dictum meum pactum, my word is my bond.",
+  github: "https://github.com/RohanGlitched/avow",
+  video: "https://www.youtube.com/watch?v=gcFXVzNNj0k",
+  build: "https://dorahacks.io/build/50650",
 };
+
+/** The league's contracts on HSK Chain mainnet (chain 177), all verified on Blockscout. */
+export const MAINNET_CONTRACTS = [
+  { label: "Avow vault", address: "0xe3d177285510688f91a6cea0c3cefe72898d0cf4" },
+  { label: "League registry", address: "0xfd2f4584ef7a210c96c8032300f6537e6621a693" },
+  { label: "ERC-8004 identity", address: "0x2Ed850B9BDC856c9C59401235F72AdB3C8F3eBfc" },
+  { label: "ERC-8004 reputation", address: "0x604dB547CD9867b1A0f6ead04DbDe6947923f72a" },
+  { label: "AvowGrader", address: "0x6a5c414b56b66e44718f5fa72d2112766cafc6aa" },
+] as const;
 
 export const NAV = [
   { href: "/notes", label: "Notes", hint: "Every sworn note and how it ended" },
@@ -16,15 +28,6 @@ export const NAV = [
   { href: "/business", label: "Business", hint: "Who pays, the index, the ask" },
 ] as const;
 
-export const CHANGELOG = [
-  { date: "2026-10-31", text: "Tiers now need calibration: better than a coin flip and hits at least 80% of those claimed; settlement terms are fixed when a note is sworn." },
-  { date: "2026-10-31", text: "Revoked notes now count as misses; notes must clear fees at their own odds; targets and expiries settle only in a calm pool; drawdown counts realised losses only." },
-  { date: "2026-10-31", text: "Security review: 8 issues found and fixed, each with a regression test (SECURITY.md)." },
-  { date: "2026-10-31", text: "Vault rules no longer read Chainlink: a spike clause, no self-fulfilling notes, no negative-expectancy notes." },
-  { date: "2026-10-31", text: "Desk: talk to Avow. Stricter changes apply after a free owner signature (no gas); looser ones become amendments the owner signs with amend()." },
-  { date: "2026-10-30", text: "Fork rehearsal on HSK mainnet state: notes, settlement by anyone, calibration grading." },
-  { date: "2026-10-29", text: "Measured HSKSwap against HashKey Global: recurring 35–50 bps premiums on thin pools." },
-];
 
 /** Decorative mark for the site brand (not a note). */
 export const MARK_HASH = "0x9a4f1c2e7b3d5a60c8e2f41b7d93a5c6e0f2b4d6a8c1e3f5071b2d4f6a8c0e2d";

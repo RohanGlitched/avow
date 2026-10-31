@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./pagerail.css";
+import "./footer.css";
 import { archivo, bodoni } from "./fonts";
 import { getState } from "@/lib/data";
 import { LiveProvider } from "@/lib/live";

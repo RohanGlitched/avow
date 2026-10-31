@@ -3476,24 +3476,6 @@ a.stub:hover {
 .foot__mid > * {
   min-width: 0;
 }
-.changelog {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 10px;
-  font-size: 14px;
-}
-.changelog li {
-  display: grid;
-  grid-template-columns: 84px minmax(0, 1fr);
-  gap: 12px;
-  color: var(--on-plate-muted);
-}
-.changelog time {
-  color: var(--on-plate);
-  font-variant-numeric: tabular-nums;
-}
 .foot__bottom {
   display: flex;
   justify-content: space-between;
