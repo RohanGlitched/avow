@@ -2,12 +2,13 @@ import { createPublicClient, fallback, http, parseAbi, parseAbiItem, type Addres
 import { ASSETS, MAINNET_RPC, MAINNET_RPCS, RPC, RPCS, USDT, VAULT, FEED_USDT, hsk, hskMainnet, type AssetCfg, type Sym } from "./config.js";
 import { vaultAbi } from "./abi.js";
 
-// The public RPC rate-limits per IP, and several agents share one: concurrent reads are folded into Multicall3 calls and
-// JSON-RPC batches, and failed requests back off before retrying.
+// The public RPC rate-limits per IP, and several agents share one: concurrent reads go out as JSON-RPC batches and failed
+// requests back off before retrying. No automatic Multicall3 folding: Chainlink on HSK Chain refuses contract callers, and a
+// multicalled read is a contract call.
 const transport = (url: string) => http(url, { timeout: 20_000, retryCount: 3, retryDelay: 1_500, batch: { batchSize: 20, wait: 16 } });
 const transports = (urls: string[]) => (urls.length > 1 ? fallback(urls.map(transport)) : transport(urls[0]));
-export const chain = createPublicClient({ chain: { ...hsk, contracts: { multicall3: { address: "0xcA11bde05977b3631167028862bE2a173976CA11" } } }, transport: transports(RPCS), batch: { multicall: { wait: 16 } } });
-export const mainnet = createPublicClient({ chain: { ...hskMainnet, contracts: { multicall3: { address: "0xcA11bde05977b3631167028862bE2a173976CA11" } } }, transport: transports(MAINNET_RPCS), batch: { multicall: { wait: 16 } } });
+export const chain = createPublicClient({ chain: { ...hsk, contracts: { multicall3: { address: "0xcA11bde05977b3631167028862bE2a173976CA11" } } }, transport: transports(RPCS) });
+export const mainnet = createPublicClient({ chain: { ...hskMainnet, contracts: { multicall3: { address: "0xcA11bde05977b3631167028862bE2a173976CA11" } } }, transport: transports(MAINNET_RPCS) });
 
 const erc20 = parseAbi(["function balanceOf(address) view returns (uint256)"]);
 const poolAbi = parseAbi([
