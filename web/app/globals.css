@@ -1550,7 +1550,6 @@ a.ovi {
   max-width: 15ch;
   margin: 26px 0 0;
   text-wrap: balance;
-  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s both;
 }
 .hero__lede {
   font-size: 19px;
@@ -1559,12 +1558,10 @@ a.ovi {
   max-width: 58ch;
   margin: 24px 0 0;
   text-wrap: pretty;
-  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.22s both;
 }
 .hero__actions {
   justify-content: center;
   margin-top: 34px;
-  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.34s both;
 }
 .btn--lg {
   min-height: 52px;
@@ -1594,7 +1591,6 @@ a.ovi {
   text-decoration: none;
   text-align: left;
   transition: border-color 0.2s;
-  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 .hero__pill:hover {
   border-color: var(--gilt);
@@ -1618,7 +1614,6 @@ a.ovi {
   padding: 0;
   font-size: 15px;
   color: var(--ink);
-  animation: hero-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.46s both;
 }
 .hero__points li {
   display: inline-flex;
@@ -1632,12 +1627,6 @@ a.ovi {
   flex: none;
   transform: rotate(45deg);
   border: 1.5px solid var(--gilt);
-}
-@keyframes hero-up {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
 }
 
 /* the engraved lathe field */
@@ -1790,11 +1779,6 @@ a.ovi {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero h1,
-  .hero__lede,
-  .hero__actions,
-  .hero__pill,
-  .hero__points,
   .hfield,
   .hfield__ink,
   .hstage__rise {
