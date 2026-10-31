@@ -3,37 +3,48 @@
 Every step was rehearsed on a fork of mainnet on the VM. Gas for the pool upgrades was measured against mainnet itself with
 `eth_estimateGas` on Oct 31 (research/est.mjs); everything else was measured on the fork. Mainnet gas price: 500 gwei; HSK ≈ $0.087.
 
-## What the owner does: one transfer
+## What the owner does: one transfer of about 280 HSK (≈ $24)
 
-Send **HSK** on HSK Chain to the setup address **`0xCfDDe8CF26062229e1Bc12294c1029E531a7ac9A`** (a fresh key made for this launch on
-the VM; backed up locally; never printed). The agent's key is `0xCa3b5788a5296429CCc2729dBB1bB0d523e992Fd`.
+Send **≈ 280 HSK** on HSK Chain to the setup address **`0xCfDDe8CF26062229e1Bc12294c1029E531a7ac9A`** (a fresh key made for this launch
+on the VM; backed up locally; never printed). HSK reaches HSK Chain by withdrawing from HashKey Global or Gate on the "HSK Chain" network.
 
-| Option | HSK to send | Becomes in the vault | Gas reserve |
-|---|---|---|---|
-| Lean | **≈ 950 HSK** (≈ $83) | 60 USDT + ≈ $7 each of WETH, WBTC, WHSK | 20 HSK |
-| Recommended | **≈ 1,900 HSK** (≈ $165) | 100 USDT + ≈ $20 each of WETH, WBTC, WHSK | 20 HSK |
+The launch is three small vaults, one per league agent, each with a $5 cap (Probation notes are $1), $5 open exposure and a $2 daily loss
+limit. Agent keys: Avow `0xCa3b5788a5296429CCc2729dBB1bB0d523e992Fd`, Bold `0x9145AcF83F1ff539dA1dDF0D50c791C302AfE890`, Fade
+`0xD19CE1b12B3caD9E5a19455d1D368F52aCD2A761`.
 
-Why notes need size: a note and its settlement cost ≈ 0.92M gas ≈ 0.46 HSK ≈ $0.04. On a $10 note that is 0.4% on top of the 0.6% pool
-fees; on a $50 note it is 0.08%. The mandate's cap is $250, so the agent starts at Probation with $50 notes (20% of the cap) and the
-contract refuses any note that cannot pay its round trip at the agent's own odds. Short notes sell inventory, so they are sized to the
-WETH/WBTC/WHSK the vault holds.
+| Item | HSK | ≈ USD |
+|---|---|---|
+| Three vault deployments (5.80M gas each at 500 gwei) | 8.7 | 0.76 |
+| HSKSwap pools to 240 observation slots, once (15.49M gas, measured with `eth_estimateGas`; WBTC keeps only 1 today, so it has no TWAP without this) | 7.7 | 0.67 |
+| AvowLeague registry and three entries (1.15M gas) | 0.6 | 0.05 |
+| Funding swaps and deposits (≈ 1.3M gas per vault) | 2.0 | 0.17 |
+| Capital per vault: $3 USDT + ≈ $1.20 each of WETH, WBTC, WHSK (stays yours; withdrawable by the owner) | 3 × 77 = 231 | 20.1 |
+| Agent gas: Avow 2, Bold 5, Fade 5 (a note plus its settlement ≈ 0.46 HSK) | 12 | 1.04 |
+| Margin | ≈ 18 | 1.6 |
+| **Total** | **≈ 280** | **≈ 24** |
 
-HSK reaches HSK Chain by withdrawing from HashKey Global or Gate on the "HSK Chain" network.
+Why it barely trades at this size: a note and its settlement cost ≈ $0.04 of gas, 4% of a $1 note on top of the 0.6% pool fees. Avow's
+rules count that cost, so it will mostly pass; the rule baselines (Bold, Fade) aim past it and trade, which gives the full mainnet loop:
+a note sworn, then settled by a wallet that is neither the agent nor the owner. Raising the cap later (owner `amend`) makes notes cheaper
+per dollar.
 
-## What the scripts do (every swap bounded by the pool TWAP; nothing else touches the funds)
+## What the script does (every swap bounded by the pool TWAP; nothing else touches the funds)
 
-| Step | Command (on the VM, in ~/dictum/mainnet) | Gas | HSK |
-|---|---|---|---|
-| 1. Deploy AvowVault (owner = the setup key until step 6) | `DICTUM_MODE=mainnet DICTUM_RPC=https://mainnet.hsk.xyz DICTUM_DEPLOYER_KEY_FILE=.keys/setup.key DICTUM_AGENT_KEY_FILE=.keys/agent.key DICTUM_DATA_DIR=./data node ../bin/deploy.js` (then copy research/study.json and replay.json into ./data` | 5.80M | 2.90 |
-| 2. Raise the observation buffer of the three HSKSwap pools to 240 (a 5-minute TWAP that a flood of tiny swaps cannot shorten; a public good for HSKSwap) | inside deploy.js | WETH 5.05M, WBTC 5.39M, WHSK 5.05M = 15.49M | 7.74 |
-| 3. Verify the source on Blockscout | `forge verify-contract <vault> src/AvowVault.sol:AvowVault --chain-id 177 --verifier blockscout --verifier-url https://hsk.blockscout.com/api/ --compiler-version 0.8.26 --num-of-optimizations 1 --via-ir --evm-version paris --constructor-args <abi-encoded>` | — | — |
-| 4. Gas to the agent (3 HSK), wrap HSK, swap WHSK → USDT, buy a little WETH and WBTC, deposit everything into the vault | `DICTUM_SETUP_KEY_FILE=.keys/setup.key DICTUM_AGENT_ADDRESS=0xCa3b…92Fd DICTUM_VAULT=<vault> DICTUM_FUND_USDT=60 DICTUM_FUND_ETH_USD=7 DICTUM_FUND_BTC_USD=7 DICTUM_FUND_HSK_USD=7 node ../bin/fund.js` | ≈ 1.1M | 0.55 |
-| 5. Start the agent: fill the template `avow-mainnet.service.template` (vault, deploy block), `systemctl enable --now avow-mainnet`, point Vercel's AVOW_AGENT_URL at port 8788 | — | — | — |
-| 6. Hand the vault to the owner's own wallet | `DICTUM_OWNER_KEY_FILE=.keys/setup.key DICTUM_VAULT=<vault> node ../bin/owner.js transfer <your wallet>` | ≈ 30k | 0.02 |
-| 7. Prove the permissionless stop: settle one note from a wallet that is neither agent nor owner | `cast send <vault> "settle(uint256)" <id>` | ≈ 0.38M | 0.19 |
+On the VM: `bash ~/dictum/launch-mainnet.sh check` (balances and plan, no transactions), then `bash ~/dictum/launch-mainnet.sh go`.
+Each step is skipped when already done, so a re-run resumes after a failure (agent/scripts/launch-mainnet.sh).
 
-Total gas ≈ 11.2 HSK for the launch plus 3 HSK for the agent's first notes (≈ 0.27 HSK per note, ≈ 0.19 per settlement); the 20 HSK
-reserve covers about 30 notes. Model: Gemini 3.5 Flash on Vertex AI, ≈ $0.002 per decision.
+1. Deploy the three AvowVaults (owner = the setup key until step 6) and raise the three pools' observation buffers to 240.
+2. Deploy the AvowLeague registry and enter the three vaults as Avow, Bold and Fade.
+3. Fund each vault (wrap HSK, swap to USDT, buy a little WETH and WBTC, deposit) and give each agent its gas.
+4. Start the three agents as systemd services; the flagship (port 8788) serves the league table; point Vercel's `AVOW_AGENT_URL` at it.
+5. Verify the sources on Blockscout: `forge verify-contract <address> src/AvowVault.sol:AvowVault --chain-id 177 --verifier blockscout
+   --verifier-url https://hsk.blockscout.com/api/ --compiler-version 0.8.26 --num-of-optimizations 1 --via-ir --evm-version paris
+   --constructor-args <abi-encoded>` (and the same for `src/AvowLeague.sol:AvowLeague`, no constructor arguments).
+6. Hand each vault to the owner's own wallet: `DICTUM_OWNER_KEY_FILE=.keys/setup.key DICTUM_VAULT=<vault> node ../bin/owner.js transfer <wallet>`
+   (≈ 30k gas each). League entries stay; renaming or leaving then needs the new owner.
+7. Prove the permissionless stop: settle one note from a wallet that is neither agent nor owner (`cast send <vault> "settle(uint256)" <id>`).
+
+Model: Gemini 3.5 Flash on Vertex AI, ≈ $0.002 per decision (Avow only; Bold and Fade use no model).
 
 ## Powers
 
