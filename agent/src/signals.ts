@@ -18,8 +18,9 @@ export interface Candidate {
   notionalUsd: number;
   rewardBps: number;
   riskBps: number;
-  costBps: number; // round trip: two pool fees plus gas, in bps of the notional
-  pMin: number; // break-even probability at these levels: risk / (reward + risk)
+  costBps: number; // round trip the vault pays: two pool fees, in bps of the notional
+  gasBps: number; // gas for the note and its settlement, paid by the agent's wallet, in bps of the notional
+  pMin: number; // break-even probability for the vault at these levels: (risk + cost) / (reward + risk)
   facts: string[]; // the numbers the model may quote
   why: string; // one deterministic line
 }
@@ -30,13 +31,8 @@ export interface Pass {
 }
 
 const r = (x: number, p = 2) => Number(x.toFixed(p));
-/**
- * Every league agent sees the same candidates: any visible gap or trend, with targets set past the full round-trip cost
- * (pool fees plus gas, which at $1 Probation notes is most of it). The agents differ only in the decision: the model
- * agent states the odds it believes and the vault refuses any note that cannot pay at those odds; the rule baselines
- * state fixed odds. A stricter rule gate here would leave the model nothing to decide.
- */
-const LOOSE = true;
+// Every league agent sees the same candidates. The agents differ only in the decision: the model agent states the odds it
+// believes, the rule baselines state fixed odds, and the vault refuses any note that cannot pay its pool fees at those odds.
 
 export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; passes: Pass[] } {
   const list: Candidate[] = [];
@@ -72,22 +68,24 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
     ];
 
     // costs of a round trip, measured: two pool fees plus gas for the note and its settlement at mainnet prices
+    // The vault pays the two pool fees; gas is paid by the agent's own wallet (about $0.04 for a note and its settlement
+    // at 500 gwei), so a note is judged on the vault's economics and gas is reported as the price of building a graded record.
+    // At $1 Probation notes gas is about 4% of the note, which is why size only grows with the record.
     const gasBps = (ROUND_TRIP_GAS_USD(snaps) / Math.max(1, cap)) * 1e4;
-    const costBps = 2 * POOL_FEE_BPS + gasBps;
+    const costBps = 2 * POOL_FEE_BPS;
     const prior = studyFact(s.sym, Math.abs(s.gapBps ?? 0));
     if (prior) facts.push(prior);
-    facts.push(`round-trip cost ${r(costBps, 0)} bps (two 0.30% pool fees + gas for a $${r(cap)} note)`);
+    facts.push(`round trip in the vault ${r(costBps, 0)} bps (two 0.30% pool fees); gas about $${r(ROUND_TRIP_GAS_USD(snaps), 3)} a note, paid by the agent's wallet (${r(gasBps, 0)} bps of a $${r(cap)} note)`);
 
-    // 1. catch-up: HSKSwap lags the exchanges; buy (or sell) toward fair value and claim the pool will follow
+    // levels come from the market, not from the note size: a 12-hour or 8-hour horizon, a stop inside normal noise bands
     let made = false;
-    if (absGap > (LOOSE ? 15 : costBps + 20)) {
+    // 1. catch-up: HSKSwap lags the exchanges; buy (or sell) toward fair value and claim the pool will follow
+    if (absGap > 15) {
       const side = gap > 0 ? "long" : "short";
-      // a rule baseline aims past the fees even when the gap is smaller than them; the vault still checks the note at its stated odds
-      const rewardBps = LOOSE ? Math.max(Math.min(absGap, maxStop * 2), costBps * 2.5) : Math.min(absGap, maxStop * 2);
-      // the baselines take a 2:1 target so their fixed odds clear break-even; the vault still checks it
-      const riskBps = Math.max(30, Math.min(maxStop, rewardBps / (LOOSE ? 2 : Math.max(minRR * 1.06, 1.3))));
+      const rewardBps = Math.max(Math.min(absGap, maxStop * 2), costBps * 1.5);
+      const riskBps = Math.max(30, Math.min(maxStop, rewardBps / 2.5));
       if (rewardBps / riskBps >= minRR * 1.02) {
-        list.push(build(s, a.id, side, "catch-up", rewardBps, riskBps, 12 * 3600, cap, costBps, facts, `HSKSwap is ${r(absGap / 100)}% ${gap > 0 ? "below" : "above"} the exchanges; the target sits past the ${r(costBps / 100)}% round trip (pool fees plus gas on a $${r(cap)} note)`, v));
+        list.push(build(s, a.id, side, "catch-up", rewardBps, riskBps, 12 * 3600, cap, costBps, gasBps, facts, `HSKSwap is ${r(absGap / 100)}% ${gap > 0 ? "below" : "above"} the exchanges; the pool fees are ${r(costBps / 100)}% round trip`, v));
         made = true;
       }
     }
@@ -95,22 +93,22 @@ export function candidates(snaps: Snap[], v: VaultView): { list: Candidate[]; pa
     if (s.r4h !== null && s.r1h !== null && s.vol1h !== null) {
       const trend = s.r4h;
       const agree = Math.sign(s.r1h) === Math.sign(trend);
-      const strong = Math.abs(trend) > (LOOSE ? Math.max(0.005, 1.2 * s.vol1h) : Math.max(0.012, 2.2 * s.vol1h));
+      const strong = Math.abs(trend) > Math.max(0.005, 1.2 * s.vol1h);
       const notAgainstGap = trend > 0 ? gap > -60 : gap < 60;
       if (agree && strong && notAgainstGap) {
         const side = trend > 0 ? "long" : "short";
         const riskBps = Math.max(40, Math.min(maxStop, s.vol1h * 1e4 * 2.5));
         const rewardBps = Math.max(riskBps * Math.max(minRR * 1.06, 1.8), costBps * 2.5);
-        list.push(build(s, a.id, side, "momentum", rewardBps, riskBps, 8 * 3600, cap, costBps, facts, `the exchanges moved ${r(trend * 100)}% in 4 hours and the last hour agrees`, v));
+        list.push(build(s, a.id, side, "momentum", rewardBps, riskBps, 8 * 3600, cap, costBps, gasBps, facts, `the exchanges moved ${r(trend * 100)}% in 4 hours and the last hour agrees`, v));
         made = true;
       }
     }
-    if (!made) passes.push({ sym: s.sym, reason: absGap <= costBps + 20 ? `HSKSwap is within ${r(absGap / 100)}% of the exchanges; a round trip costs ${r(costBps / 100)}%, so there is no edge` : "no trend strong enough" });
+    if (!made) passes.push({ sym: s.sym, reason: absGap <= 15 ? `HSKSwap is within ${r(absGap / 100)}% of the exchanges and no trend is strong enough` : "no trend strong enough" });
   }
   return { list, passes };
 }
 
-function build(s: Snap, assetId: number, side: "long" | "short", kind: Candidate["kind"], rewardBps: number, riskBps: number, horizon: number, cap: number, costBps: number, facts: string[], why: string, v: VaultView): Candidate {
+function build(s: Snap, assetId: number, side: "long" | "short", kind: Candidate["kind"], rewardBps: number, riskBps: number, horizon: number, cap: number, costBps: number, gasBps: number, facts: string[], why: string, v: VaultView): Candidate {
   const e = s.twapPx!;
   const dir = side === "long" ? 1 : -1;
   const horizonSec = Math.min(horizon, v.mandate.maxHorizon);
@@ -134,6 +132,7 @@ function build(s: Snap, assetId: number, side: "long" | "short", kind: Candidate
     rewardBps,
     riskBps,
     costBps,
+    gasBps,
     pMin: (riskBps + costBps) / (rewardBps + riskBps),
     facts,
     why,

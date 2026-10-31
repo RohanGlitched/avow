@@ -16,11 +16,14 @@ const snap = (sym: string, twap: number, fair: number, extra: Record<string, unk
 const market = (eth: [number, number]) => [snap("WETH", eth[0], eth[1]), snap("WBTC", 76_000, 76_000), snap("WHSK", 0.087, 0.087)];
 
 describe("candidate rules", () => {
-  it("sets the target past the full round trip even when the gap is inside it, so the cost lands in pMin", () => {
+  it("sets market-sized levels past the pool fees, and keeps gas out of the vault's break-even", () => {
     const { list } = candidates(market([2235, 2235 * 1.005]) as never, vault());
     const c = list.find((x) => x.key === "WETH:long:catch-up")!;
     expect(c).toBeTruthy();
-    expect(c.rewardBps).toBeGreaterThanOrEqual(c.costBps * 2.5 - 1e-9); // aims past the cost, not at the gap
+    expect(c.costBps).toBe(60); // two 0.30% pool fees
+    expect(c.gasBps).toBeGreaterThan(0); // reported, paid by the agent's wallet
+    expect(c.rewardBps).toBeGreaterThanOrEqual(c.costBps * 1.5 - 1e-9);
+    expect(c.rewardBps).toBeLessThan(400); // a market view, not a size artefact
     expect(c.pMin).toBeCloseTo((c.riskBps + c.costBps) / (c.rewardBps + c.riskBps), 6);
   });
   it("passes when there is no visible gap or trend", () => {
@@ -32,7 +35,7 @@ describe("candidate rules", () => {
     const { list } = candidates(market([2235, 2235 * 1.012]) as never, vault());
     const c = list.find((x) => x.key === "WETH:long:catch-up")!;
     expect(c).toBeTruthy();
-    expect(c.costBps).toBeGreaterThan(60);
+    expect(c.costBps).toBe(60); // the vault pays two pool fees; gas is reported separately in gasBps
     expect(c.pMin).toBeCloseTo((c.riskBps + c.costBps) / (c.rewardBps + c.riskBps), 6);
     expect(c.rewardBps / c.riskBps).toBeGreaterThanOrEqual(1.2);
     expect(c.target).toBeGreaterThan(c.entry);
