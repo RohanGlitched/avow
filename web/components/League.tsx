@@ -110,10 +110,17 @@ export function LeagueTable({ league, compact, limit = 3 }: { league: League; co
                   <div className="lg-agent">
                     <VaultMark e={e} />
                     <div>
-                      <a href={anchor(e.persona.id)} className="lg-name">
-                        {e.persona.name}
-                      </a>
-                      <span className={`chip lg-kind lg-kind--${e.persona.kind}`}>{KIND_WORD(e.persona.kind)}</span>
+                      <div className="lg-agent__line">
+                        <a href={anchor(e.persona.id)} className="lg-name">
+                          {e.persona.name}
+                        </a>
+                        <span className={`chip lg-kind lg-kind--${e.persona.kind}`}>{KIND_WORD(e.persona.kind)}</span>
+                        {!compact && e.erc8004?.agentId != null ? (
+                          <a href={`#agent-${e.persona.id}-8004`} className="chip lg-8004chip" title={`ERC-8004 agent ${e.erc8004.agentId}: its grades are published as ERC-8004 reputation`}>
+                            ERC-8004 #{e.erc8004.agentId}
+                          </a>
+                        ) : null}
+                      </div>
                       <span className="sub lg-strategy">{e.persona.strategy}</span>
                     </div>
                   </div>
@@ -214,6 +221,11 @@ export function LeagueFolio({ e, ladder, own }: { e: Ranked; ladder: Tier[]; own
           <h3 id={`agent-${e.persona.id}-h`}>{e.persona.name}</h3>
           <div className="lg-folio__tags">
             <span className={`chip lg-kind lg-kind--${e.persona.kind}`}>{KIND_WORD(e.persona.kind)}</span>
+            {e.erc8004?.agentId != null ? (
+              <a href={`#agent-${e.persona.id}-8004`} className="chip lg-8004chip">
+                ERC-8004 #{e.erc8004.agentId}
+              </a>
+            ) : null}
             <Alive e={e} />
             <span className="muted">{e.lastHeartbeat ? `heartbeat ${when(e.lastHeartbeat)}` : "no heartbeat yet"}</span>
           </div>
@@ -346,6 +358,61 @@ export function LeagueFolio({ e, ladder, own }: { e: Ranked; ladder: Tier[]; own
           )}
         </div>
       </div>
+      <Erc8004Block e={e} />
     </article>
+  );
+}
+
+/** The agent's ERC-8004 identity and the reputation the grader has posted for it. */
+function Erc8004Block({ e }: { e: Ranked }) {
+  const x = e.erc8004;
+  if (!x) return null;
+  const fork = e.mode === "fork-rehearsal";
+  return (
+    <section className="lg-8004" id={`agent-${e.persona.id}-8004`} aria-label={`${e.persona.name}: ERC-8004 reputation`}>
+      <div className="lg-8004__head">
+        <h4>
+          {x.agentId != null ? `ERC-8004 agent #${x.agentId}` : "ERC-8004 agent not linked yet"}
+          {fork ? <span>, on the rehearsal fork of HSK Chain</span> : <span> on HSK Chain</span>}
+        </h4>
+        <a href="#erc8004" className="lg-8004__how">
+          How the grade is computed
+        </a>
+      </div>
+      <dl className="lg-8004__grid">
+        <div>
+          <dt>Grades posted</dt>
+          <dd className="lg-8004__n">{x.posted}</dd>
+        </div>
+        <div>
+          <dt>Mean grade, out of 100</dt>
+          <dd className="lg-8004__n">{x.mean != null ? x.mean.toFixed(2) : <span className="lg-none">No grade posted yet</span>}</dd>
+        </div>
+        <div>
+          <dt>Identity registry</dt>
+          <dd>
+            <Hex value={x.identity} href={leagueLink(e.mode, x.identity)} />
+          </dd>
+        </div>
+        <div>
+          <dt>Reputation registry</dt>
+          <dd>
+            <Hex value={x.reputation} href={leagueLink(e.mode, x.reputation)} />
+          </dd>
+        </div>
+        <div>
+          <dt>Grader</dt>
+          <dd>
+            <Hex value={x.grader} href={leagueLink(e.mode, x.grader)} />
+          </dd>
+        </div>
+      </dl>
+      <p className="plate">
+        {x.posted
+          ? `The mean grade is 100 × (1 − Brier) over the ${x.posted} posted ${x.posted === 1 ? "note" : "notes"}. `
+          : "Each settled note is posted as one grade, computed by the grader from the vault. "}
+        Any ERC-8004 client can read it from the reputation registry, filtered to the grader&apos;s address and the tag avow-calibration.
+      </p>
+    </section>
   );
 }

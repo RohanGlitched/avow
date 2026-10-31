@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getState } from "@/lib/data";
-import { fixedOdds, getLeague, leagueLink, ranked } from "@/lib/league";
+import { fixedOdds, getLeague, gradeOf, leagueLink, placeText, ranked } from "@/lib/league";
 import { expectedBrier, hitRateFor } from "@/lib/brier";
 import { SecHead, Divider } from "@/components/Bits";
 import { Term } from "@/components/Term";
@@ -59,6 +59,13 @@ export default async function LeaguePage() {
   ];
   const registry = l.registry;
   const rpc = fork ? "<rehearsal fork RPC>" : s.network.rpc || "https://mainnet.hsk.xyz";
+  const rep = rows.find((e) => e.erc8004)?.erc8004 ?? null;
+  const repEx = rows.find((e) => e.erc8004?.agentId != null) ?? null;
+  const gradeEx = [
+    { t: "Sworn at 80%, honoured", p: 0.8, o: 1 as const },
+    { t: "Sworn at 80%, void", p: 0.8, o: 0 as const },
+    { t: "Sworn at 50%, missed", p: 0.5, o: 0 as const },
+  ];
   return (
     <>
       <section className="page-head lg-head">
@@ -291,6 +298,145 @@ export default async function LeaguePage() {
           </div>
         </div>
       </section>
+
+      <section className="sec" id="erc8004" aria-labelledby="erc8004-h">
+        <div className="wrap">
+          <SecHead id="erc8004-h" title="Readable by any ERC-8004 client.">
+            Every grade on this page is also published in a standard format, so a wallet, a marketplace or another agent can read an agent&apos;s record without knowing anything about Avow.
+          </SecHead>
+          <div className="grid-2" style={{ alignItems: "start" }}>
+            <div className="prose">
+              <p>
+                <b>ERC-8004, &ldquo;Trustless Agents&rdquo;</b>, is a draft Ethereum standard from August 2025 for AI agents. Each agent gets an identity, an ERC-721 token pointing to a
+                registration file, and anyone can post feedback about it to a reputation registry that other apps read with one call.
+              </p>
+              <p>
+                There was no ERC-8004 deployment on HSK Chain, so Avow deployed one that follows the Draft: its identity registry and reputation registry functions. It does not include the
+                Draft&apos;s validation registry. Each agent in the league is registered there as an ERC-8004 agent.
+              </p>
+              <p>
+                The grade is not written by Avow or by the agent. A contract, AvowGrader, reads a settled note from the vault and computes it from two things: the odds the agent stated and
+                how the note ended. Anyone may ask the grader to post a note&apos;s grade, but nobody can choose the number. Feedback from the grader&apos;s address is arithmetic, not
+                opinion. The agent posts each grade right after it settles a note, so the reputation keeps pace with the vault.
+              </p>
+            </div>
+            <div>
+              <div className="lg-formula" role="img" aria-label="grade equals 100 minus 100 times the square of stated odds minus outcome">
+                <span className="lg-formula__lhs">grade</span> = 100 − 100 × <span className="lg-formula__nb">(stated odds − outcome)²</span>
+              </div>
+              <p className="plate">Outcome is 1 if the note was honoured and 0 otherwise. Two decimals. Tag one is avow-calibration; tag two is how the note ended.</p>
+              <div className="table-wrap" style={{ marginTop: 20 }}>
+                <table className="tbl lg-ex">
+                  <thead>
+                    <tr>
+                      <th>Example</th>
+                      <th className="r">Grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {gradeEx.map((x) => (
+                      <tr key={x.t}>
+                        <td>{x.t}</td>
+                        <td className="r" style={{ fontWeight: 650 }}>
+                          {gradeOf(x.p, x.o).toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="plate">
+                The mean grade over the posted notes is <b>100 × (1 − Brier)</b>: a Brier of 0.25, the coin flip, is a mean grade of 75. Higher is better.
+              </p>
+            </div>
+          </div>
+
+          {rep ? (
+            <>
+              <div className="table-wrap" style={{ marginTop: 48 }}>
+                <table className="tbl tbl--stack lg-8004tbl">
+                  <thead>
+                    <tr>
+                      <th>Place</th>
+                      <th>Agent</th>
+                      <th>ERC-8004 agent</th>
+                      <th className="r">Grades posted</th>
+                      <th className="r">Mean grade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {rows.map((e) => (
+                      <tr key={e.persona.id}>
+                        <td data-h="Place">{placeText(e)}</td>
+                        <td data-h="Agent" style={{ fontFamily: "var(--serif)", fontSize: 19 }}>
+                          <a href={`#agent-${e.persona.id}-8004`}>{e.persona.name}</a>
+                        </td>
+                        <td data-h="ERC-8004 agent">{e.erc8004?.agentId != null ? `#${e.erc8004.agentId}` : <span className="muted">Not linked yet</span>}</td>
+                        <td data-h="Grades posted" className="r">
+                          {e.erc8004 ? e.erc8004.posted : "—"}
+                        </td>
+                        <td data-h="Mean grade" className="r" style={{ fontWeight: 650 }}>
+                          {e.erc8004?.mean != null ? e.erc8004.mean.toFixed(2) : <span className="lg-none">No grade posted yet</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="grid-2" style={{ marginTop: 40, alignItems: "start" }}>
+                <div className="cmds">
+                  <div className="cmd">
+                    <div className="cmd__q">
+                      Read an agent&apos;s reputation <span>anyone, no key</span>
+                    </div>
+                    <pre>
+                      <code>{`cast call ${rep.reputation} \\\n  "getSummary(uint256,address[],string,string)(uint64,int128,uint8)" \\\n  ${repEx?.erc8004?.agentId ?? "<agent id>"} \\\n  "[${rep.grader}]" \\\n  "avow-calibration" "" \\\n  --rpc-url ${rpc}`}</code>
+                    </pre>
+                  </div>
+                  <div className="cmd">
+                    <div className="cmd__q">
+                      Post a settled note&apos;s grade <span>anyone; the grader computes it</span>
+                    </div>
+                    <pre>
+                      <code>{`cast send ${rep.grader} \\\n  "post(address,uint256)" <vault> <note id> \\\n  --rpc-url ${rpc} --account <any>`}</code>
+                    </pre>
+                  </div>
+                </div>
+                <div>
+                  <dl className="kv">
+                    <dt>Identity registry</dt>
+                    <dd>
+                      <Hex value={rep.identity} href={leagueLink(l.mode, rep.identity)} />
+                    </dd>
+                    <dt>Reputation registry</dt>
+                    <dd>
+                      <Hex value={rep.reputation} href={leagueLink(l.mode, rep.reputation)} />
+                    </dd>
+                    <dt>Grader</dt>
+                    <dd>
+                      <Hex value={rep.grader} href={leagueLink(l.mode, rep.grader)} />
+                    </dd>
+                    <dt>Implements</dt>
+                    <dd>The Draft&apos;s identity and reputation functions, not its validation registry</dd>
+                  </dl>
+                  <p className="plate">
+                    getSummary returns how many grades were posted and their mean, counting only feedback from the addresses you pass. Passing the grader&apos;s address leaves out
+                    anything anyone else posted about the agent.
+                    {fork ? " These contracts are on the rehearsal fork; on mainnet the same calls go to the mainnet addresses." : ""}
+                  </p>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="empty" style={{ marginTop: 48 }}>
+              <b>Not published as ERC-8004 yet</b>
+              The agents on this table have no ERC-8004 registries configured. When they do, each agent&apos;s id, grades posted and mean grade appear here and on its plate.
+            </div>
+          )}
+        </div>
+      </section>
+
+      <Divider seed="league-outside" />
 
       <section className="sec" aria-labelledby="outside">
         <div className="wrap">

@@ -55,6 +55,22 @@ export interface RegistryEntry {
   enteredAt: number;
 }
 
+/**
+ * The agent's ERC-8004 reputation: its id in the Identity Registry and the grades AvowGrader has posted for it to the
+ * Reputation Registry. Each grade is computed by the grader from the vault: 100 − 100·(stated odds − outcome)².
+ */
+export interface Erc8004 {
+  grader: string;
+  identity: string;
+  reputation: string;
+  /** null until the vault's owner links the vault to an ERC-8004 agent */
+  agentId: number | null;
+  /** grades posted for this agent */
+  posted: number;
+  /** mean grade, 0–100 (= 100·(1 − Brier) over the posted notes); null until the first */
+  mean: number | null;
+}
+
 export interface LeagueEntry {
   persona: LeaguePersona;
   /** null for the agent that serves this site; otherwise the peer agent's own URL */
@@ -75,6 +91,8 @@ export interface LeagueEntry {
   notes: LeagueNote[];
   /** the registry row for this vault, or null if its owner has not entered it */
   entry: RegistryEntry | null;
+  /** ERC-8004 identity and reputation; null (or absent, from older agents) when not configured */
+  erc8004?: Erc8004 | null;
 }
 
 export interface League {
@@ -147,5 +165,8 @@ export function fixedOdds(strategy: string): number | null {
   const m = strategy.match(/always stat(?:es|ing) (\d{2})%/i);
   return m ? Number(m[1]) / 100 : null;
 }
+
+/** The grade AvowGrader posts for one settled note: 100 − 100·(stated odds − outcome)², two decimals. */
+export const gradeOf = (odds: number, outcome: 0 | 1) => Math.round((100 - 100 * (odds - outcome) ** 2) * 100) / 100;
 
 export { expectedBrier, hitRateFor } from "./brier";
