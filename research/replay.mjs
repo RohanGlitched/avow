@@ -124,7 +124,7 @@ for (const sym of SYMS) {
   else { s0 = Math.sqrt(series.P[0] / 10 ** (a.dec - 6)); tick0 = tickOfS(s0); L0 = inWin[0].L; }
   const gate = new Map([...(await gatePre(a.gate)), ...readJson(`gate-${a.gate}-1790800500-1793392800.json`)].map(([t, c]) => [Number(t), c.c]));
   const hk = new Map(await hashkey(a.hk));
-  M[sym] = { ...a, sym, ev: inWin, s0, tick0, L0, gate, hk };
+  M[sym] = { ...a, sym, ev: inWin, evAll: ev, s0, tick0, L0, gate, hk };
 }
 // close of the 5-minute candle ending at t (t on the 5-minute grid), last known value if missing
 function closeAt(map, t) { for (let k = 0; k < 12; k++) { const v = map.get(t - STEP * (k + 1)); if (v) return v; } return null; }
@@ -145,7 +145,7 @@ function hourlyStats(sym, t, fair) {
   const lr = []; for (let i = 1; i < cl.length; i++) lr.push(Math.log(cl[i] / cl[i - 1]));
   const m = lr.reduce((s, x) => s + x, 0) / lr.length;
   const vol = Math.sqrt(lr.reduce((s, x) => s + (x - m) ** 2, 0) / (lr.length - 1));
-  return { r1h: fair / at(1) - 1, r4h: fair / at(4) - 1, vol1h: vol };
+  return { r1h: fair / at(1) - 1, r4h: fair / at(4) - 1, r24h: fair / at(24) - 1, vol1h: vol };
 }
 
 // ───────────────────────────────────────────── the pool, swap by swap, with our own trades in it
@@ -319,7 +319,8 @@ for (const scope of ['all', 'WHSK']) for (const S of [30, 60]) for (const H of [
     } });
 
 // ───────────────────────────────────────────── one book: one rule, run through time, settled by the contract
-function runBook(rule, { kind, scope = 'all' }) {
+// tFrom / untilClosed / onOpen are used only by --calib (one-note simulations and prompt snapshots); defaults keep the book as before
+function runBook(rule, { kind, scope = 'all', tFrom = null, untilClosed = false, onOpen = null }) {
   const pools = Object.fromEntries(SYMS.map((s) => [s, new Pool(M[s])]));
   const samples = Object.fromEntries(SYMS.map((s) => [s, []]));
   const open = {}; const notes = [];
@@ -360,9 +361,10 @@ function runBook(rule, { kind, scope = 'all' }) {
     if (pnl < 0) dailyLoss += -pnl;
   };
 
-  for (let T = startT + STEP; T <= endT; T += STEP) {
+  for (let T = tFrom ?? startT + STEP; T <= endT; T += STEP) {
     for (let tau = T - STEP + SETTLE_STEP; tau <= T; tau += SETTLE_STEP)
       for (const sym of SYMS) if (open[sym]) { pools[sym].advance(tau); trySettle(sym, open[sym], tau); }
+    if (untilClosed && notes.length && !Object.keys(open).length) break;
     for (const sym of SYMS) {
       const p = pools[sym]; p.advance(T);
       samples[sym].push({ t: T, dex: p.twap(T), cex: fairAt(sym, T), spot: p.spot() });
@@ -416,6 +418,7 @@ function runBook(rule, { kind, scope = 'all' }) {
         notional: cap, qty, got, gasUsd, feeUsd: fee, impactUsd: impact, status: 'open',
       };
       open[sym] = n; notes.push(n); lastSwear = T;
+      if (onOpen) n.snap = onOpen({ pools, open, T, costBps });
     }
   }
   return notes;
@@ -466,6 +469,74 @@ for (const kind of ['catch-up', 'momentum']) {
 }
 console.log(`current rules replayed in ${((Date.now() - t0) / 1000).toFixed(1)} s (impact model: ${IMPACT_MODEL})`);
 console.table(current.map((c) => ({ asset: c.asset, kind: c.kind, notes: c.notes, hon: c.honoured, void: c.void, lapsed: c.lapsed, hit: c.hitRate, pMin: c.meanPMin, pnl: c.pnlUsd, perNote: c.pnlPerNoteUsd, impact: c.impactUsdPerNote, IS: c.inSample.pnlPerNoteUsd, OOS: c.outOfSample.pnlPerNoteUsd, OOSn: c.outOfSample.notes })));
+
+// ───────────────────────────────────────────── --calib: per-candidate rows for the model calibration study (CALIBRATION.md)
+// Re-runs the two live books with a snapshot hook (what the live prompt shows, at the moment each note opened, using only
+// data up to that moment), then re-simulates every note alone under the reshapes the model may ask for (targetScale
+// 0.70-1.30 in 0.05 steps x horizon 2/4/8/12 h) and under its mirror image (the Fade baseline's note), with the same pool,
+// fee, guard and settlement code as the book. Writes calib-candidates.json. Reset impact model only.
+if (process.argv.includes('--calib')) {
+  if (IMPACT_MODEL !== 'reset') throw new Error('--calib uses the reset impact model');
+  const BUCKETS = [[40, '40–60 bps'], [60, '60–100 bps'], [100, '100–200 bps'], [200, '>200 bps']];
+  const episodes = readJson('episodes.json');
+  // study.json's prior, rebuilt from the episodes that were fully observed (12 h) before time T: no look-ahead
+  const priorAt = (sym, absGap, T) => {
+    let b = -1; for (let k = 0; k < BUCKETS.length; k++) if (absGap >= BUCKETS[k][0]) b = k;
+    if (b < 0) return null;
+    const known = episodes[sym].filter((e) => e.bucket === b && e.t + 12 * 3600 <= T);
+    const full = episodes[sym].filter((e) => e.bucket === b && e.fullyObserved);
+    return { bucket: BUCKETS[b][1], episodes: known.length, moved: known.filter((e) => e.poolMovedHalf).length, days: Math.round(((T - startT) / 86400) * 10) / 10,
+      fullWindow: { episodes: full.length, moved: full.filter((e) => e.poolMovedHalf).length } };
+  };
+  const snapHook = ({ pools, open, T, costBps }) => SYMS.map((sym) => {
+    const p = pools[sym];
+    const twap = p.twap(T), spot = p.spot(), fair = fairAt(sym, T);
+    const st = fair ? hourlyStats(sym, T, fair) : null;
+    const recent = M[sym].evAll.filter((e) => e.t > T - 10_000 && e.t <= T); // live: the last 5,000 blocks (~2.8 h)
+    const lastAny = M[sym].evAll.filter((e) => e.t <= T).at(-1)?.t ?? null; // includes swaps from before the window
+    const flows = recent.map((e) => (e.a1 ?? 0) / 1e6); // + = USDT into the pool (people bought the asset)
+    const gap = fair ? ((fair - twap) / twap) * 1e4 : null;
+    const ctx = { sym, t: T, twap, spot, fair, gap, costBps, samples: [], lastExt: p.lastExt };
+    return {
+      sym, twapPx: twap, spotPx: spot, gatePx: gateAt(sym, T), hashkeyPx: closeAt(M[sym].hk, T), fairPx: fair, gapBps: gap,
+      lastSwapAgoSec: lastAny !== null ? T - lastAny : null, swaps3h: recent.length,
+      netFlowUsd3h: flows.reduce((a, x) => a + x, 0), maxSwapUsd3h: flows.reduce((a, x) => Math.max(a, Math.abs(x)), 0),
+      r1h: st?.r1h ?? null, r4h: st?.r4h ?? null, r24h: st?.r24h ?? null, vol1h: st?.vol1h ?? null,
+      outstanding: !!open[sym],
+      ruleFires: fair ? { 'catch-up': !!currentRule('catch-up')(ctx), momentum: !!currentRule('momentum')(ctx) } : null,
+      prior: gap !== null ? priorAt(sym, Math.abs(gap), T) : null,
+    };
+  });
+  const rows = [];
+  for (const kind of ['catch-up', 'momentum']) {
+    for (const n of settled(runBook(currentRule(kind), { kind, onOpen: snapHook }))) rows.push({ book: 'current-' + kind, ...n });
+  }
+  rows.sort((a, b) => a.openT - b.openT || a.asset.localeCompare(b.asset));
+  // one note alone: the same book code, a rule that fires once at (sym, T) with the given levels
+  const one = (sym, T, side, rewardBps, riskBps, horizonSec) => {
+    const ns = runBook((ctx) => (ctx.t === T && ctx.sym === sym ? { side, rewardBps, riskBps, horizonSec } : null), { kind: 'calib', scope: sym, tFrom: T, untilClosed: true });
+    if (!ns.length) return { status: 'rejected' }; // the opening swap would have reverted (slippage, SelfFulfilling) or a pre-check refused
+    const x = ns[0];
+    if (x.status === 'open') return { status: 'unresolved' }; // still open at the end of the window
+    return { status: x.status, closeT: x.closeT, entry: x.entry, target: x.target, void: x.void, pnlUsd: r4(x.pnlUsd), netUsd: r4(x.netUsd), costBps: x.costBps };
+  };
+  const SCALES = []; for (let k = 70; k <= 130; k += 5) SCALES.push(k / 100);
+  const t1 = Date.now();
+  const out = rows.filter((n) => n.expiry <= endT).map((n, id) => {
+    const variants = {};
+    for (const k of SCALES) for (const h of [2, 4, 8, 12]) variants[`${k.toFixed(2)}@${h}`] = one(n.asset, n.openT, n.side, n.rewardBps * k, n.riskBps, h * 3600);
+    const flip = one(n.asset, n.openT, n.side === 'long' ? 'short' : 'long', n.rewardBps, n.riskBps, n.expiry - n.openT);
+    const split = inIS(n) ? 'in-sample' : inOOS(n) ? 'out-of-sample' : 'straddles';
+    const { qty, got, snap, ...rest } = n;
+    return { id, ...rest, split, snap, variants, flip };
+  });
+  // the one-note simulation at the rule's own shape should reproduce the book's note
+  const same = out.filter((c) => { const v = c.variants[`1.00@${(c.expiry - c.openT) / 3600}`]; return v.status === c.status && Math.abs(v.netUsd - c.netUsd) < 0.005; }).length;
+  console.log(`calib: ${out.length} candidates, ${Object.keys(out[0].variants).length + 1} one-note simulations each, ${((Date.now() - t1) / 1000).toFixed(1)} s; one-note sim reproduces the book note (status, net within $0.005) for ${same}/${out.length}`);
+  fs.writeFileSync(path.join(HERE, 'calib-candidates.json'), JSON.stringify({ generatedAt: Math.floor(Date.now() / 1000), window: { from: startT, to: endT, splitAt }, notionalUsd: MANDATE.notionalUsd, scales: SCALES, horizonsH: [2, 4, 8, 12], oneNoteSimMatchesBook: same, candidates: out }));
+  console.log('wrote calib-candidates.json');
+  process.exit(0);
+}
 
 // ───────────────────────────────────────────── model-free edge budget
 // For every 5-minute sample where the pool had an external swap in the prior 12 h and the pool sits >= G bps from

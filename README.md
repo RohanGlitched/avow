@@ -78,6 +78,12 @@ We measured HSKSwap before trusting our own strategy, on 30 days of real mainnet
 - **[research/REPLAY.md](research/REPLAY.md)**: replaying the agent's exact rules with the contract's settlement, both pool fees, measured
   price impact (a $50 trade moves WETH/WBTC ~16–18 bps) and gas, every asset and strategy **lost money** in-sample and out-of-sample
   (catch-up −$0.16 and momentum −$0.24 per $50 note), and none of 88 pre-declared alternatives cleared a pre-set bar.
+- **[research/CALIBRATION.md](research/CALIBRATION.md)**: we graded our own model before trusting it with money. Gemini 3.5 Flash was run
+  through the live `decide()` prompt on the 200 historical candidates with no look-ahead (12% of them came true). When it chose to swear
+  it stated 74% on average and was right 20% of the time (Brier 0.465, worse than a coin flip at 0.25). Asked for a plain forecast on
+  every candidate it scored 0.151, beating a coin (0.250) and both rule baselines (Bold 0.568, Fade 0.420), but not the flat base rate
+  (0.104). As a brake it helps: its choices lost $1.55 against $40.57 for swearing everything; swearing nothing ($0) beat both. This is
+  the case for Avow in one table: the AI's stated confidence did not mean what it said, and the grade is what shows it.
 
 So on today's 0.30%-fee pools the honest posture is mostly to pass — and Avow's contract makes that binding: it refuses any note that
 cannot pay its round trip at the odds the agent states. Every 30 seconds the agent checks the pools; every candidate goes to Gemini, which
