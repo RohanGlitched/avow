@@ -1,3 +1,4 @@
+import { PERSONA } from "./personas.js";
 import { generate } from "./llm.js";
 import type { Candidate, Pass } from "./signals.js";
 import type { Snap } from "./market.js";
@@ -117,7 +118,7 @@ export function statement(c: Candidate, expiry: number, confidence: number, beca
   const a = ASSETS.find((z) => z.sym === c.sym)!;
   const dir = c.side === "long" ? "above" : "below";
   const t = IST(expiry).replace(",", "");
-  const core = `Avow swears that ${a.label} will trade ${dir} ${fmtPx(c.sym, c.target)} on HSKSwap before ${t} IST, or this note is void at ${fmtPx(c.sym, c.void)}. Odds ${Math.round(confidence * 100)}%.`;
+  const core = `${PERSONA.name} swears that ${a.label} will trade ${dir} ${fmtPx(c.sym, c.target)} on HSKSwap before ${t} IST, or this note is void at ${fmtPx(c.sym, c.void)}. Odds ${Math.round(confidence * 100)}%.`;
   return because ? `${core} ${because}` : core;
 }
 

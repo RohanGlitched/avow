@@ -7,7 +7,8 @@ import { vaultAbi } from "./abi.js";
 import { chain, mainnetPool, snapshot, type MainnetPool, type Snap } from "./market.js";
 import { enter, grade, mark } from "./shadow.js";
 import { mandateEvents, mandateWords, readVault, type VaultView } from "./vault.js";
-import { candidates, reshape } from "./signals.js";
+import { candidates, reshape, type Candidate } from "./signals.js";
+import { PERSONA, ruleDecision } from "./personas.js";
 import { reviewNote } from "./brain.js";
 import { decide, statement, unsupportedNumbers } from "./brain.js";
 import { journal } from "./journal.js";
@@ -94,7 +95,8 @@ export async function keep(v: VaultView) {
   }
 }
 
-export const serial = (id: number) => `AVW·${String(id + 1).padStart(6, "0")}`;
+export const SERIAL_PREFIX = { avow: "AVW", bold: "BLD", fade: "FAD" }[PERSONA.id];
+export const serial = (id: number) => `${SERIAL_PREFIX}·${String(id + 1).padStart(6, "0")}`;
 
 const declined = new Map<string, number>(); // candidate key → last time the model declined it
 let lastThink = 0;
@@ -124,6 +126,16 @@ export async function think(snaps: Snap[], v: VaultView) {
   lastThink = Date.now();
   lastPassSig = sig;
 
+  if (PERSONA.kind === "rule") {
+    const r = ruleDecision(fresh);
+    if (!r.c) {
+      for (const x of fresh) declined.set(x.key, Date.now());
+      journal.add({ kind: "declined", asset: fresh[0].sym, title: `Declined: the flipped levels would not clear the fees`, detail: r.rationale, model: "rule", tokens: 0 });
+      return;
+    }
+    return swearNote(r.c, r.confidence, r, snaps, v);
+  }
+
   const recent = v.notes.filter((n) => n.status !== "outstanding").slice(0, 6).map((n) => `${ASSETS[n.asset].label} ${n.side ? "short" : "long"} at ${n.confidenceBps / 100}% → ${n.status}`);
   let d;
   try {
@@ -143,8 +155,12 @@ export async function think(snaps: Snap[], v: VaultView) {
     journal.add({ kind: "declined", asset: fresh[0].sym, title: `Declined to swear: ${fresh.map((x) => `${ASSETS[x.assetId].label} ${x.side} (${x.kind})`).join(", ")}`, detail: d.rationale || d.because, model: d.model, tokens: d.tokens });
     return;
   }
-  // ── guards: the model chooses and states odds; rules decide what may be sworn
-  const p = Math.min(0.99, Math.max(0.5, Number(d.confidence)));
+  return swearNote(c, Number(d.confidence), d, snaps, v);
+}
+
+/** Guards, then the oath: the agent chooses and states odds; the rules and the vault decide what may be sworn. */
+async function swearNote(c: Candidate, confidence: number, d: { rationale: string; because: string; model: string; tokens: number }, snaps: Snap[], v: VaultView) {
+  const p = Math.min(0.99, Math.max(0.5, confidence));
   if (!Number.isFinite(p) || p <= c.pMin + 0.01) {
     declined.set(c.key, Date.now());
     journal.add({ kind: "declined", asset: c.sym, title: `Declined ${ASSETS[c.assetId].label} ${c.side}: odds below break-even`, detail: `The model gave ${Math.round(p * 100)}%; this note breaks even at ${Math.round(c.pMin * 100)}%. ${d.rationale}`, model: d.model, tokens: d.tokens });

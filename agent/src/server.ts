@@ -5,6 +5,7 @@ import { desk, classify, type Msg } from "./desk.js";
 import { mcp } from "./mcp.js";
 import { scenario } from "./sim.js";
 import { journal } from "./journal.js";
+import { league } from "./league.js";
 import { chain } from "./market.js";
 import { account, tightenMandate, words } from "./agent.js";
 import type { VaultView } from "./vault.js";
@@ -41,6 +42,10 @@ export function serve() {
       if (req.method === "GET" && url.pathname === "/state") {
         if (!live.state) return send(res, 503, { error: "warming up" });
         return send(res, 200, live.state);
+      }
+      if (req.method === "GET" && url.pathname === "/league") {
+        if (!live.state) return send(res, 503, { error: "warming up" });
+        return send(res, 200, await league(live.state));
       }
       if (req.method === "GET" && url.pathname === "/health") {
         const bal = await chain.getBalance({ address: account.address }).catch(() => null);

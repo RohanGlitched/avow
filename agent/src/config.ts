@@ -57,3 +57,10 @@ export const CHAINLINK_MAX_AGE_S = 26 * 3600;
 export const LOOP_MS = Number(process.env.DICTUM_LOOP_MS ?? 30_000);
 export const THINK_EVERY_MS = Number(process.env.DICTUM_THINK_MS ?? 5 * 60_000);
 export const MODELS = (process.env.DICTUM_MODELS ?? "gemini-3.5-flash,gemini-3.5-flash-lite").split(",");
+
+/** League peers the flagship agent reports alongside its own record: "url,url" of other agents' /state endpoints. */
+export const LEAGUE_PEERS = (process.env.DICTUM_LEAGUE ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+/** Only one process per fork may keep the fork's pools mirrored to mainnet. */
+export const MIRROR = process.env.DICTUM_MIRROR !== "0";
+/** The on-chain league registry, when deployed. */
+export const LEAGUE_REGISTRY = (process.env.DICTUM_LEAGUE_REGISTRY ?? "") as Address;
