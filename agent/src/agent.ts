@@ -163,7 +163,7 @@ async function swearNote(c: Candidate, confidence: number, d: { rationale: strin
   const p = Math.min(0.99, Math.max(0.5, confidence));
   if (!Number.isFinite(p) || p <= c.pMin + 0.01) {
     declined.set(c.key, Date.now());
-    journal.add({ kind: "declined", asset: c.sym, title: `Declined ${ASSETS[c.assetId].label} ${c.side}: odds below break-even`, detail: `The model gave ${Math.round(p * 100)}%; this note breaks even at ${Math.round(c.pMin * 100)}%. ${d.rationale}`, model: d.model, tokens: d.tokens });
+    journal.add({ kind: "declined", asset: c.sym, title: `Declined ${ASSETS[c.assetId].label} ${c.side}: odds below break-even`, detail: `${PERSONA.kind === "rule" ? "It states" : "The model gave"} ${Math.round(p * 100)}%; this note breaks even at ${Math.round(c.pMin * 100)}%. ${d.rationale}`, model: d.model, tokens: d.tokens });
     return;
   }
   if (c.notionalUsd < 1) {
@@ -209,6 +209,7 @@ const lastReview = new Map<number, number>();
 
 /** Every 15 minutes, a note that has moved, stalled or lost its reason is put back to the model: hold, tighten the stop, or retract. */
 export async function review(snaps: Snap[], v: VaultView) {
+  if (PERSONA.kind === "rule") return; // rule baselines hold every note until it settles; no model is consulted
   for (const n of v.notes.filter((x) => x.status === "outstanding")) {
     if (Date.now() - (lastReview.get(n.id) ?? 0) < 15 * 60_000) continue;
     const a = ASSETS[n.asset];
