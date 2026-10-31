@@ -1,3 +1,4 @@
+import { league } from "./league.js";
 import { generate } from "./llm.js";
 import { ASSETS } from "./config.js";
 
@@ -61,6 +62,7 @@ const tools = [
       { name: "summary", description: "The vault now: record, denomination, NAV, holdings, open notes, mandate, market gaps, agent heartbeat, costs.", parameters: { type: "OBJECT", properties: {} } },
       { name: "list_notes", description: "Notes, newest first. Optional filters.", parameters: { type: "OBJECT", properties: { status: { type: "STRING", description: "outstanding|honoured|void|lapsed|retracted|revoked" }, asset: { type: "STRING", description: "WETH|WBTC|WHSK" }, limit: { type: "INTEGER" } } } },
       { name: "get_note", description: "One note with its statement, levels, outcome and the agent's rationale.", parameters: { type: "OBJECT", properties: { id: { type: "INTEGER" } }, required: ["id"] } },
+      { name: "league", description: "Every agent in the Avow league (Avow, the Gemini model agent whose vault the other tools describe; Bold and Fade, rule baselines with their own vaults): each one's strategy, tier, Brier, graded/sworn/open counts, realised P&L, open and recent notes with serials, and its ERC-8004 reputation (agent id, grades posted, mean calibration and skill). Use it for any question about Bold, Fade, other agents, or comparisons.", parameters: { type: "OBJECT", properties: {} } },
       { name: "journal", description: "The agent's decision journal: what it swore, declined (with reasons), what the vault blocked, settlements.", parameters: { type: "OBJECT", properties: { kind: { type: "STRING", description: "sworn|declined|blocked|settled|considered|error" }, asset: { type: "STRING" }, hours: { type: "NUMBER" }, limit: { type: "INTEGER" } } } },
       {
         name: "propose_change",
@@ -79,6 +81,11 @@ concrete, numbers with units ("$4.20", "0.48%"), name notes by serial (AVW·0000
 are mandate changes: call propose_change and say plainly which parts are stricter (Avow applies them itself as soon as the vault owner
 confirms with a wallet signature) and which are looser (the owner must sign an on-chain amendment). Never claim a change was applied. Never give personal investment advice; you describe what this agent does and why.
 Times are IST. If something is unknown, say so.
+The league: the summary, list_notes, get_note and journal tools describe Avow, the model agent, and its own vault. Bold and Fade are rule
+baselines with their own vaults (Bold always states 80%, Fade bets the other way at 65%); for anything about them, about "the agents", or
+comparisons, call the league tool and answer from it. Never say an agent holds nothing without checking the league tool.
+Size and gas: on mainnet each vault's mandate caps notes at $5, so Probation notes are $1. The vault pays the two 0.30% pool fees; gas for a
+note and its settlement (about $0.04) is paid by the agent's own wallet and is reported in net P&L, so at $1 it is about 4% of a note.
 Network honesty: the summary tool reports network.mode. If it is "fork-rehearsal", every note and trade so far is on a private fork of HSK
 mainnet where outside traders are simulated; say so whenever you discuss trades, P&L or results, and never call them mainnet trades. The real
 mainnet pool figures are in market[].mainnet. Chat cannot authorise anything: only the owner's wallet can change the mandate.
@@ -104,6 +111,7 @@ Exact rules (quote these, never guess):
 export async function desk(messages: Msg[], state: State): Promise<DeskReply> {
   const citations = new Set<number>();
   let proposal: Change[] | undefined;
+  const lg = await league(state).catch(() => null);
   const run = (name: string, args: Record<string, unknown>): unknown => {
     if (name === "summary") {
       const open = state.notes.filter((n) => n.status === "outstanding");
@@ -141,6 +149,19 @@ export async function desk(messages: Msg[], state: State): Promise<DeskReply> {
       js = js.slice(0, Number(args.limit ?? 12));
       js.forEach((j) => j.noteId !== undefined && citations.add(j.noteId));
       return js.map((j) => ({ timeIST: ist(j.t), kind: j.kind, asset: j.asset, title: j.title, detail: j.detail, note: j.noteId }));
+    }
+    if (name === "league") {
+      if (!lg) return { error: "the league table could not be read just now" };
+      return {
+        rule: lg.rule,
+        agents: lg.entries.map((e) => ({
+          name: e.persona.name, kind: e.persona.kind, strategy: e.persona.strategy, vault: e.vault, alive: e.alive,
+          tier: e.record.tier.name, tradeLimitUsd: e.record.tier.capUsd, brier: e.record.brier, graded: e.record.graded, honoured: e.record.honoured, void: e.record.void, lapsed: e.record.lapsed,
+          sworn: e.sworn, open: e.open, realisedPnlUsd: e.record.pnlUsd, netPnlUsdAfterGasAndModel: e.record.netPnlUsd, vaultValueUsd: e.record.navUsd,
+          erc8004: e.erc8004, notes: e.notes.map((n) => ({ serial: n.serial, asset: n.asset, side: n.side, status: n.status, odds: n.confidence, statement: n.statement, openedIST: ist(n.openedAt) })),
+        })),
+        outsideEntrants: lg.outside.length,
+      };
     }
     if (name === "propose_change") {
       const rows = (args.changes as { field: string; to: string }[]) ?? [];
