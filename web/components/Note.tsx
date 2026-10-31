@@ -21,6 +21,8 @@ export interface NoteProps {
   defer?: boolean;
   as?: "article" | "div";
   headingLevel?: 2 | 3;
+  /** The league agent that swore the note, when it is not Avow (e.g. "Bold"). */
+  agent?: string;
 }
 
 function Callout({ k, on }: { k: string; on?: boolean }) {
@@ -56,7 +58,7 @@ function Seal({ block, fork, uid }: { block: number; fork: boolean; uid: string 
   );
 }
 
-export function Note({ note, state, print, annotate, defer, as = "article", headingLevel = 2 }: NoteProps) {
+export function Note({ note, state, print, annotate, defer, as = "article", headingLevel = 2, agent }: NoteProps) {
   const uid = `n${note.id}${print ? "p" : ""}${annotate ? "a" : ""}`;
   const L = ASSET_LABEL[note.asset];
   const d = denom(note.notionalUsd);
@@ -93,8 +95,8 @@ export function Note({ note, state, print, annotate, defer, as = "article", head
           </div>
 
           <div className="note__issuer">
-            <H className="note__brand">Avow</H>
-            <span className="note__cap">Sworn note of the Avow vault on HSK Chain</span>
+            <H className="note__brand">{agent ?? "Avow"}</H>
+            <span className="note__cap">{agent && agent !== "Avow" ? `Sworn note of ${agent}'s vault in the Avow league, HSK Chain` : "Sworn note of the Avow vault on HSK Chain"}</span>
           </div>
 
           <div className="note__denom" aria-label={`Notional ${usd(note.notionalUsd)}`}>

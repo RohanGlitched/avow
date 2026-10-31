@@ -105,7 +105,7 @@ export default async function Home() {
         </div>
 
         <div className="wrap">
-          <HeroStage>{hero ? <Note note={hero} state={heroState} print /> : <Note note={specimenNote("outstanding")} state={s} print />}</HeroStage>
+          <HeroStage>{hero ? <Note note={hero} state={heroState} agent={heroBy?.name} print /> : <Note note={specimenNote("outstanding")} state={s} print />}</HeroStage>
           <div className="plate hero__plate">
             <span>
               {hero ? (
